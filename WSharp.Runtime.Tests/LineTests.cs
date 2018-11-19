@@ -1,5 +1,6 @@
 ﻿using NUnit.Framework;
 using System;
+using System.Numerics;
 
 namespace WSharp.Runtime.Tests
 {
@@ -9,7 +10,7 @@ namespace WSharp.Runtime.Tests
 		public static void Create()
 		{
 			const ulong identifier = 1;
-			const ulong count = 2;
+			var count = new BigInteger(2);
 			var code = new Action<IExecutionEngineActions>(_ => { });
 
 			var line = new Line(identifier, count, code);
@@ -38,7 +39,7 @@ namespace WSharp.Runtime.Tests
 
 			var newLine = line.UpdateCount(delta);
 			Assert.That(newLine.Identifier, Is.EqualTo(identifier));
-			Assert.That(newLine.Count, Is.EqualTo(expectedResult));
+			Assert.That(newLine.Count, Is.EqualTo(new BigInteger(expectedResult)));
 			Assert.That(newLine.Code, Is.SameAs(code));
 		}
 	}

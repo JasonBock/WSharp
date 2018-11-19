@@ -9,7 +9,7 @@ namespace WSharp.Runtime
 	public sealed class ExecutionEngine
 		: IExecutionEngineActions
 	{
-		private readonly ImmutableDictionary<ulong, Line> lines;
+		private readonly Dictionary<ulong, Line> lines;
 		private readonly Random random;
 		private bool shouldStatementBeDeferred;
 
@@ -43,14 +43,12 @@ namespace WSharp.Runtime
 				}
 			}
 
-			var indexedLines = ImmutableDictionary.CreateBuilder<ulong, Line>();
+			this.lines = new Dictionary<ulong, Line>();
 
 			foreach(var line in lines)
 			{
-				indexedLines.Add(line.Identifier, line);
+				this.lines.Add(line.Identifier, line);
 			}
-
-			this.lines = indexedLines.ToImmutable();
 		}
 
 		public BigInteger GetCurrentLineCount()
@@ -83,12 +81,12 @@ namespace WSharp.Runtime
 			}
 		}
 
-		public bool Execute()
+		public void Execute()
 		{
 			this.shouldStatementBeDeferred = false;
 			var currentLineCount = this.GetCurrentLineCount();
 
-			if(currentLineCount > 0)
+			while(currentLineCount > 0)
 			{
 				var buffer = currentLineCount.ToByteArray();
 				this.random.NextBytes(buffer);
@@ -108,6 +106,7 @@ namespace WSharp.Runtime
 						if (!this.shouldStatementBeDeferred)
 						{
 							var newLine = line.UpdateCount(-1);
+							this.lines[newLine.Identifier] = newLine;
 						}
 
 						break;
@@ -118,11 +117,7 @@ namespace WSharp.Runtime
 					}
 				}
 
-				return true;
-			}
-			else
-			{
-				return false;
+				currentLineCount = this.GetCurrentLineCount();
 			}
 		}
 
@@ -130,5 +125,8 @@ namespace WSharp.Runtime
 			throw new NotImplementedException();
 
 		public string U(long number) => number.ToString();
+
+		public void UpdateCount(ulong identifier, BigInteger delta) => 
+			this.lines[identifier].UpdateCount(delta);
 	}
 }
