@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.IO;
 using System.Numerics;
 
 namespace WSharp.Runtime
@@ -12,10 +13,12 @@ namespace WSharp.Runtime
 		private readonly Dictionary<ulong, Line> lines;
 		private readonly Random random;
 		private bool shouldStatementBeDeferred;
+		private readonly TextWriter writer;
 
-		public ExecutionEngine(ImmutableList<Line> lines, Random random)
+		public ExecutionEngine(ImmutableList<Line> lines, Random random, TextWriter writer)
 		{
 			this.random = random ?? throw new ArgumentNullException(nameof(random));
+			this.writer = writer ?? throw new ArgumentNullException(nameof(writer));
 
 			if (lines == null)
 			{
@@ -82,29 +85,32 @@ namespace WSharp.Runtime
 				var buffer = currentLineCount.ToByteArray();
 				this.random.NextBytes(buffer);
 
-				var generated = new BigInteger(buffer) % currentLineCount;
+				var generated = BigInteger.Abs(new BigInteger(buffer) % currentLineCount);
 				var currentLowerBound = BigInteger.Zero;
 
 				// TODO: We should never come out of this foreach
 				// without executing a line.
 				foreach (var line in this.lines.Values)
 				{
-					var range = new Range<BigInteger>(currentLowerBound, line.Count + currentLowerBound - 1);
-					if (range.Contains(generated))
+					if(line.Count > BigInteger.Zero)
 					{
-						line.Code(this);
-
-						if (!this.shouldStatementBeDeferred)
+						var range = new Range<BigInteger>(currentLowerBound, line.Count + currentLowerBound - 1);
+						if (range.Contains(generated))
 						{
-							var newLine = line.UpdateCount(-1);
-							this.lines[newLine.Identifier] = newLine;
-						}
+							line.Code(this);
 
-						break;
-					}
-					else
-					{
-						currentLowerBound += line.Count;
+							if (!this.shouldStatementBeDeferred)
+							{
+								var newLine = line.UpdateCount(-1);
+								this.lines[newLine.Identifier] = newLine;
+							}
+
+							break;
+						}
+						else
+						{
+							currentLowerBound += line.Count;
+						}
 					}
 				}
 
@@ -113,6 +119,8 @@ namespace WSharp.Runtime
 		}
 
 		public BigInteger N(ulong identifier) => this.lines[identifier].Count;
+
+		public void Print(string message) => this.writer.WriteLine(message);
 
 		public string U(long number) => number.ToString();
 
