@@ -8,6 +8,9 @@ namespace WSharp.Runtime
 	public sealed class ExecutionEngineLinesException
 		: Exception
 	{
+		public ExecutionEngineLinesException()
+			: base() { }
+
 		public ExecutionEngineLinesException(ImmutableList<string> messages)
 			: base() => this.Messages = messages;
 
