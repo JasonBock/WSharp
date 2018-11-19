@@ -1,17 +1,36 @@
 ﻿using System;
+using System.Numerics;
 
 namespace WSharp.Runtime
 {
 	public sealed class Line
 	{
-		public Line(ulong identifier, ulong count, Action<IExecutionEngineActions> code) => 
-			(this.Identifier, this.Count, this.Code) = (identifier, count, code ?? throw new ArgumentNullException(nameof(code)));
+		public Line(ulong identifier, BigInteger count, Action<IExecutionEngineActions> code)
+		{
+			if(count < BigInteger.Zero)
+			{
+				throw new ArgumentException("Cannot use a negative count for a line.", nameof(count));
+			}
 
-		public Line UpdateCount(ulong delta) =>
-			new Line(this.Identifier, delta > this.Count ? 0 : this.Count - delta, this.Code);
+			this.Count = count;
+			this.Identifier = identifier;
+			this.Code = code ?? throw new ArgumentNullException(nameof(code));
+		}
+
+		public Line UpdateCount(BigInteger delta)
+		{
+			var newCount = this.Count + delta;
+
+			if (newCount < BigInteger.Zero)
+			{
+				newCount = BigInteger.Zero;
+			}
+
+			return new Line(this.Identifier, newCount, this.Code);
+		}
 
 		public ulong Identifier { get; }
-		public ulong Count { get; }
+		public BigInteger Count { get; }
 		public Action<IExecutionEngineActions> Code { get; }
 	}
 }

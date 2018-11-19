@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Numerics;
 
 namespace WSharp.Runtime
 {
@@ -52,9 +53,9 @@ namespace WSharp.Runtime
 			this.lines = indexedLines.ToImmutable();
 		}
 
-		public ulong GetCurrentLineCount()
+		public BigInteger GetCurrentLineCount()
 		{
-			var lineCount = 0ul;
+			var lineCount = BigInteger.Zero;
 
 			foreach(var line in this.lines.Values)
 			{
@@ -64,8 +65,11 @@ namespace WSharp.Runtime
 			return lineCount;
 		}
 
-		public bool Defer(bool shouldDefer) => 
-			throw new NotImplementedException();
+		public bool Defer(bool shouldDefer)
+		{
+			this.shouldStatementBeDeferred = shouldDefer;
+			return shouldDefer;
+		}
 
 		public bool DoesLineExist(ulong identifier)
 		{
@@ -84,17 +88,42 @@ namespace WSharp.Runtime
 			this.shouldStatementBeDeferred = false;
 			var currentLineCount = this.GetCurrentLineCount();
 
-			var buffer = new byte[8];
-			this.random.NextBytes(buffer);
+			if(currentLineCount > 0)
+			{
+				var buffer = currentLineCount.ToByteArray();
+				this.random.NextBytes(buffer);
 
-			var generated = BitConverter.ToUInt64(buffer, 0) % currentLineCount;
-			// Turn wasDeferCalled
-			// Randomly pick a line if there are lines to execute.
-			// Execute the line's Code.
-			// If wasDeferCalled == true
-			//   keep the line count the same
-			// Else
-			//   decrement the line's count by 1.
+				var generated = new BigInteger(buffer) % currentLineCount;
+				var currentLowerBound = BigInteger.Zero;
+
+				// TODO: We should never come out of this foreach
+				// without executing a line.
+				foreach (var line in this.lines.Values)
+				{
+					var range = new Range<BigInteger>(currentLowerBound, line.Count + currentLowerBound - 1);
+					if (range.Contains(generated))
+					{
+						line.Code(this);
+
+						if (!this.shouldStatementBeDeferred)
+						{
+							var newLine = line.UpdateCount(-1);
+						}
+
+						break;
+					}
+					else
+					{
+						currentLowerBound += line.Count;
+					}
+				}
+
+				return true;
+			}
+			else
+			{
+				return false;
+			}
 		}
 
 		public ulong N(ulong identifier) => 

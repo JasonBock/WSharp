@@ -23,9 +23,14 @@ namespace WSharp.Runtime.Tests
 		public static void CreateWhenCodeIsNull() =>
 			Assert.That(() => new Line(default, default, null), Throws.TypeOf<ArgumentNullException>());
 
-		[TestCase(1ul, 2ul, 1ul, 1ul)]
-		[TestCase(1ul, 2ul, 3ul, 0ul)]
-		public static void UpdateCount(ulong identifier, ulong count, ulong delta, ulong expectedResult)
+		[Test]
+		public static void CreateWhenCountIsLessThanZero() =>
+			Assert.That(() => new Line(1ul, -1, new Action<IExecutionEngineActions>(_ => { })), Throws.TypeOf<ArgumentException>());
+
+		[TestCase(1ul, 2ul, 1L, 3ul)]
+		[TestCase(1ul, 2ul, -1L, 1ul)]
+		[TestCase(1ul, 2ul, -3L, 0ul)]
+		public static void UpdateCount(ulong identifier, ulong count, long delta, ulong expectedResult)
 		{
 			var code = new Action<IExecutionEngineActions>(_ => { });
 
