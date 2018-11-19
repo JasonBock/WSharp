@@ -1,6 +1,8 @@
 ﻿using NUnit.Framework;
 using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Numerics;
 
 namespace WSharp.Runtime.Tests
 {
@@ -12,11 +14,11 @@ namespace WSharp.Runtime.Tests
 			var lines = ImmutableList.Create(new Line(1, 1, _ => { }));
 			var random = new Random();
 
-			Assert.That(() => new ExecutionEngine(lines, random), Throws.Nothing);			
+			Assert.That(() => new ExecutionEngine(lines, random), Throws.Nothing);
 		}
 
 		[Test]
-		public static void CreateWhenGivenNullList() => 
+		public static void CreateWhenGivenNullList() =>
 			Assert.That(() => new ExecutionEngine(null, new Random()), Throws.TypeOf<ArgumentNullException>());
 
 		[Test]
@@ -50,11 +52,72 @@ namespace WSharp.Runtime.Tests
 		public static void DoesLineExist(ulong identifier, ulong count, ulong identifierToSearch, bool expectedDoesLineExist)
 		{
 			var lines = ImmutableList.Create(new Line(identifier, count, _ => { }));
-			var random = new Random();
 
-			var engine = new ExecutionEngine(lines, random);
+			var engine = new ExecutionEngine(lines, new Random());
 
 			Assert.That(engine.DoesLineExist(identifierToSearch), Is.EqualTo(expectedDoesLineExist));
+		}
+
+		[Test]
+		public static void CallGetCurrentLineCount()
+		{
+			var lines = ImmutableList.Create(new Line(1, 3, _ => { }), new Line(2, 4, _ => { }));
+
+			var engine = new ExecutionEngine(lines, new Random());
+
+			Assert.That(engine.GetCurrentLineCount(), Is.EqualTo(new BigInteger(7)));
+		}
+
+		[Test]
+		public static void CallN()
+		{
+			var lines = ImmutableList.Create(new Line(1, 3, _ => { }));
+
+			var engine = new ExecutionEngine(lines, new Random());
+
+			Assert.That(engine.N(1), Is.EqualTo(new BigInteger(3)));
+		}
+
+		[Test]
+		public static void CallNWhereLineDoesNotExist()
+		{
+			var lines = ImmutableList.Create(new Line(1, 3, _ => { }));
+
+			var engine = new ExecutionEngine(lines, new Random());
+
+			Assert.That(() => engine.N(2), Throws.TypeOf<KeyNotFoundException>());
+		}
+
+		[Test]
+		public static void CallU()
+		{
+			const long number = 3;
+			var lines = ImmutableList.Create(new Line(1, 3, _ => { }));
+
+			var engine = new ExecutionEngine(lines, new Random());
+
+			Assert.That(engine.U(number), Is.EqualTo(number.ToString()));
+		}
+
+		[Test]
+		public static void CallUpdateCount()
+		{
+			var lines = ImmutableList.Create(new Line(1, 3, _ => { }));
+
+			var engine = new ExecutionEngine(lines, new Random());
+			engine.UpdateCount(1, 2);
+
+			Assert.That(engine.GetCurrentLineCount(), Is.EqualTo(new BigInteger(5)));
+		}
+
+		[Test]
+		public static void CallUpdateCountWhereLineDoesNotExist()
+		{
+			var lines = ImmutableList.Create(new Line(1, 3, _ => { }));
+
+			var engine = new ExecutionEngine(lines, new Random());
+
+			Assert.That(() => engine.UpdateCount(2, BigInteger.Zero), Throws.TypeOf<KeyNotFoundException>());
 		}
 	}
 }

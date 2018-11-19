@@ -6,7 +6,7 @@ namespace WSharp.Runtime
 	{
 		bool Defer(bool shouldDefer);
 		bool DoesLineExist(ulong identifier);
-		ulong N(ulong identifier);
+		BigInteger N(ulong identifier);
 		string U(long number);
 		void UpdateCount(ulong identifier, BigInteger delta);
 	}

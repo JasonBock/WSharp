@@ -121,12 +121,11 @@ namespace WSharp.Runtime
 			}
 		}
 
-		public ulong N(ulong identifier) => 
-			throw new NotImplementedException();
+		public BigInteger N(ulong identifier) => this.lines[identifier].Count;
 
 		public string U(long number) => number.ToString();
 
 		public void UpdateCount(ulong identifier, BigInteger delta) => 
-			this.lines[identifier].UpdateCount(delta);
+			this.lines[identifier] = this.lines[identifier].UpdateCount(delta);
 	}
 }
