@@ -48,14 +48,23 @@ namespace WSharp.Runtime.Tests
 
 		[TestCase(1ul, 1ul, 1ul, true)]
 		[TestCase(1ul, 0ul, 1ul, false)]
-		[TestCase(1ul, 1ul, 2ul, false)]
-		public static void DoesLineExist(ulong identifier, ulong count, ulong identifierToSearch, bool expectedDoesLineExist)
+		public static void CallDoesLineExist(ulong identifier, ulong count, ulong identifierToSearch, bool expectedDoesLineExist)
 		{
 			var lines = ImmutableList.Create(new Line(identifier, count, _ => { }));
 
 			var engine = new ExecutionEngine(lines, new Random());
 
 			Assert.That(engine.DoesLineExist(identifierToSearch), Is.EqualTo(expectedDoesLineExist));
+		}
+
+		[Test]
+		public static void CallDoesLineExistWhereLineDoesNotExist()
+		{
+			var lines = ImmutableList.Create(new Line(1, 3, _ => { }));
+
+			var engine = new ExecutionEngine(lines, new Random());
+
+			Assert.That(() => engine.DoesLineExist(2), Throws.TypeOf<KeyNotFoundException>());
 		}
 
 		[Test]

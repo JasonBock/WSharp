@@ -69,17 +69,8 @@ namespace WSharp.Runtime
 			return shouldDefer;
 		}
 
-		public bool DoesLineExist(ulong identifier)
-		{
-			if(this.lines.TryGetValue(identifier, out var line))
-			{
-				return line.Count > 0;
-			}
-			else
-			{
-				return false;
-			}
-		}
+		public bool DoesLineExist(ulong identifier) => 
+			this.lines[identifier].Count > 0;
 
 		public void Execute()
 		{
