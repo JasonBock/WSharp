@@ -4,6 +4,7 @@ namespace WSharp.Runtime
 {
 	public interface IExecutionEngineActions
 	{
+		bool Again(bool shouldKeep);
 		bool Defer(bool shouldDefer);
 		bool DoesLineExist(ulong identifier);
 		BigInteger N(ulong identifier);

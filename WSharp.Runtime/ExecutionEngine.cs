@@ -14,6 +14,7 @@ namespace WSharp.Runtime
 		private readonly Dictionary<ulong, Line> lines;
 		private readonly Random random;
 		private bool shouldStatementBeDeferred;
+		private bool shouldStatementBeKept;
 		private readonly TextWriter writer;
 
 		public ExecutionEngine(ImmutableList<Line> lines, Random random, TextWriter writer)
@@ -55,6 +56,12 @@ namespace WSharp.Runtime
 			}
 		}
 
+		public bool Again(bool shouldKeep)
+		{
+			this.shouldStatementBeKept |= shouldKeep;
+			return shouldKeep;
+		}
+
 		public BigInteger GetCurrentLineCount()
 		{
 			var lineCount = BigInteger.Zero;
@@ -69,7 +76,7 @@ namespace WSharp.Runtime
 
 		public bool Defer(bool shouldDefer)
 		{
-			this.shouldStatementBeDeferred = shouldDefer;
+			this.shouldStatementBeDeferred |= shouldDefer;
 			return shouldDefer;
 		}
 
@@ -79,6 +86,7 @@ namespace WSharp.Runtime
 		public void Execute()
 		{
 			this.shouldStatementBeDeferred = false;
+			this.shouldStatementBeKept = false;
 			var currentLineCount = this.GetCurrentLineCount();
 
 			while (currentLineCount > 0)
@@ -96,13 +104,14 @@ namespace WSharp.Runtime
 					{
 						line.Code(this);
 
-						if (!this.shouldStatementBeDeferred)
+						if (!this.shouldStatementBeKept && !this.shouldStatementBeDeferred)
 						{
 							var newLine = line.UpdateCount(-1);
 							this.lines[newLine.Identifier] = newLine;
 						}
 
 						this.shouldStatementBeDeferred = false;
+						this.shouldStatementBeKept = false;
 						break;
 					}
 					else

@@ -8,7 +8,7 @@ namespace WSharp
 	{
 		static void Main()
 		{
-			var lines = NinetyNineBottlesGenerator.Generate();
+			var lines = FibonacciSequenceGenerator.Generate();
 			var engine = new ExecutionEngine(lines, new SecureRandom(), Console.Out);
 			engine.Execute();
 		}
