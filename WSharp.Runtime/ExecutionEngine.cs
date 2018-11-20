@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
+using System.Linq;
 using System.Numerics;
 
 namespace WSharp.Runtime
@@ -24,7 +25,7 @@ namespace WSharp.Runtime
 			{
 				throw new ArgumentNullException(nameof(lines));
 			}
-			else if(lines.Count == 0)
+			else if (lines.Count == 0)
 			{
 				throw new ArgumentException("Must pass in at least one line.", nameof(lines));
 			}
@@ -32,15 +33,15 @@ namespace WSharp.Runtime
 			{
 				var messages = new List<string>();
 
-				for(var i = 0; i < lines.Count; i++)
+				for (var i = 0; i < lines.Count; i++)
 				{
-					if(lines[i] == null)
+					if (lines[i] == null)
 					{
 						messages.Add($"The line at index {i} is null.");
 					}
 				}
 
-				if(messages.Count > 0)
+				if (messages.Count > 0)
 				{
 					throw new ExecutionEngineLinesException(messages.ToImmutableList());
 				}
@@ -48,7 +49,7 @@ namespace WSharp.Runtime
 
 			this.lines = new Dictionary<ulong, Line>();
 
-			foreach(var line in lines)
+			foreach (var line in lines)
 			{
 				this.lines.Add(line.Identifier, line);
 			}
@@ -58,7 +59,7 @@ namespace WSharp.Runtime
 		{
 			var lineCount = BigInteger.Zero;
 
-			foreach(var line in this.lines.Values)
+			foreach (var line in this.lines.Values)
 			{
 				lineCount = lineCount + line.Count;
 			}
@@ -72,7 +73,7 @@ namespace WSharp.Runtime
 			return shouldDefer;
 		}
 
-		public bool DoesLineExist(ulong identifier) => 
+		public bool DoesLineExist(ulong identifier) =>
 			this.lines[identifier].Count > 0;
 
 		public void Execute()
@@ -80,7 +81,7 @@ namespace WSharp.Runtime
 			this.shouldStatementBeDeferred = false;
 			var currentLineCount = this.GetCurrentLineCount();
 
-			while(currentLineCount > 0)
+			while (currentLineCount > 0)
 			{
 				var buffer = currentLineCount.ToByteArray();
 				this.random.NextBytes(buffer);
@@ -88,29 +89,25 @@ namespace WSharp.Runtime
 				var generated = BigInteger.Abs(new BigInteger(buffer) % currentLineCount);
 				var currentLowerBound = BigInteger.Zero;
 
-				// TODO: We should never come out of this foreach
-				// without executing a line.
-				foreach (var line in this.lines.Values)
+				foreach (var line in this.lines.Values.Where(_ => _.Count > BigInteger.Zero))
 				{
-					if(line.Count > BigInteger.Zero)
+					var range = new Range<BigInteger>(currentLowerBound, line.Count + currentLowerBound - 1);
+					if (range.Contains(generated))
 					{
-						var range = new Range<BigInteger>(currentLowerBound, line.Count + currentLowerBound - 1);
-						if (range.Contains(generated))
-						{
-							line.Code(this);
+						line.Code(this);
 
-							if (!this.shouldStatementBeDeferred)
-							{
-								var newLine = line.UpdateCount(-1);
-								this.lines[newLine.Identifier] = newLine;
-							}
-
-							break;
-						}
-						else
+						if (!this.shouldStatementBeDeferred)
 						{
-							currentLowerBound += line.Count;
+							var newLine = line.UpdateCount(-1);
+							this.lines[newLine.Identifier] = newLine;
 						}
+
+						this.shouldStatementBeDeferred = false;
+						break;
+					}
+					else
+					{
+						currentLowerBound += line.Count;
 					}
 				}
 
@@ -124,7 +121,7 @@ namespace WSharp.Runtime
 
 		public string U(long number) => number.ToString();
 
-		public void UpdateCount(ulong identifier, BigInteger delta) => 
+		public void UpdateCount(ulong identifier, BigInteger delta) =>
 			this.lines[identifier] = this.lines[identifier].UpdateCount(delta);
 	}
 }

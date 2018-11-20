@@ -27,6 +27,7 @@ namespace WSharp.Runtime.Tests
 		public static void CreateWhenGivenNullRandom() =>
 			Assert.That(() => new ExecutionEngine(ImmutableList.Create(new Line(1, 1, _ => { })), null, new StringWriter()), Throws.TypeOf<ArgumentNullException>());
 
+		[Test]
 		public static void CreateWhenGivenNullWriter() =>
 			Assert.That(() => new ExecutionEngine(ImmutableList.Create(new Line(1, 1, _ => { })), new Random(), null), Throws.TypeOf<ArgumentNullException>());
 
