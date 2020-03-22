@@ -68,7 +68,7 @@ namespace WSharp.Runtime
 
 			foreach (var line in this.lines.Values)
 			{
-				lineCount = lineCount + line.Count;
+				lineCount += line.Count;
 			}
 
 			return lineCount;

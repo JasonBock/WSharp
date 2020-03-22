@@ -2,7 +2,7 @@
 {
 	public static class Program
 	{
-		static void Main() 
+		public static void Main() 
 		{ 
 			// To be clear, what this project is meant for is to work on
 			// building the compiler for WSharp.Runtime. This is new territory for me,

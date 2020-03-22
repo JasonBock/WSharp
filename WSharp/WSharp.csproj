@@ -13,6 +13,9 @@
     <Version>0.1.0</Version>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="Program.cs~RF37e1030.TMP" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\WSharp.Runtime\WSharp.Runtime.csproj" />
   </ItemGroup>
 </Project>

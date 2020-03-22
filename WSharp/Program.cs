@@ -4,9 +4,9 @@ using WSharp.Runtime;
 
 namespace WSharp
 {
-	class Program
+	public static class Program
 	{
-		static void Main()
+		public static void Main()
 		{
 			var lines = FibonacciSequenceGenerator.Generate();
 			var engine = new ExecutionEngine(lines, new SecureRandom(), Console.Out);
