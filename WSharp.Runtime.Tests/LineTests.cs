@@ -15,14 +15,17 @@ namespace WSharp.Runtime.Tests
 
 			var line = new Line(identifier, count, code);
 
-			Assert.That(line.Identifier, Is.EqualTo(identifier));
-			Assert.That(line.Count, Is.EqualTo(count));
-			Assert.That(line.Code, Is.SameAs(code));
+			Assert.Multiple(() =>
+			{
+				Assert.That(line.Identifier, Is.EqualTo(identifier));
+				Assert.That(line.Count, Is.EqualTo(count));
+				Assert.That(line.Code, Is.SameAs(code));
+			});
 		}
 
 		[Test]
 		public static void CreateWhenCodeIsNull() =>
-			Assert.That(() => new Line(default, default, null), Throws.TypeOf<ArgumentNullException>());
+			Assert.That(() => new Line(default, default, null!), Throws.TypeOf<ArgumentNullException>());
 
 		[Test]
 		public static void CreateWhenCountIsLessThanZero() =>
@@ -34,13 +37,15 @@ namespace WSharp.Runtime.Tests
 		public static void UpdateCount(ulong identifier, ulong count, long delta, ulong expectedResult)
 		{
 			var code = new Action<IExecutionEngineActions>(_ => { });
-
 			var line = new Line(identifier, count, code);
-
 			var newLine = line.UpdateCount(delta);
-			Assert.That(newLine.Identifier, Is.EqualTo(identifier));
-			Assert.That(newLine.Count, Is.EqualTo(new BigInteger(expectedResult)));
-			Assert.That(newLine.Code, Is.SameAs(code));
+
+			Assert.Multiple(() =>
+			{
+				Assert.That(newLine.Identifier, Is.EqualTo(identifier));
+				Assert.That(newLine.Count, Is.EqualTo(new BigInteger(expectedResult)));
+				Assert.That(newLine.Code, Is.SameAs(code));
+			});
 		}
 	}
 }

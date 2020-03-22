@@ -9,13 +9,13 @@ namespace WSharp.Runtime
 		: Exception
 	{
 		public ExecutionEngineLinesException()
-			: base() { }
+			: base() => this.Messages = ImmutableList<string>.Empty;
 
 		public ExecutionEngineLinesException(ImmutableList<string> messages)
 			: base() => this.Messages = messages;
 
-		public ExecutionEngineLinesException(SerializationInfo info, StreamingContext context) 
-			: base(info, context) { }
+		public ExecutionEngineLinesException(SerializationInfo info, StreamingContext context)
+			: base(info, context) => this.Messages = ImmutableList<string>.Empty;
 
 		public ImmutableList<string> Messages { get; }
 	}

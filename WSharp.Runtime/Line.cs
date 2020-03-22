@@ -29,8 +29,8 @@ namespace WSharp.Runtime
 			return new Line(this.Identifier, newCount, this.Code);
 		}
 
-		public ulong Identifier { get; }
-		public BigInteger Count { get; }
 		public Action<IExecutionEngineActions> Code { get; }
+		public BigInteger Count { get; }
+		public ulong Identifier { get; }
 	}
 }
