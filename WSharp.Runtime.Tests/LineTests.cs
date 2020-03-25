@@ -9,7 +9,7 @@ namespace WSharp.Runtime.Tests
 		[Test]
 		public static void Create()
 		{
-			const ulong identifier = 1;
+			var identifier = BigInteger.One;
 			var count = new BigInteger(2);
 			var code = new Action<IExecutionEngineActions>(_ => { });
 
@@ -25,11 +25,16 @@ namespace WSharp.Runtime.Tests
 
 		[Test]
 		public static void CreateWhenCodeIsNull() =>
-			Assert.That(() => new Line(default, default, null!), Throws.TypeOf<ArgumentNullException>());
+			Assert.That(() => new Line(BigInteger.One, default, null!), Throws.TypeOf<ArgumentNullException>());
+
+		[Test]
+		public static void CreateWhenIdentifierIsLessThanOne() =>
+			Assert.That(() => new Line(BigInteger.Zero, new BigInteger(2), new Action<IExecutionEngineActions>(_ => { })), 
+				Throws.TypeOf<ArgumentException>());
 
 		[Test]
 		public static void CreateWhenCountIsLessThanZero() =>
-			Assert.That(() => new Line(1ul, -1, new Action<IExecutionEngineActions>(_ => { })), Throws.TypeOf<ArgumentException>());
+			Assert.That(() => new Line(BigInteger.One, -1, new Action<IExecutionEngineActions>(_ => { })), Throws.TypeOf<ArgumentException>());
 
 		[TestCase(1ul, 2ul, 1L, 3ul)]
 		[TestCase(1ul, 2ul, -1L, 1ul)]
@@ -42,7 +47,7 @@ namespace WSharp.Runtime.Tests
 
 			Assert.Multiple(() =>
 			{
-				Assert.That(newLine.Identifier, Is.EqualTo(identifier));
+				Assert.That(newLine.Identifier, Is.EqualTo((BigInteger)identifier));
 				Assert.That(newLine.Count, Is.EqualTo(new BigInteger(expectedResult)));
 				Assert.That(newLine.Code, Is.SameAs(code));
 			});

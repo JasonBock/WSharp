@@ -5,8 +5,13 @@ namespace WSharp.Runtime
 {
 	public sealed class Line
 	{
-		public Line(ulong identifier, BigInteger count, Action<IExecutionEngineActions> code)
+		public Line(BigInteger identifier, BigInteger count, Action<IExecutionEngineActions> code)
 		{
+			if(identifier < BigInteger.One)
+			{
+				throw new ArgumentException($"The identifier, {identifier}, must be greater than zero.", nameof(identifier));
+			}
+
 			if(count < BigInteger.Zero)
 			{
 				throw new ArgumentException("Cannot use a negative count for a line.", nameof(count));
@@ -31,6 +36,6 @@ namespace WSharp.Runtime
 
 		public Action<IExecutionEngineActions> Code { get; }
 		public BigInteger Count { get; }
-		public ulong Identifier { get; }
+		public BigInteger Identifier { get; }
 	}
 }

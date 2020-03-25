@@ -11,7 +11,7 @@ namespace WSharp.Runtime
 	public sealed class ExecutionEngine
 		: IExecutionEngineActions
 	{
-		private readonly Dictionary<ulong, Line> lines;
+		private readonly Dictionary<BigInteger, Line> lines;
 		private readonly Random random;
 		private bool shouldStatementBeDeferred;
 		private bool shouldStatementBeKept;
@@ -48,7 +48,7 @@ namespace WSharp.Runtime
 				}
 			}
 
-			this.lines = new Dictionary<ulong, Line>();
+			this.lines = new Dictionary<BigInteger, Line>();
 
 			foreach (var line in lines)
 			{
@@ -80,7 +80,7 @@ namespace WSharp.Runtime
 			return shouldDefer;
 		}
 
-		public bool DoesLineExist(ulong identifier) =>
+		public bool DoesLineExist(BigInteger identifier) =>
 			this.lines[identifier].Count > 0;
 
 		public void Execute()
@@ -124,13 +124,13 @@ namespace WSharp.Runtime
 			}
 		}
 
-		public BigInteger N(ulong identifier) => this.lines[identifier].Count;
+		public BigInteger N(BigInteger identifier) => this.lines[identifier].Count;
 
 		public void Print(string message) => this.writer.WriteLine(message);
 
 		public string U(long number) => number.ToString();
 
-		public void UpdateCount(ulong identifier, BigInteger delta) =>
+		public void UpdateCount(BigInteger identifier, BigInteger delta) =>
 			this.lines[identifier] = this.lines[identifier].UpdateCount(delta);
 	}
 }

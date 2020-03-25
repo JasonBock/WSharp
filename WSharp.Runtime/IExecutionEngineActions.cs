@@ -6,10 +6,10 @@ namespace WSharp.Runtime
 	{
 		bool Again(bool shouldKeep);
 		bool Defer(bool shouldDefer);
-		bool DoesLineExist(ulong identifier);
-		BigInteger N(ulong identifier);
+		bool DoesLineExist(BigInteger identifier);
+		BigInteger N(BigInteger identifier);
 		void Print(string message);
 		string U(long number);
-		void UpdateCount(ulong identifier, BigInteger delta);
+		void UpdateCount(BigInteger identifier, BigInteger delta);
 	}
 }

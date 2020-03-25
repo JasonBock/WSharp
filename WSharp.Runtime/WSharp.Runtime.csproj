@@ -12,6 +12,9 @@
     <Version>0.1.0</Version>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="IExecutionEngineActions.cs~RF40cd3fa.TMP" />
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Include="Spackle" Version="9.0.0" />
     <PackageReference Include="System.Collections.Immutable" Version="1.7.0" />
   </ItemGroup>
