@@ -14,7 +14,7 @@ namespace WSharp.Runtime
 		public ExecutionEngineLinesException(ImmutableList<string> messages)
 			: base() => this.Messages = messages;
 
-		public ExecutionEngineLinesException(SerializationInfo info, StreamingContext context)
+		private ExecutionEngineLinesException(SerializationInfo info, StreamingContext context)
 			: base(info, context) => this.Messages = ImmutableList<string>.Empty;
 
 		public ImmutableList<string> Messages { get; }

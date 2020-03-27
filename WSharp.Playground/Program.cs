@@ -4,6 +4,7 @@ using System.Linq;
 using Spackle;
 using Spackle.Extensions;
 using WSharp.Runtime;
+using WSharp.Runtime.Compiler;
 
 // To be clear, what this project is meant for is to work on
 // building the compiler for WSharp.Runtime. This is new territory for me,
@@ -46,26 +47,19 @@ namespace WSharp.Playground
 		}
 
 		public static void Main() =>
-			//Program.RunRepl();
-			Program.RunEvaluator();
+			Program.RunRepl();
 
-		private static void RunEvaluator()
+		private static void RunEvaluator(SyntaxTree tree)
 		{
-			Console.Out.Write("> ");
-			var line = Console.In.ReadLine();
-
-			if (!string.IsNullOrWhiteSpace(line))
-			{
-				var parser = new Parser(line);
-				var syntaxTree = parser.Parse();
-				var lines = EvaluatorGenerator.Generate(new List<SyntaxTree> { syntaxTree });
-				var engine = new ExecutionEngine(lines, new SecureRandom(), Console.Out);
-				engine.Execute();
-			}
+			var lines = EvaluatorGenerator.Generate(new List<SyntaxTree> { tree });
+			var engine = new ExecutionEngine(lines, new SecureRandom(), Console.Out);
+			engine.Execute();
 		}
 
 		private static void RunRepl()
 		{
+			var showTree = false;
+
 			while (true)
 			{
 				Console.Out.Write("> ");
@@ -73,23 +67,41 @@ namespace WSharp.Playground
 
 				if (!string.IsNullOrWhiteSpace(line))
 				{
-					var parser = new Parser(line);
-					var syntaxTree = parser.Parse();
-
-					using (ConsoleColor.DarkGray.Bind(() => Console.ForegroundColor))
+					if(line == "#showTree")
 					{
-						Program.Print(syntaxTree.Root);
+						showTree = !showTree;
+						Console.Out.WriteLine(showTree ? "Showing parse trees." : "Not showing parse trees");
+						continue;
+					}
+					else if(line == "#cls")
+					{
+						Console.Clear();
+						continue;
 					}
 
-					if (syntaxTree.Diagnostics.Any())
+					var tree = SyntaxTree.Parse(line);
+
+					if(showTree)
+					{
+						using (ConsoleColor.DarkGray.Bind(() => Console.ForegroundColor))
+						{
+							Program.Print(tree.Root);
+						}
+					}
+
+					if (tree.Diagnostics.Any())
 					{
 						using (ConsoleColor.DarkRed.Bind(() => Console.ForegroundColor))
 						{
-							foreach (var diagnostic in parser.Diagnostics)
+							foreach (var diagnostic in tree.Diagnostics)
 							{
 								Console.Out.WriteLine(diagnostic);
 							}
 						}
+					}
+					else
+					{
+						//Program.RunEvaluator(tree);
 					}
 				}
 				else

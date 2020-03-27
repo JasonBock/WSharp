@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Numerics;
 
-namespace WSharp.Playground
+namespace WSharp.Runtime.Compiler
 {
 	public sealed class Lexer
 	{
@@ -12,6 +12,16 @@ namespace WSharp.Playground
 
 		public Lexer(string text) => 
 			this.text = text ?? throw new ArgumentNullException(nameof(text));
+
+		private char GetCurrent()
+		{
+			if (this.position >= this.text.Length)
+			{
+				return '\0';
+			}
+
+			return this.text[this.position];
+		}
 
 		public SyntaxToken Next() 
 		{
@@ -31,12 +41,16 @@ namespace WSharp.Playground
 
 				var length = this.position - start;
 				var text = this.text.Substring(start, length);
-				BigInteger.TryParse(text, out var value);
+
+				if(!BigInteger.TryParse(text, out var value))
+				{
+					this.diagnostics.Add($"The number {text} isn't a valid BigInteger.");
+				}
 
 				return new SyntaxToken(SyntaxKind.NumberToken, start, text, value);
 			}
 
-			if(char.IsWhiteSpace(this.GetCurrent()))
+			if (char.IsWhiteSpace(this.GetCurrent()))
 			{
 				var start = this.position;
 
@@ -60,7 +74,6 @@ namespace WSharp.Playground
 				return new SyntaxToken(SyntaxKind.CommaToken, this.position++, ",", null);
 			}
 
-			/*
 			if (this.GetCurrent() == '+')
 			{
 				return new SyntaxToken(SyntaxKind.PlusToken, this.position++, "+", null);
@@ -90,20 +103,14 @@ namespace WSharp.Playground
 			{
 				return new SyntaxToken(SyntaxKind.CloseParenthesisToken, this.position++, "(", null);
 			}
-			*/
+
+			if (this.GetCurrent() == ';')
+			{
+				return new SyntaxToken(SyntaxKind.SemicolonToken, this.position++, ";", null);
+			}
 
 			this.diagnostics.Add($"ERROR: bad character input: '{this.GetCurrent()}'");
 			return new SyntaxToken(SyntaxKind.BadToken, this.position++, this.text.Substring(this.position - 1, 1), null);
-		}
-
-		private char GetCurrent()
-		{
-			if(this.position >= this.text.Length)
-			{
-				return '\0';
-			}
-
-			return this.text[this.position];
 		}
 
 		private void UpdatePosition() => this.position++;

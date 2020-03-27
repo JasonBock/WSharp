@@ -1,4 +1,4 @@
-﻿namespace WSharp.Playground
+﻿namespace WSharp.Runtime.Compiler
 {
 	public enum SyntaxKind
 	{
@@ -17,6 +17,8 @@
 		CloseParenthesisToken,
 		BinaryExpression,
 		UpdateLineCountExpression,
-		LineExpression
+		LineExpression,
+		ParenthesizedExpression,
+		SemicolonToken
 	}
 }
