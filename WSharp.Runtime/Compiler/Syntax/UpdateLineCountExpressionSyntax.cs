@@ -2,7 +2,7 @@
 
 namespace WSharp.Runtime.Compiler.Syntax
 {
-	public sealed class UpdateLineCountExpressionSyntax 
+	public sealed class UpdateLineCountExpressionSyntax
 		: ExpressionSyntax
 	{
 		public UpdateLineCountExpressionSyntax(ExpressionSyntax left, SyntaxToken operatorToken, ExpressionSyntax right) =>

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Numerics;
 using WSharp.Runtime.Compiler.Syntax;
 
@@ -21,8 +22,51 @@ namespace WSharp.Runtime.Compiler.Binding
 					return this.BindUnaryExpression((UnaryExpressionSyntax)syntax);
 				case SyntaxKind.BinaryExpression:
 					return this.BindBinaryExpression((BinaryExpressionSyntax)syntax);
+				case SyntaxKind.UpdateLineCountExpression:
+					return this.BindUpdateLineCountExpression((UpdateLineCountExpressionSyntax)syntax);
+				case SyntaxKind.LineExpression:
+					return this.BindLineExpression((LineExpressionSyntax)syntax);
 				default:
 					throw new BindingException($"Unexpected syntax {syntax.Kind}");
+			}
+		}
+
+		private BoundExpression BindLineExpression(LineExpressionSyntax syntax)
+		{
+			var boundLineNumber = this.BindExpression(syntax.Number);
+			var boundLines = syntax.Expressions.Select(_ => this.BindExpression(_)).ToList();
+			return new BoundLineExpression(boundLineNumber, boundLines);
+		}
+
+		private BoundExpression BindUpdateLineCountExpression(UpdateLineCountExpressionSyntax syntax)
+		{
+			var boundLeft = this.BindExpression(syntax.Left);
+			var boundRight = this.BindExpression(syntax.Right);
+			var boundOperatorKind = this.BindUpdateLineCountOperatorKind(syntax.OperatorToken.Kind, boundLeft.Type, boundRight.Type);
+
+			if (boundOperatorKind == null)
+			{
+				this.diagnostics.Add($"Binary operator '{syntax.OperatorToken.Text}' is not defined for types {boundLeft.Type} and {boundRight.Type}.");
+				return boundLeft;
+			}
+
+			return new BoundUpdateLineCountExpression(boundLeft, boundOperatorKind.Value, boundRight);
+		}
+
+		private BoundUpdateLineCountOperatorKind? BindUpdateLineCountOperatorKind(SyntaxKind kind, Type leftType, Type rightType)
+		{
+			if (leftType != typeof(BigInteger) || rightType != typeof(BigInteger))
+			{
+				return null;
+			}
+
+			if(kind == SyntaxKind.UpdateLineCountToken)
+			{
+				return BoundUpdateLineCountOperatorKind.Update;
+			}
+			else
+			{
+				throw new BindingException($"Unexpected update line count operator {kind}");
 			}
 		}
 
