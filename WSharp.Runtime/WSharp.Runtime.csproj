@@ -12,6 +12,7 @@
     <Version>0.1.0</Version>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="Compiler\Binding\BoundBinaryExpression.cs~RF33d6021.TMP" />
     <None Remove="Compiler\Binding\BoundLineExpression.cs~RF27274bd.TMP" />
     <None Remove="Compiler\NumberExpressionSyntax.cs~RF1c5580e9.TMP" />
     <None Remove="Compiler\SyntaxKind.cs~RF1d699cee.TMP" />

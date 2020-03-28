@@ -51,10 +51,9 @@ namespace WSharp.Playground
 		public static void Main() =>
 			Program.RunRepl();
 
-		private static void RunEvaluator(BoundExpression expression)
+		private static void RunEvaluator(EvaluationResult evaluation)
 		{
-			var lines = BoundEvaluatorGenerator.Generate(new List<BoundExpression> { expression });
-			var engine = new ExecutionEngine(lines, new SecureRandom(), Console.Out);
+			var engine = new ExecutionEngine(evaluation.Lines, new SecureRandom(), Console.Out);
 			Console.Out.WriteLine("ExecutionEngine ready...");
 			//engine.Execute();
 		}
@@ -83,9 +82,9 @@ namespace WSharp.Playground
 					}
 
 					var tree = SyntaxTree.Parse(line);
-					var binder = new Binder();
-					var boundExpression = binder.BindExpression(tree.Root);
-					var diagnostics = tree.Diagnostics.Concat(binder.Diagnostics).ToArray();
+					var binder = new Compilation(tree);
+					var result = binder.Evaluate();
+ 					var diagnostics = result.Diagnostics;
 
 					if(showTree)
 					{
@@ -95,7 +94,7 @@ namespace WSharp.Playground
 						}
 					}
 
-					if (diagnostics.Length > 0)
+					if (diagnostics.Any())
 					{
 						using (ConsoleColor.DarkRed.Bind(() => Console.ForegroundColor))
 						{
@@ -107,7 +106,7 @@ namespace WSharp.Playground
 					}
 					else
 					{
-						Program.RunEvaluator(boundExpression);
+						Program.RunEvaluator(result);
 					}
 				}
 				else
