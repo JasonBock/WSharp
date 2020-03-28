@@ -2,6 +2,7 @@
 using System.Collections.Immutable;
 using System.Linq;
 using System.Numerics;
+using WSharp.Runtime.Compiler.Syntax;
 
 namespace WSharp.Runtime.Compiler
 {
@@ -16,9 +17,26 @@ namespace WSharp.Runtime.Compiler
 				actions.UpdateCount(lineToUpdate, count);
 				return BigInteger.Zero;
 			}
-			else if(node is NumberExpressionSyntax number)
+			else if(node is LiteralExpressionSyntax literal)
 			{
-				return (BigInteger)number.NumberToken.Value!;
+				return (BigInteger)literal.LiteralToken.Value!;
+			}
+			else if(node is UnaryExpressionSyntax unary)
+			{
+				var operand = EvaluatorGenerator.Evaluate(unary.Operand, actions);
+
+				if (unary.OperatorToken.Kind == SyntaxKind.PlusToken)
+				{
+					return operand;
+				}
+				else if (unary.OperatorToken.Kind == SyntaxKind.MinusToken)
+				{
+					return -operand; 
+				}
+				else
+				{
+					throw new EvaluationException($"Unexpected unary operator {unary.OperatorToken.Kind}");
+				}
 			}
 			else if(node is BinaryExpressionSyntax binary)
 			{
@@ -50,8 +68,8 @@ namespace WSharp.Runtime.Compiler
 
 			foreach (var tree in trees)
 			{
-				var lineNumberNode = (NumberExpressionSyntax)tree.Root.GetChildren().First(_ => _.Kind == SyntaxKind.NumberExpression);
-				var lineNumber = (BigInteger)lineNumberNode.NumberToken.Value!;
+				var lineNumberNode = (LiteralExpressionSyntax)tree.Root.GetChildren().First(_ => _.Kind == SyntaxKind.LiteralExpression);
+				var lineNumber = (BigInteger)lineNumberNode.LiteralToken.Value!;
 
 				builder.Add(new Line(lineNumber, BigInteger.One, actions =>
 				{

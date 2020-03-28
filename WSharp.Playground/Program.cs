@@ -5,6 +5,7 @@ using Spackle;
 using Spackle.Extensions;
 using WSharp.Runtime;
 using WSharp.Runtime.Compiler;
+using WSharp.Runtime.Compiler.Syntax;
 
 // To be clear, what this project is meant for is to work on
 // building the compiler for WSharp.Runtime. This is new territory for me,
@@ -58,7 +59,7 @@ namespace WSharp.Playground
 
 		private static void RunRepl()
 		{
-			var showTree = false;
+			var showTree = true;
 
 			while (true)
 			{

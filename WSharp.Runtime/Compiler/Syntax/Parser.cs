@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace WSharp.Runtime.Compiler
+namespace WSharp.Runtime.Compiler.Syntax
 {
 	public sealed class Parser
 	{
@@ -17,7 +17,7 @@ namespace WSharp.Runtime.Compiler
 
 			do
 			{
-				token = lexer.Next();
+				token = lexer.Lex();
 
 				if (token.Kind != SyntaxKind.WhitespaceToken &&
 					token.Kind != SyntaxKind.BadToken)
@@ -51,27 +51,10 @@ namespace WSharp.Runtime.Compiler
 		public SyntaxTree Parse()
 		{
 			var lineNumber = this.Match(SyntaxKind.NumberToken);
-			var lineExpressions = new LineExpressionSyntax(new NumberExpressionSyntax(lineNumber), this.ParseLineExpressions());
+			var lineExpressions = new LineExpressionSyntax(new LiteralExpressionSyntax(lineNumber), this.ParseLineExpressions());
 			var endOfFileToken = this.Match(SyntaxKind.EndOfFileToken);
 
 			return new SyntaxTree(this.diagnostics, lineExpressions, endOfFileToken);
-		}
-
-		private ExpressionSyntax ParseExpression() => this.ParseTerm();
-
-		private ExpressionSyntax ParseFactor()
-		{
-			var left = this.ParseNumberExpression();
-
-			while (this.Current.Kind == SyntaxKind.StarToken ||
-				this.Current.Kind == SyntaxKind.SlashToken)
-			{
-				var operatorToken = this.Next();
-				var right = this.ParseNumberExpression();
-				left = new BinaryExpressionSyntax(left, operatorToken, right);
-			}
-
-			return left;
 		}
 
 		private List<ExpressionSyntax> ParseLineExpressions()
@@ -85,9 +68,9 @@ namespace WSharp.Runtime.Compiler
 
 				if (!semiColonFound)
 				{
-					var lineNumber = this.ParseTerm();
+					var lineNumber = this.ParseExpression();
 					var operatorToken = this.Match(SyntaxKind.UpdateLineCountToken);
-					var updateLineCountToken = this.ParseTerm();
+					var updateLineCountToken = this.ParseExpression ();
 					lineExpressions.Add(new UpdateLineCountExpressionSyntax(
 						lineNumber, operatorToken, updateLineCountToken));
 				}
@@ -133,18 +116,37 @@ namespace WSharp.Runtime.Compiler
 			}
 
 			var numberToken = this.Match(SyntaxKind.NumberToken);
-			return new NumberExpressionSyntax(numberToken);
+			return new LiteralExpressionSyntax(numberToken);
 		}
 
-		private ExpressionSyntax ParseTerm()
+		private ExpressionSyntax ParseExpression(int parentPrecendence = 0)
 		{
-			var left = this.ParseFactor();
+			ExpressionSyntax left;
 
-			while (this.Current.Kind == SyntaxKind.PlusToken ||
-				this.Current.Kind == SyntaxKind.MinusToken)
+			var unaryOperatorPrecedence = this.Current.Kind.GetUnaryOperatorPrecedence();
+
+			if (unaryOperatorPrecedence != 0 && unaryOperatorPrecedence >= parentPrecendence)
 			{
 				var operatorToken = this.Next();
-				var right = this.ParseFactor();
+				var operand = this.ParseExpression(unaryOperatorPrecedence);
+				left = new UnaryExpressionSyntax(operatorToken, operand);
+			}
+			else
+			{
+				left = this.ParseNumberExpression();
+			}
+
+			while (true)
+			{
+				var precedence = this.Current.Kind.GetBinaryOperatorPrecedence();
+
+				if(precedence == 0 || precedence <= parentPrecendence)
+				{
+					break;
+				}
+
+				var operatorToken = this.Next();
+				var right = this.ParseExpression(precedence);
 				left = new BinaryExpressionSyntax(left, operatorToken, right);
 			}
 

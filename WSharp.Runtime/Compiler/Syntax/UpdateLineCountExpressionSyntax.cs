@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace WSharp.Runtime.Compiler
+namespace WSharp.Runtime.Compiler.Syntax
 {
 	public sealed class UpdateLineCountExpressionSyntax 
 		: ExpressionSyntax

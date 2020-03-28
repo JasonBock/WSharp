@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Numerics;
 
-namespace WSharp.Runtime.Compiler
+namespace WSharp.Runtime.Compiler.Syntax
 {
 	public sealed class Lexer
 	{
@@ -23,7 +23,7 @@ namespace WSharp.Runtime.Compiler
 			return this.text[this.position];
 		}
 
-		public SyntaxToken Next() 
+		public SyntaxToken Lex() 
 		{
 			if(this.position >= this.text.Length)
 			{
@@ -64,49 +64,26 @@ namespace WSharp.Runtime.Compiler
 				return new SyntaxToken(SyntaxKind.WhitespaceToken, start, text, text);
 			}
 
-			if(this.GetCurrent() == '#')
+			switch (this.GetCurrent())
 			{
-				return new SyntaxToken(SyntaxKind.UpdateLineCountToken, this.position++, "#", null);
-			}
-
-			if (this.GetCurrent() == ',')
-			{
-				return new SyntaxToken(SyntaxKind.CommaToken, this.position++, ",", null);
-			}
-
-			if (this.GetCurrent() == '+')
-			{
-				return new SyntaxToken(SyntaxKind.PlusToken, this.position++, "+", null);
-			}
-
-			if (this.GetCurrent() == '-')
-			{
-				return new SyntaxToken(SyntaxKind.MinusToken, this.position++, "-", null);
-			}
-
-			if (this.GetCurrent() == '*')
-			{
-				return new SyntaxToken(SyntaxKind.StarToken, this.position++, "*", null);
-			}
-
-			if (this.GetCurrent() == '/')
-			{
-				return new SyntaxToken(SyntaxKind.SlashToken, this.position++, "/", null);
-			}
-
-			if (this.GetCurrent() == '(')
-			{
-				return new SyntaxToken(SyntaxKind.OpenParenthesisToken, this.position++, "(", null);
-			}
-
-			if (this.GetCurrent() == ')')
-			{
-				return new SyntaxToken(SyntaxKind.CloseParenthesisToken, this.position++, "(", null);
-			}
-
-			if (this.GetCurrent() == ';')
-			{
-				return new SyntaxToken(SyntaxKind.SemicolonToken, this.position++, ";", null);
+				case '#':
+					return new SyntaxToken(SyntaxKind.UpdateLineCountToken, this.position++, "#", null);
+				case ',':
+					return new SyntaxToken(SyntaxKind.CommaToken, this.position++, ",", null);
+				case '+':
+					return new SyntaxToken(SyntaxKind.PlusToken, this.position++, "+", null);
+				case '-':
+					return new SyntaxToken(SyntaxKind.MinusToken, this.position++, "-", null);
+				case '*':
+					return new SyntaxToken(SyntaxKind.StarToken, this.position++, "*", null);
+				case '/':
+					return new SyntaxToken(SyntaxKind.SlashToken, this.position++, "/", null);
+				case '(':
+					return new SyntaxToken(SyntaxKind.OpenParenthesisToken, this.position++, "(", null);
+				case ')':
+					return new SyntaxToken(SyntaxKind.CloseParenthesisToken, this.position++, "(", null);
+				case ';':
+					return new SyntaxToken(SyntaxKind.SemicolonToken, this.position++, ";", null);
 			}
 
 			this.diagnostics.Add($"ERROR: bad character input: '{this.GetCurrent()}'");

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace WSharp.Runtime.Compiler
+namespace WSharp.Runtime.Compiler.Syntax
 {
 	public sealed class SyntaxToken 
 		: SyntaxNode
