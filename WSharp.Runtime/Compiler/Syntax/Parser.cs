@@ -120,7 +120,7 @@ namespace WSharp.Runtime.Compiler.Syntax
 				case SyntaxKind.FalseKeyword:
 				{
 					var keywordToken = this.Next();
-					var value = this.Current.Kind == SyntaxKind.TrueKeyword;
+					var value = keywordToken.Kind == SyntaxKind.TrueKeyword;
 					return new LiteralExpressionSyntax(keywordToken, value);
 				}
 				default:

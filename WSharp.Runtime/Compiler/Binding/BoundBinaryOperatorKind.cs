@@ -1,6 +1,6 @@
 ﻿namespace WSharp.Runtime.Compiler.Binding
 {
-	internal enum BoundBinaryOperatorKind
+	public enum BoundBinaryOperatorKind
 	{
 		Addition,
 		Subtraction,

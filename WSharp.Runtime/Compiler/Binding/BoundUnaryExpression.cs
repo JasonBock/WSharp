@@ -5,10 +5,10 @@ namespace WSharp.Runtime.Compiler.Binding
 	internal sealed class BoundUnaryExpression
 		: BoundExpression
 	{
-		public BoundUnaryExpression(BoundUnaryOperatorKind operatorKind, BoundExpression operand) => 
-			(this.OperatorKind, this.Operand) = (operatorKind, operand);
+		public BoundUnaryExpression(BoundUnaryOperator @operator, BoundExpression operand) => 
+			(this.Operator, this.Operand) = (@operator, operand);
 
-		public BoundUnaryOperatorKind OperatorKind { get; }
+		public BoundUnaryOperator Operator { get; }
 		public BoundExpression Operand { get; }
 
 		public override Type Type => this.Operand.Type;

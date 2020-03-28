@@ -5,11 +5,11 @@ namespace WSharp.Runtime.Compiler.Binding
 	internal sealed class BoundBinaryExpression
 		: BoundExpression
 	{
-		public BoundBinaryExpression(BoundExpression left, BoundBinaryOperatorKind operatorKind, BoundExpression right) =>
-			(this.Left, this.OperatorKind, this.Right) = (left, operatorKind, right);
+		public BoundBinaryExpression(BoundExpression left, BoundBinaryOperator @operator, BoundExpression right) =>
+			(this.Left, this.Operator, this.Right) = (left, @operator, right);
 
 		public BoundExpression Left { get; }
-		public BoundBinaryOperatorKind OperatorKind { get; }
+		public BoundBinaryOperator Operator { get; }
 		public BoundExpression Right { get; }
 
 		public override Type Type => this.Left.Type;

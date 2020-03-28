@@ -1,6 +1,6 @@
 ﻿namespace WSharp.Runtime.Compiler.Binding
 {
-	internal enum BoundUnaryOperatorKind
+	public enum BoundUnaryOperatorKind
 	{
 		Identity,
 		Negation,

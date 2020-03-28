@@ -24,12 +24,12 @@ namespace WSharp.Runtime.Compiler
 			{
 				var operand = BoundEvaluatorGenerator.Evaluate(unary.Operand, actions);
 
-				return unary.OperatorKind switch
+				return unary.Operator.OperatorKind switch
 				{
 					BoundUnaryOperatorKind.Identity => (BigInteger)operand,
 					BoundUnaryOperatorKind.Negation => -(BigInteger)operand,
 					BoundUnaryOperatorKind.LogicalNegation => !(bool)operand,
-					_ => throw new EvaluationException($"Unexpected unary operator {unary.OperatorKind}")
+					_ => throw new EvaluationException($"Unexpected unary operator {unary.Operator}")
 				};
 			}
 			else if (node is BoundBinaryExpression binary)
@@ -37,7 +37,7 @@ namespace WSharp.Runtime.Compiler
 				var left = BoundEvaluatorGenerator.Evaluate(binary.Left, actions);
 				var right = BoundEvaluatorGenerator.Evaluate(binary.Right, actions);
 
-				return binary.OperatorKind switch
+				return binary.Operator.OperatorKind switch
 				{
 					BoundBinaryOperatorKind.Addition => (BigInteger)left + (BigInteger)right,
 					BoundBinaryOperatorKind.Subtraction => (BigInteger)left - (BigInteger)right,
@@ -45,7 +45,7 @@ namespace WSharp.Runtime.Compiler
 					BoundBinaryOperatorKind.Division => (BigInteger)left / (BigInteger)right,
 					BoundBinaryOperatorKind.LogicalAnd => (bool)left && (bool)right,
 					BoundBinaryOperatorKind.LogicalOr => (bool)left || (bool)right,
-					_ => throw new EvaluationException($"Unexpected binary operator {binary.OperatorKind}")
+					_ => throw new EvaluationException($"Unexpected binary operator {binary.Operator}")
 				};
 			}
 			else
