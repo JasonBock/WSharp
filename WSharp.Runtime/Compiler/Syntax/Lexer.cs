@@ -89,8 +89,6 @@ namespace WSharp.Runtime.Compiler.Syntax
 					return new SyntaxToken(SyntaxKind.CloseParenthesisToken, this.position++, "(", null);
 				case ';':
 					return new SyntaxToken(SyntaxKind.SemicolonToken, this.position++, ";", null);
-				case '!':
-					return new SyntaxToken(SyntaxKind.BangToken, this.position++, "!", null);
 				case '&':
 					{
 						if (this.Lookahead == '&')
@@ -106,6 +104,25 @@ namespace WSharp.Runtime.Compiler.Syntax
 							return new SyntaxToken(SyntaxKind.PipePipeToken, this.position += 2, "||", null);
 						}
 						break;
+					}
+				case '=':
+					{
+						if (this.Lookahead == '=')
+						{
+							return new SyntaxToken(SyntaxKind.EqualsEqualsToken, this.position += 2, "==", null);
+						}
+						break;
+					}
+				case '!':
+					{
+						if (this.Lookahead == '=')
+						{
+							return new SyntaxToken(SyntaxKind.BangEqualsToken, this.position += 2, "!=", null);
+						}
+						else
+						{
+							return new SyntaxToken(SyntaxKind.BangToken, this.position++, "!", null);
+						}
 					}
 			}
 

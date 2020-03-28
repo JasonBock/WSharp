@@ -16,8 +16,8 @@ namespace WSharp.Runtime.Compiler.Binding
 		private BoundUnaryOperator(SyntaxKind syntaxKind, BoundUnaryOperatorKind operatorKind, Type operandType)
 			: this(syntaxKind, operatorKind, operandType, operandType) { }
 
-		private BoundUnaryOperator(SyntaxKind syntaxKind, BoundUnaryOperatorKind operatorKind, Type operandType, Type returnType) =>
-			(this.SyntaxKind, this.OperatorKind, this.OperandType, this.ReturnType) = (syntaxKind, operatorKind, operandType, returnType);
+		private BoundUnaryOperator(SyntaxKind syntaxKind, BoundUnaryOperatorKind operatorKind, Type operandType, Type resultType) =>
+			(this.SyntaxKind, this.OperatorKind, this.OperandType, this.ResultType) = (syntaxKind, operatorKind, operandType, resultType);
 
 		public static BoundUnaryOperator? Bind(SyntaxKind syntaxKind, Type operandType)
 		{
@@ -34,7 +34,7 @@ namespace WSharp.Runtime.Compiler.Binding
 
 		public BoundUnaryOperatorKind OperatorKind { get; }
 		public Type OperandType { get; }
-		public Type ReturnType { get; }
+		public Type ResultType { get; }
 		public SyntaxKind SyntaxKind { get; }
 	}
 }

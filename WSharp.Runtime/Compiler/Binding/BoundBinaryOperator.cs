@@ -12,15 +12,22 @@ namespace WSharp.Runtime.Compiler.Binding
 			new BoundBinaryOperator(SyntaxKind.MinusToken, BoundBinaryOperatorKind.Subtraction, typeof(BigInteger)),
 			new BoundBinaryOperator(SyntaxKind.StarToken, BoundBinaryOperatorKind.Multiplication, typeof(BigInteger)),
 			new BoundBinaryOperator(SyntaxKind.SlashToken, BoundBinaryOperatorKind.Division, typeof(BigInteger)),
+			new BoundBinaryOperator(SyntaxKind.EqualsEqualsToken, BoundBinaryOperatorKind.Equals, typeof(BigInteger), typeof(bool)),
+			new BoundBinaryOperator(SyntaxKind.BangEqualsToken, BoundBinaryOperatorKind.NotEquals, typeof(BigInteger), typeof(bool)),
 			new BoundBinaryOperator(SyntaxKind.AmpersandAmpersandToken, BoundBinaryOperatorKind.LogicalAnd, typeof(bool)),
-			new BoundBinaryOperator(SyntaxKind.PipePipeToken, BoundBinaryOperatorKind.LogicalOr, typeof(bool))
+			new BoundBinaryOperator(SyntaxKind.PipePipeToken, BoundBinaryOperatorKind.LogicalOr, typeof(bool)),
+			new BoundBinaryOperator(SyntaxKind.EqualsEqualsToken, BoundBinaryOperatorKind.Equals, typeof(bool)),
+			new BoundBinaryOperator(SyntaxKind.BangEqualsToken, BoundBinaryOperatorKind.NotEquals, typeof(bool)),
 		};
 
 		private BoundBinaryOperator(SyntaxKind syntaxKind, BoundBinaryOperatorKind operatorKind, Type type)
 			: this(syntaxKind, operatorKind, type, type, type) { }
 
-		private BoundBinaryOperator(SyntaxKind syntaxKind, BoundBinaryOperatorKind operatorKind, Type leftType, Type rightType, Type returnType) =>
-			(this.SyntaxKind, this.OperatorKind, this.LeftType, this.RightType, this.ReturnType) = (syntaxKind, operatorKind, leftType, rightType, returnType);
+		private BoundBinaryOperator(SyntaxKind syntaxKind, BoundBinaryOperatorKind operatorKind, Type operandType, Type resultType)
+			: this(syntaxKind, operatorKind, operandType, operandType, resultType) { }
+
+		private BoundBinaryOperator(SyntaxKind syntaxKind, BoundBinaryOperatorKind operatorKind, Type leftType, Type rightType, Type resultType) =>
+			(this.SyntaxKind, this.OperatorKind, this.LeftType, this.RightType, this.ResultType) = (syntaxKind, operatorKind, leftType, rightType, resultType);
 
 		public static BoundBinaryOperator? Bind(SyntaxKind syntaxKind, Type leftType, Type rightType)
 		{
@@ -37,7 +44,7 @@ namespace WSharp.Runtime.Compiler.Binding
 
 		public Type LeftType { get; }
 		public BoundBinaryOperatorKind OperatorKind { get; }
-		public Type ReturnType { get; }
+		public Type ResultType { get; }
 		public Type RightType { get; }
 		public SyntaxKind SyntaxKind { get; }
 	}

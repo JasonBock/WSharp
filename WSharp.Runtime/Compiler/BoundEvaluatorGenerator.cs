@@ -45,6 +45,8 @@ namespace WSharp.Runtime.Compiler
 					BoundBinaryOperatorKind.Division => (BigInteger)left / (BigInteger)right,
 					BoundBinaryOperatorKind.LogicalAnd => (bool)left && (bool)right,
 					BoundBinaryOperatorKind.LogicalOr => (bool)left || (bool)right,
+					BoundBinaryOperatorKind.Equals => object.Equals(left, right),
+					BoundBinaryOperatorKind.NotEquals => !object.Equals(left, right),
 					_ => throw new EvaluationException($"Unexpected binary operator {binary.Operator}")
 				};
 			}

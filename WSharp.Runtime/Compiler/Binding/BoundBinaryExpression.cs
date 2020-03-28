@@ -12,7 +12,7 @@ namespace WSharp.Runtime.Compiler.Binding
 		public BoundBinaryOperator Operator { get; }
 		public BoundExpression Right { get; }
 
-		public override Type Type => this.Left.Type;
+		public override Type Type => this.Operator.ResultType;
 
 		public override BoundNodeKind Kind => BoundNodeKind.BinaryExpression;
 	}

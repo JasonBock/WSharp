@@ -11,7 +11,7 @@ namespace WSharp.Runtime.Compiler.Binding
 		public BoundUnaryOperator Operator { get; }
 		public BoundExpression Operand { get; }
 
-		public override Type Type => this.Operand.Type;
+		public override Type Type => this.Operator.ResultType;
 
 		public override BoundNodeKind Kind => BoundNodeKind.UnaryExpression;
 	}

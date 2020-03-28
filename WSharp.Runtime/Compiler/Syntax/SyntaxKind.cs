@@ -14,6 +14,8 @@
 		BangToken,
 		AmpersandAmpersandToken,
 		PipePipeToken,
+		BangEqualsToken,
+		EqualsEqualsToken,
 		OpenParenthesisToken,
 		CloseParenthesisToken,
 		UpdateLineCountToken,
