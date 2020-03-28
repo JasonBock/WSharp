@@ -105,18 +105,30 @@ namespace WSharp.Runtime.Compiler.Syntax
 			return lineExpressions;
 		}
 
-		private ExpressionSyntax ParseNumberExpression()
+		private ExpressionSyntax ParsePrimaryExpression()
 		{
-			if (this.Current.Kind == SyntaxKind.OpenParenthesisToken)
+			switch (this.Current.Kind)
 			{
-				var left = this.Next();
-				var expression = this.ParseExpression();
-				var right = this.Match(SyntaxKind.CloseParenthesisToken);
-				return new ParenthesizedExpressionSyntax(left, expression, right);
+				case SyntaxKind.OpenParenthesisToken:
+				{
+					var left = this.Next();
+					var expression = this.ParseExpression();
+					var right = this.Match(SyntaxKind.CloseParenthesisToken);
+					return new ParenthesizedExpressionSyntax(left, expression, right);
+				}
+				case SyntaxKind.TrueKeyword:
+				case SyntaxKind.FalseKeyword:
+				{
+					var keywordToken = this.Next();
+					var value = this.Current.Kind == SyntaxKind.TrueKeyword;
+					return new LiteralExpressionSyntax(keywordToken, value);
+				}
+				default:
+				{
+					var numberToken = this.Match(SyntaxKind.NumberToken);
+					return new LiteralExpressionSyntax(numberToken);
+				}
 			}
-
-			var numberToken = this.Match(SyntaxKind.NumberToken);
-			return new LiteralExpressionSyntax(numberToken);
 		}
 
 		private ExpressionSyntax ParseExpression(int parentPrecendence = 0)
@@ -133,7 +145,7 @@ namespace WSharp.Runtime.Compiler.Syntax
 			}
 			else
 			{
-				left = this.ParseNumberExpression();
+				left = this.ParsePrimaryExpression();
 			}
 
 			while (true)

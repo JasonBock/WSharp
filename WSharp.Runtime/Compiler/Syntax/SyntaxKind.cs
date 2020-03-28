@@ -2,6 +2,7 @@
 {
 	public enum SyntaxKind
 	{
+		// Tokens
 		BadToken,
 		EndOfFileToken,
 		WhitespaceToken,
@@ -10,11 +11,21 @@
 		MinusToken,
 		StarToken,
 		SlashToken,
+		BangToken,
+		AmpersandAmpersandToken,
+		PipePipeToken,
 		OpenParenthesisToken,
 		CloseParenthesisToken,
 		UpdateLineCountToken,
 		CommaToken,
 		SemicolonToken,
+		IdentifierToken,
+
+		// Keywords
+		FalseKeyword,
+		TrueKeyword,
+
+		// Expressions
 		LiteralExpression,
 		UnaryExpression,
 		BinaryExpression,

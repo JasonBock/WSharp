@@ -16,6 +16,7 @@
     <None Remove="Compiler\NumberExpressionSyntax.cs~RF1c5580e9.TMP" />
     <None Remove="Compiler\SyntaxKind.cs~RF1d699cee.TMP" />
     <None Remove="Compiler\Syntax\SyntaxKind.cs~RF1dad679b.TMP" />
+    <None Remove="Compiler\Syntax\SyntaxKind.cs~RF2df5ffb.TMP" />
     <None Remove="IExecutionEngineActions.cs~RF40cd3fa.TMP" />
   </ItemGroup>
   <ItemGroup>

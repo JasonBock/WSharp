@@ -14,7 +14,7 @@ namespace WSharp.Runtime.Compiler.Binding
 
 		public BoundExpression BindExpression(ExpressionSyntax syntax)
 		{
-			switch(syntax.Kind)
+			switch (syntax.Kind)
 			{
 				case SyntaxKind.ParenthesizedExpression:
 					return this.BindParenthesizedExpression((ParenthesizedExpressionSyntax)syntax);
@@ -33,7 +33,7 @@ namespace WSharp.Runtime.Compiler.Binding
 			}
 		}
 
-		private BoundExpression BindParenthesizedExpression(ParenthesizedExpressionSyntax syntax) => 
+		private BoundExpression BindParenthesizedExpression(ParenthesizedExpressionSyntax syntax) =>
 			this.BindExpression(syntax.Expression);
 
 		private BoundExpression BindLineExpression(LineExpressionSyntax syntax)
@@ -65,7 +65,7 @@ namespace WSharp.Runtime.Compiler.Binding
 				return null;
 			}
 
-			if(kind == SyntaxKind.UpdateLineCountToken)
+			if (kind == SyntaxKind.UpdateLineCountToken)
 			{
 				return BoundUpdateLineCountOperatorKind.Update;
 			}
@@ -92,24 +92,33 @@ namespace WSharp.Runtime.Compiler.Binding
 
 		private BoundBinaryOperatorKind? BindBinaryOperatorKind(SyntaxKind kind, Type leftType, Type rightType)
 		{
-			if(leftType != typeof(BigInteger) || rightType != typeof(BigInteger))
+			if (leftType == typeof(BigInteger) && rightType == typeof(BigInteger))
 			{
-				return null;
+				switch (kind)
+				{
+					case SyntaxKind.PlusToken:
+						return BoundBinaryOperatorKind.Addition;
+					case SyntaxKind.MinusToken:
+						return BoundBinaryOperatorKind.Subtraction;
+					case SyntaxKind.StarToken:
+						return BoundBinaryOperatorKind.Multiplication;
+					case SyntaxKind.SlashToken:
+						return BoundBinaryOperatorKind.Division;
+				}
 			}
 
-			switch (kind)
+			if (leftType == typeof(bool) && rightType == typeof(bool))
 			{
-				case SyntaxKind.PlusToken:
-					return BoundBinaryOperatorKind.Addition;
-				case SyntaxKind.MinusToken:
-					return BoundBinaryOperatorKind.Subtraction;
-				case SyntaxKind.StarToken:
-					return BoundBinaryOperatorKind.Multiplication;
-				case SyntaxKind.SlashToken:
-					return BoundBinaryOperatorKind.Division;
-				default:
-					throw new BindingException($"Unexpected binary operator {kind}");
+				switch (kind)
+				{
+					case SyntaxKind.AmpersandAmpersandToken:
+						return BoundBinaryOperatorKind.LogicalAnd;
+					case SyntaxKind.PipePipeToken:
+						return BoundBinaryOperatorKind.LogicalOr;
+				}
 			}
+
+			return null;
 		}
 
 		private BoundExpression BindUnaryExpression(UnaryExpressionSyntax syntax)
@@ -117,7 +126,7 @@ namespace WSharp.Runtime.Compiler.Binding
 			var boundOperand = this.BindExpression(syntax.Operand);
 			var boundOperatorKind = this.BindUnaryOperatorKind(syntax.OperatorToken.Kind, boundOperand.Type);
 
-			if(boundOperatorKind == null)
+			if (boundOperatorKind == null)
 			{
 				this.diagnostics.Add($"Unary operator '{syntax.OperatorToken.Text}' is not defined for type {boundOperand.Type}.");
 				return boundOperand;
@@ -128,25 +137,32 @@ namespace WSharp.Runtime.Compiler.Binding
 
 		private BoundUnaryOperatorKind? BindUnaryOperatorKind(SyntaxKind kind, Type operandType)
 		{
-			if(operandType != typeof(BigInteger))
+			if (operandType == typeof(BigInteger))
 			{
-				return null;
+				switch (kind)
+				{
+					case SyntaxKind.PlusToken:
+						return BoundUnaryOperatorKind.Identity;
+					case SyntaxKind.MinusToken:
+						return BoundUnaryOperatorKind.Negation;
+				}
 			}
 
-			switch(kind)
+			if (operandType == typeof(bool))
 			{
-				case SyntaxKind.PlusToken:
-					return BoundUnaryOperatorKind.Identity;
-				case SyntaxKind.MinusToken:
-					return BoundUnaryOperatorKind.Negation;
-				default:
-					throw new BindingException($"Unexpected unary operator {kind}");
+				switch (kind)
+				{
+					case SyntaxKind.BangToken:
+						return BoundUnaryOperatorKind.LogicalNegation;
+				}
 			}
+
+			return null;
 		}
 
 		private BoundExpression BindLiteralExpression(LiteralExpressionSyntax syntax)
 		{
-			var value = syntax.LiteralToken.Value as BigInteger? ?? BigInteger.Zero;
+			var value = syntax.Value ?? BigInteger.Zero;
 			return new BoundLiteralExpression(value);
 		}
 	}
