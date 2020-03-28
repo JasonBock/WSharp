@@ -5,6 +5,7 @@ using Spackle;
 using Spackle.Extensions;
 using WSharp.Runtime;
 using WSharp.Runtime.Compiler;
+using WSharp.Runtime.Compiler.Binding;
 using WSharp.Runtime.Compiler.Syntax;
 
 // To be clear, what this project is meant for is to work on
@@ -50,11 +51,12 @@ namespace WSharp.Playground
 		public static void Main() =>
 			Program.RunRepl();
 
-		private static void RunEvaluator(SyntaxTree tree)
+		private static void RunEvaluator(BoundExpression expression)
 		{
-			var lines = EvaluatorGenerator.Generate(new List<SyntaxTree> { tree });
+			var lines = BoundEvaluatorGenerator.Generate(new List<BoundExpression> { expression });
 			var engine = new ExecutionEngine(lines, new SecureRandom(), Console.Out);
-			engine.Execute();
+			Console.Out.WriteLine("ExecutionEngine ready...");
+			//engine.Execute();
 		}
 
 		private static void RunRepl()
@@ -81,6 +83,9 @@ namespace WSharp.Playground
 					}
 
 					var tree = SyntaxTree.Parse(line);
+					var binder = new Binder();
+					var boundExpression = binder.BindExpression(tree.Root);
+					var diagnostics = tree.Diagnostics.Concat(binder.Diagnostics).ToArray();
 
 					if(showTree)
 					{
@@ -90,11 +95,11 @@ namespace WSharp.Playground
 						}
 					}
 
-					if (tree.Diagnostics.Any())
+					if (diagnostics.Length > 0)
 					{
 						using (ConsoleColor.DarkRed.Bind(() => Console.ForegroundColor))
 						{
-							foreach (var diagnostic in tree.Diagnostics)
+							foreach (var diagnostic in diagnostics)
 							{
 								Console.Out.WriteLine(diagnostic);
 							}
@@ -102,7 +107,7 @@ namespace WSharp.Playground
 					}
 					else
 					{
-						//Program.RunEvaluator(tree);
+						Program.RunEvaluator(boundExpression);
 					}
 				}
 				else

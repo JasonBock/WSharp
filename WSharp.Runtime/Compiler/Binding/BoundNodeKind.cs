@@ -1,6 +1,6 @@
 ﻿namespace WSharp.Runtime.Compiler.Binding
 {
-	internal enum BoundNodeKind
+	public enum BoundNodeKind
 	{
 		UnaryExpression,
 		LiteralExpression,

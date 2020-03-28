@@ -6,7 +6,7 @@ using WSharp.Runtime.Compiler.Syntax;
 
 namespace WSharp.Runtime.Compiler.Binding
 {
-	internal sealed class Binder
+	public sealed class Binder
 	{
 		private readonly List<string> diagnostics = new List<string>();
 
@@ -16,6 +16,8 @@ namespace WSharp.Runtime.Compiler.Binding
 		{
 			switch(syntax.Kind)
 			{
+				case SyntaxKind.ParenthesizedExpression:
+					return this.BindParenthesizedExpression((ParenthesizedExpressionSyntax)syntax);
 				case SyntaxKind.LiteralExpression:
 					return this.BindLiteralExpression((LiteralExpressionSyntax)syntax);
 				case SyntaxKind.UnaryExpression:
@@ -30,6 +32,9 @@ namespace WSharp.Runtime.Compiler.Binding
 					throw new BindingException($"Unexpected syntax {syntax.Kind}");
 			}
 		}
+
+		private BoundExpression BindParenthesizedExpression(ParenthesizedExpressionSyntax syntax) => 
+			this.BindExpression(syntax.Expression);
 
 		private BoundExpression BindLineExpression(LineExpressionSyntax syntax)
 		{

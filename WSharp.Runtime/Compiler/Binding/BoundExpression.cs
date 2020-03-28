@@ -2,7 +2,7 @@
 
 namespace WSharp.Runtime.Compiler.Binding
 {
-	internal abstract class BoundExpression
+	public abstract class BoundExpression
 		: BoundNode
 	{
 		public abstract Type Type { get; }
