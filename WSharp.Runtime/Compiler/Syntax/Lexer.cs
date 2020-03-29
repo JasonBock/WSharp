@@ -5,7 +5,6 @@ namespace WSharp.Runtime.Compiler.Syntax
 {
 	public sealed class Lexer
 	{
-		private readonly DiagnosticBag diagnostics = new DiagnosticBag();
 		private int position;
 		private readonly string text;
 
@@ -33,7 +32,7 @@ namespace WSharp.Runtime.Compiler.Syntax
 
 				if (!BigInteger.TryParse(text, out var value))
 				{
-					this.diagnostics.ReportInvalidNumber(new TextSpan(start, length), text, typeof(BigInteger));
+					this.Diagnostics.ReportInvalidNumber(new TextSpan(start, length), text, typeof(BigInteger));
 				}
 
 				return new SyntaxToken(SyntaxKind.NumberToken, start, text, value);
@@ -126,14 +125,11 @@ namespace WSharp.Runtime.Compiler.Syntax
 					}
 			}
 
-			this.diagnostics.ReportBadCharacter(this.position, this.Current);
+			this.Diagnostics.ReportBadCharacter(this.position, this.Current);
 			return new SyntaxToken(SyntaxKind.BadToken, this.position++, this.text.Substring(this.position - 1, 1), null);
 		}
 
 		private void UpdatePosition() => this.position++;
-
-		private char Current => this.Peek(0);
-		private char Lookahead => this.Peek(1);
 
 		private char Peek(int offset)
 		{
@@ -147,6 +143,8 @@ namespace WSharp.Runtime.Compiler.Syntax
 			return this.text[index];
 		}
 
-		public DiagnosticBag Diagnostics => this.diagnostics;
+		private char Current => this.Peek(0);
+		private char Lookahead => this.Peek(1);
+		public DiagnosticBag Diagnostics { get; } = new DiagnosticBag();
 	}
 }
