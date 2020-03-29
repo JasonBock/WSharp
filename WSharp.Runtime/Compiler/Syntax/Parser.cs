@@ -4,7 +4,7 @@ namespace WSharp.Runtime.Compiler.Syntax
 {
 	public sealed class Parser
 	{
-		private readonly List<string> diagnostics = new List<string>();
+		private readonly DiagnosticBag diagnostics = new DiagnosticBag();
 		private int position;
 		private readonly SyntaxToken[] tokens;
 
@@ -37,7 +37,7 @@ namespace WSharp.Runtime.Compiler.Syntax
 				return this.Next();
 			}
 
-			this.diagnostics.Add($"Error: Unexpected token <{this.Current.Kind}>, expected <{kind}>");
+			this.diagnostics.ReportUnexpectedToken(this.Current.Span, this.Current.Kind, kind);
 			return new SyntaxToken(kind, this.Current.Position, string.Empty, null);
 		}
 
@@ -90,7 +90,7 @@ namespace WSharp.Runtime.Compiler.Syntax
 				{
 					if (!semiColonFound)
 					{
-						this.diagnostics.Add("Error: ; expected");
+						this.diagnostics.ReportMissingSemicolon(new TextSpan(this.Current.Span.Start - 1, 1));
 					}
 
 					break;
@@ -178,6 +178,6 @@ namespace WSharp.Runtime.Compiler.Syntax
 
 		private SyntaxToken Current => this.Peek(0);
 
-		public IEnumerable<string> Diagnostics => this.diagnostics;
+		public DiagnosticBag Diagnostics => this.diagnostics;
 	}
 }

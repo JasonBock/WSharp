@@ -1,8 +1,6 @@
-﻿using Spackle;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.IO;
 using System.Linq;
 using WSharp.Runtime.Compiler.Binding;
 using WSharp.Runtime.Compiler.Syntax;
@@ -28,7 +26,7 @@ namespace WSharp.Runtime.Compiler
 			var evaluator = new Evaluator();
 			var lines = evaluator.Evaluate(new List<BoundExpression> { expression });
 
-			return new EvaluationResult(Array.Empty<string>(), lines);
+			return new EvaluationResult(Array.Empty<Diagnostic>(), lines);
 		}
 
 		public SyntaxTree Tree { get; }

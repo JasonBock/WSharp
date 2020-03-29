@@ -8,9 +8,9 @@ namespace WSharp.Runtime.Compiler.Binding
 {
 	public sealed class Binder
 	{
-		private readonly List<string> diagnostics = new List<string>();
+		private readonly DiagnosticBag diagnostics = new DiagnosticBag();
 
-		public IEnumerable<string> Diagnostics => this.diagnostics;
+		public DiagnosticBag Diagnostics => this.diagnostics;
 
 		public BoundExpression BindExpression(ExpressionSyntax syntax)
 		{
@@ -51,7 +51,7 @@ namespace WSharp.Runtime.Compiler.Binding
 
 			if (boundOperatorKind == null)
 			{
-				this.diagnostics.Add($"Binary operator '{syntax.OperatorToken.Text}' is not defined for types {boundLeft.Type} and {boundRight.Type}.");
+				this.diagnostics.ReportUndefinedLineCountOperator(syntax.OperatorToken.Span, syntax.OperatorToken.Text, boundLeft.Type, boundRight.Type);
 				return boundLeft;
 			}
 
@@ -83,7 +83,7 @@ namespace WSharp.Runtime.Compiler.Binding
 
 			if (boundOperator == null)
 			{
-				this.diagnostics.Add($"Binary operator '{syntax.OperatorToken.Text}' is not defined for types {boundLeft.Type} and {boundRight.Type}.");
+				this.diagnostics.ReportUndefinedBinaryOperator(syntax.OperatorToken.Span, syntax.OperatorToken.Text, boundLeft.Type, boundRight.Type);
 				return boundLeft;
 			}
 
@@ -97,7 +97,7 @@ namespace WSharp.Runtime.Compiler.Binding
 
 			if (boundOperator == null)
 			{
-				this.diagnostics.Add($"Unary operator '{syntax.OperatorToken.Text}' is not defined for type {boundOperand.Type}.");
+				this.diagnostics.ReportUndefinedUnaryOperator(syntax.OperatorToken.Span, syntax.OperatorToken.Text, boundOperand.Type);
 				return boundOperand;
 			}
 

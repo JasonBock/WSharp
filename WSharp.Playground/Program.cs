@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using Spackle;
 using Spackle.Extensions;
 using WSharp.Runtime;
 using WSharp.Runtime.Compiler;
-using WSharp.Runtime.Compiler.Binding;
 using WSharp.Runtime.Compiler.Syntax;
 
 // To be clear, what this project is meant for is to work on
@@ -69,13 +67,13 @@ namespace WSharp.Playground
 
 				if (!string.IsNullOrWhiteSpace(line))
 				{
-					if(line == "#showTree")
+					if (line == "#showTree")
 					{
 						showTree = !showTree;
 						Console.Out.WriteLine(showTree ? "Showing parse trees." : "Not showing parse trees");
 						continue;
 					}
-					else if(line == "#cls")
+					else if (line == "#cls")
 					{
 						Console.Clear();
 						continue;
@@ -84,9 +82,9 @@ namespace WSharp.Playground
 					var tree = SyntaxTree.Parse(line);
 					var binder = new Compilation(tree);
 					var result = binder.Evaluate();
- 					var diagnostics = result.Diagnostics;
+					var diagnostics = result.Diagnostics;
 
-					if(showTree)
+					if (showTree)
 					{
 						using (ConsoleColor.DarkGray.Bind(() => Console.ForegroundColor))
 						{
@@ -96,13 +94,31 @@ namespace WSharp.Playground
 
 					if (diagnostics.Any())
 					{
-						using (ConsoleColor.DarkRed.Bind(() => Console.ForegroundColor))
+						foreach (var diagnostic in diagnostics)
 						{
-							foreach (var diagnostic in diagnostics)
+							Console.Out.WriteLine();
+							using (ConsoleColor.DarkRed.Bind(() => Console.ForegroundColor))
 							{
 								Console.Out.WriteLine(diagnostic);
 							}
+
+							var prefix = line.Substring(0, diagnostic.Span.Start);
+							var error = line.Substring(diagnostic.Span.Start, diagnostic.Span.Length);
+							var suffix = line.Substring(diagnostic.Span.End);
+
+							Console.Out.Write(Program.Space);
+							Console.Out.Write(prefix);
+
+							using (ConsoleColor.DarkRed.Bind(() => Console.ForegroundColor))
+							{
+								Console.Out.Write(error);
+							}
+
+							Console.Out.Write(suffix);
+							Console.Out.WriteLine();
 						}
+
+						Console.Out.WriteLine();
 					}
 					else
 					{

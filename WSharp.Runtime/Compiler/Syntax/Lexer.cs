@@ -1,12 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Numerics;
 
 namespace WSharp.Runtime.Compiler.Syntax
 {
 	public sealed class Lexer
 	{
-		private readonly List<string> diagnostics = new List<string>();
+		private readonly DiagnosticBag diagnostics = new DiagnosticBag();
 		private int position;
 		private readonly string text;
 
@@ -20,10 +19,10 @@ namespace WSharp.Runtime.Compiler.Syntax
 				return new SyntaxToken(SyntaxKind.EndOfFileToken, this.position, "\0", null);
 			}
 
+			var start = this.position;
+
 			if (char.IsDigit(this.Current))
 			{
-				var start = this.position;
-
 				while (char.IsDigit(this.Current))
 				{
 					this.UpdatePosition();
@@ -34,7 +33,7 @@ namespace WSharp.Runtime.Compiler.Syntax
 
 				if (!BigInteger.TryParse(text, out var value))
 				{
-					this.diagnostics.Add($"The number {text} isn't a valid BigInteger.");
+					this.diagnostics.ReportInvalidNumber(new TextSpan(start, length), text, typeof(BigInteger));
 				}
 
 				return new SyntaxToken(SyntaxKind.NumberToken, start, text, value);
@@ -42,8 +41,6 @@ namespace WSharp.Runtime.Compiler.Syntax
 
 			if (char.IsWhiteSpace(this.Current))
 			{
-				var start = this.position;
-
 				while (char.IsWhiteSpace(this.Current))
 				{
 					this.UpdatePosition();
@@ -56,8 +53,6 @@ namespace WSharp.Runtime.Compiler.Syntax
 
 			if (char.IsLetter(this.Current))
 			{
-				var start = this.position;
-
 				while (char.IsLetter(this.Current))
 				{
 					this.UpdatePosition();
@@ -93,7 +88,8 @@ namespace WSharp.Runtime.Compiler.Syntax
 					{
 						if (this.Lookahead == '&')
 						{
-							return new SyntaxToken(SyntaxKind.AmpersandAmpersandToken, this.position += 2, "&&", null);
+							this.position += 2;
+							return new SyntaxToken(SyntaxKind.AmpersandAmpersandToken, start, "&&", null);
 						}
 						break;
 					}
@@ -101,7 +97,8 @@ namespace WSharp.Runtime.Compiler.Syntax
 					{
 						if (this.Lookahead == '|')
 						{
-							return new SyntaxToken(SyntaxKind.PipePipeToken, this.position += 2, "||", null);
+							this.position += 2;
+							return new SyntaxToken(SyntaxKind.PipePipeToken, start, "||", null);
 						}
 						break;
 					}
@@ -109,7 +106,8 @@ namespace WSharp.Runtime.Compiler.Syntax
 					{
 						if (this.Lookahead == '=')
 						{
-							return new SyntaxToken(SyntaxKind.EqualsEqualsToken, this.position += 2, "==", null);
+							this.position += 2;
+							return new SyntaxToken(SyntaxKind.EqualsEqualsToken, start, "==", null);
 						}
 						break;
 					}
@@ -117,16 +115,18 @@ namespace WSharp.Runtime.Compiler.Syntax
 					{
 						if (this.Lookahead == '=')
 						{
-							return new SyntaxToken(SyntaxKind.BangEqualsToken, this.position += 2, "!=", null);
+							this.position += 2;
+							return new SyntaxToken(SyntaxKind.BangEqualsToken, start, "!=", null);
 						}
 						else
 						{
-							return new SyntaxToken(SyntaxKind.BangToken, this.position++, "!", null);
+							this.position += 1;
+							return new SyntaxToken(SyntaxKind.BangToken, start, "!", null);
 						}
 					}
 			}
 
-			this.diagnostics.Add($"ERROR: bad character input: '{this.Current}'");
+			this.diagnostics.ReportBadCharacter(this.position, this.Current);
 			return new SyntaxToken(SyntaxKind.BadToken, this.position++, this.text.Substring(this.position - 1, 1), null);
 		}
 
@@ -147,6 +147,6 @@ namespace WSharp.Runtime.Compiler.Syntax
 			return this.text[index];
 		}
 
-		public IEnumerable<string> Diagnostics => this.diagnostics;
+		public DiagnosticBag Diagnostics => this.diagnostics;
 	}
 }
