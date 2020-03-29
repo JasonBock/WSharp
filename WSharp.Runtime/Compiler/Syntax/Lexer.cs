@@ -80,48 +80,40 @@ namespace WSharp.Runtime.Compiler.Syntax
 				case '(':
 					return new SyntaxToken(SyntaxKind.OpenParenthesisToken, this.position++, "(", null);
 				case ')':
-					return new SyntaxToken(SyntaxKind.CloseParenthesisToken, this.position++, "(", null);
+					return new SyntaxToken(SyntaxKind.CloseParenthesisToken, this.position++, ")", null);
 				case ';':
 					return new SyntaxToken(SyntaxKind.SemicolonToken, this.position++, ";", null);
 				case '&':
+					if (this.Lookahead == '&')
 					{
-						if (this.Lookahead == '&')
-						{
-							this.position += 2;
-							return new SyntaxToken(SyntaxKind.AmpersandAmpersandToken, start, "&&", null);
-						}
-						break;
+						this.position += 2;
+						return new SyntaxToken(SyntaxKind.AmpersandAmpersandToken, start, "&&", null);
 					}
+					break;
 				case '|':
+					if (this.Lookahead == '|')
 					{
-						if (this.Lookahead == '|')
-						{
-							this.position += 2;
-							return new SyntaxToken(SyntaxKind.PipePipeToken, start, "||", null);
-						}
-						break;
+						this.position += 2;
+						return new SyntaxToken(SyntaxKind.PipePipeToken, start, "||", null);
 					}
+					break;
 				case '=':
+					if (this.Lookahead == '=')
 					{
-						if (this.Lookahead == '=')
-						{
-							this.position += 2;
-							return new SyntaxToken(SyntaxKind.EqualsEqualsToken, start, "==", null);
-						}
-						break;
+						this.position += 2;
+						return new SyntaxToken(SyntaxKind.EqualsEqualsToken, start, "==", null);
 					}
+					break;
 				case '!':
+					if (this.Lookahead == '=')
 					{
-						if (this.Lookahead == '=')
-						{
-							this.position += 2;
-							return new SyntaxToken(SyntaxKind.BangEqualsToken, start, "!=", null);
-						}
-						else
-						{
-							this.position += 1;
-							return new SyntaxToken(SyntaxKind.BangToken, start, "!", null);
-						}
+						this.position += 2;
+						return new SyntaxToken(SyntaxKind.BangEqualsToken, start, "!=", null);
+					}
+					else
+					{
+						this.position += 1;
+						return new SyntaxToken(SyntaxKind.BangToken, start, "!", null);
 					}
 			}
 
@@ -135,7 +127,7 @@ namespace WSharp.Runtime.Compiler.Syntax
 		{
 			var index = this.position + offset;
 
-			if (this.position >= this.text.Length)
+			if (index >= this.text.Length)
 			{
 				return '\0';
 			}

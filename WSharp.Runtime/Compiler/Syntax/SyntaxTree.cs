@@ -11,6 +11,25 @@ namespace WSharp.Runtime.Compiler.Syntax
 		public static SyntaxTree Parse(string text) => 
 			new Parser(text).Parse();
 
+		public static IEnumerable<SyntaxToken> ParseTokens(string text)
+		{
+			var lexer = new Lexer(text);
+
+			while (true)
+			{
+				var token = lexer.Lex();
+
+				if (token.Kind != SyntaxKind.EndOfFileToken)
+				{
+					yield return token;
+				}
+				else
+				{
+					break;
+				}
+			}
+		}
+
 		public IReadOnlyList<Diagnostic> Diagnostics { get; }
 		public SyntaxToken EndOfFileToken { get; }
 		public ExpressionSyntax Root { get; }

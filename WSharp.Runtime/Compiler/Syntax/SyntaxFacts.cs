@@ -46,5 +46,23 @@ namespace WSharp.Runtime.Compiler.Syntax
 				"false" => SyntaxKind.FalseKeyword,
 				_ => SyntaxKind.IdentifierToken,
 			};
+
+		public static string GetText(SyntaxKind kind) =>
+			kind switch
+			{
+				SyntaxKind.FalseKeyword => "false",
+				SyntaxKind.TrueKeyword => "true",
+				SyntaxKind.OpenParenthesisToken => "(",
+				SyntaxKind.BangEqualsToken => "!=",
+				SyntaxKind.EqualsEqualsToken => "==",
+				SyntaxKind.PipePipeToken => "||",
+				SyntaxKind.AmpersandAmpersandToken => "&&",
+				SyntaxKind.BangToken => "!",
+				SyntaxKind.SlashToken => "/",
+				SyntaxKind.StarToken => "*",
+				SyntaxKind.MinusToken => "-",
+				SyntaxKind.PlusToken => "+",
+				_ => string.Empty
+			};
 	}
 }
