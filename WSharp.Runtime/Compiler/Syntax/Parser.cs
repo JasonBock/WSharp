@@ -4,7 +4,6 @@ namespace WSharp.Runtime.Compiler.Syntax
 {
 	public sealed class Parser
 	{
-		private readonly DiagnosticBag diagnostics = new DiagnosticBag();
 		private int position;
 		private readonly SyntaxToken[] tokens;
 
@@ -27,7 +26,7 @@ namespace WSharp.Runtime.Compiler.Syntax
 			} while (token.Kind != SyntaxKind.EndOfFileToken);
 
 			this.tokens = tokens.ToArray();
-			this.diagnostics.AddRange(lexer.Diagnostics);
+			this.Diagnostics.AddRange(lexer.Diagnostics);
 		}
 
 		private SyntaxToken Match(SyntaxKind kind)
@@ -37,7 +36,7 @@ namespace WSharp.Runtime.Compiler.Syntax
 				return this.Next();
 			}
 
-			this.diagnostics.ReportUnexpectedToken(this.Current.Span, this.Current.Kind, kind);
+			this.Diagnostics.ReportUnexpectedToken(this.Current.Span, this.Current.Kind, kind);
 			return new SyntaxToken(kind, this.Current.Position, string.Empty, null);
 		}
 
@@ -54,7 +53,7 @@ namespace WSharp.Runtime.Compiler.Syntax
 			var lineExpressions = new LineExpressionSyntax(new LiteralExpressionSyntax(lineNumber), this.ParseLineExpressions());
 			var endOfFileToken = this.Match(SyntaxKind.EndOfFileToken);
 
-			return new SyntaxTree(this.diagnostics, lineExpressions, endOfFileToken);
+			return new SyntaxTree(this.Diagnostics, lineExpressions, endOfFileToken);
 		}
 
 		private List<ExpressionSyntax> ParseLineExpressions()
@@ -68,9 +67,16 @@ namespace WSharp.Runtime.Compiler.Syntax
 
 				if (!semiColonFound)
 				{
-					var lineNumber = this.ParseExpression();
+					// TODO: It is possible to have a line (see the Fibonacci program) like this:
+					// 5 4,-3,7;
+					// If a number isn't specified, then that line number is either increase or decreased based on the sign of the number.
+					// So, if a Peek(1) for UpdateLineCountToken isn't found, but a comma, then we should short-circuit
+					// and immediately create a UpdateLineCountExpressionSyntax. This may be odd because we don't have the "#" in this case,
+					// so it may be more correct to have a "UnaryLineCountExpressionSyntax" node that just takes the line number.
+					// From that, the binder can infer what to do from that point....maybe.
+					var lineNumber = this.ParseBinaryExpression();
 					var operatorToken = this.Match(SyntaxKind.UpdateLineCountToken);
-					var updateLineCountToken = this.ParseExpression ();
+					var updateLineCountToken = this.ParseBinaryExpression();
 					lineExpressions.Add(new UpdateLineCountExpressionSyntax(
 						lineNumber, operatorToken, updateLineCountToken));
 				}
@@ -90,7 +96,7 @@ namespace WSharp.Runtime.Compiler.Syntax
 				{
 					if (!semiColonFound)
 					{
-						this.diagnostics.ReportMissingSemicolon(new TextSpan(this.Current.Span.Start - 1, 1));
+						this.Diagnostics.ReportMissingSemicolon(new TextSpan(this.Current.Span.Start - 1, 1));
 					}
 
 					break;
@@ -107,31 +113,29 @@ namespace WSharp.Runtime.Compiler.Syntax
 
 		private ExpressionSyntax ParsePrimaryExpression()
 		{
+			// TODO: Remove var declarations and then possibly switch to pattern matching.
 			switch (this.Current.Kind)
 			{
 				case SyntaxKind.OpenParenthesisToken:
-				{
 					var left = this.Next();
-					var expression = this.ParseExpression();
+					var expression = this.ParseBinaryExpression();
 					var right = this.Match(SyntaxKind.CloseParenthesisToken);
 					return new ParenthesizedExpressionSyntax(left, expression, right);
-				}
 				case SyntaxKind.TrueKeyword:
 				case SyntaxKind.FalseKeyword:
-				{
 					var keywordToken = this.Next();
 					var value = keywordToken.Kind == SyntaxKind.TrueKeyword;
 					return new LiteralExpressionSyntax(keywordToken, value);
-				}
+				case SyntaxKind.IdentifierToken:
+					var identifierToken = this.Next();
+					return new NameExpressionSyntax(identifierToken);
 				default:
-				{
 					var numberToken = this.Match(SyntaxKind.NumberToken);
 					return new LiteralExpressionSyntax(numberToken);
-				}
 			}
 		}
 
-		private ExpressionSyntax ParseExpression(int parentPrecendence = 0)
+		private ExpressionSyntax ParseBinaryExpression(int parentPrecendence = 0)
 		{
 			ExpressionSyntax left;
 
@@ -140,7 +144,7 @@ namespace WSharp.Runtime.Compiler.Syntax
 			if (unaryOperatorPrecedence != 0 && unaryOperatorPrecedence >= parentPrecendence)
 			{
 				var operatorToken = this.Next();
-				var operand = this.ParseExpression(unaryOperatorPrecedence);
+				var operand = this.ParseBinaryExpression(unaryOperatorPrecedence);
 				left = new UnaryExpressionSyntax(operatorToken, operand);
 			}
 			else
@@ -152,13 +156,13 @@ namespace WSharp.Runtime.Compiler.Syntax
 			{
 				var precedence = this.Current.Kind.GetBinaryOperatorPrecedence();
 
-				if(precedence == 0 || precedence <= parentPrecendence)
+				if (precedence == 0 || precedence <= parentPrecendence)
 				{
 					break;
 				}
 
 				var operatorToken = this.Next();
-				var right = this.ParseExpression(precedence);
+				var right = this.ParseBinaryExpression(precedence);
 				left = new BinaryExpressionSyntax(left, operatorToken, right);
 			}
 
@@ -178,6 +182,6 @@ namespace WSharp.Runtime.Compiler.Syntax
 
 		private SyntaxToken Current => this.Peek(0);
 
-		public DiagnosticBag Diagnostics => this.diagnostics;
+		public DiagnosticBag Diagnostics { get; } = new DiagnosticBag();
 	}
 }

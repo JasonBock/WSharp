@@ -6,7 +6,7 @@ namespace WSharp.Runtime.Compiler.Binding
 {
 	public sealed class BoundUnaryOperator
 	{
-		private static BoundUnaryOperator[] operators =
+		private static readonly BoundUnaryOperator[] operators =
 		{
 			new BoundUnaryOperator(SyntaxKind.BangToken, BoundUnaryOperatorKind.LogicalNegation, typeof(bool)),
 			new BoundUnaryOperator(SyntaxKind.PlusToken, BoundUnaryOperatorKind.Identity, typeof(BigInteger)),

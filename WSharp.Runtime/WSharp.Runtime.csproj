@@ -4,6 +4,7 @@
     <Authors>Jason Bock</Authors>
     <Copyright>Copyright © 2020</Copyright>
     <Description>A Whenever compiler written in C#.</Description>
+    <Features>strict</Features>
     <LangVersion>latest</LangVersion>
     <Nullable>enable</Nullable>
     <RootNamespace>WSharp.Runtime</RootNamespace>

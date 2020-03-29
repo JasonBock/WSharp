@@ -6,7 +6,7 @@ namespace WSharp.Runtime.Compiler.Binding
 {
 	public sealed class BoundBinaryOperator
 	{
-		private static BoundBinaryOperator[] operators =
+		private static readonly BoundBinaryOperator[] operators =
 		{
 			new BoundBinaryOperator(SyntaxKind.PlusToken, BoundBinaryOperatorKind.Addition, typeof(BigInteger)),
 			new BoundBinaryOperator(SyntaxKind.MinusToken, BoundBinaryOperatorKind.Subtraction, typeof(BigInteger)),

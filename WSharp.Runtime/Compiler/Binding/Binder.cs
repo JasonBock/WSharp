@@ -1,37 +1,24 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using WSharp.Runtime.Compiler.Syntax;
 
 namespace WSharp.Runtime.Compiler.Binding
 {
+	// TODO: Consider making this internal
 	public sealed class Binder
 	{
-		private readonly DiagnosticBag diagnostics = new DiagnosticBag();
-
-		public DiagnosticBag Diagnostics => this.diagnostics;
-
-		public BoundExpression BindExpression(ExpressionSyntax syntax)
-		{
-			switch (syntax.Kind)
+		public BoundExpression BindExpression(ExpressionSyntax syntax) =>
+			syntax.Kind switch
 			{
-				case SyntaxKind.ParenthesizedExpression:
-					return this.BindParenthesizedExpression((ParenthesizedExpressionSyntax)syntax);
-				case SyntaxKind.LiteralExpression:
-					return this.BindLiteralExpression((LiteralExpressionSyntax)syntax);
-				case SyntaxKind.UnaryExpression:
-					return this.BindUnaryExpression((UnaryExpressionSyntax)syntax);
-				case SyntaxKind.BinaryExpression:
-					return this.BindBinaryExpression((BinaryExpressionSyntax)syntax);
-				case SyntaxKind.UpdateLineCountExpression:
-					return this.BindUpdateLineCountExpression((UpdateLineCountExpressionSyntax)syntax);
-				case SyntaxKind.LineExpression:
-					return this.BindLineExpression((LineExpressionSyntax)syntax);
-				default:
-					throw new BindingException($"Unexpected syntax {syntax.Kind}");
-			}
-		}
+				SyntaxKind.ParenthesizedExpression => this.BindParenthesizedExpression((ParenthesizedExpressionSyntax)syntax),
+				SyntaxKind.LiteralExpression => this.BindLiteralExpression((LiteralExpressionSyntax)syntax),
+				SyntaxKind.UnaryExpression => this.BindUnaryExpression((UnaryExpressionSyntax)syntax),
+				SyntaxKind.BinaryExpression => this.BindBinaryExpression((BinaryExpressionSyntax)syntax),
+				SyntaxKind.UpdateLineCountExpression => this.BindUpdateLineCountExpression((UpdateLineCountExpressionSyntax)syntax),
+				SyntaxKind.LineExpression => this.BindLineExpression((LineExpressionSyntax)syntax),
+				_ => throw new BindingException($"Unexpected syntax {syntax.Kind}"),
+			};
 
 		private BoundExpression BindParenthesizedExpression(ParenthesizedExpressionSyntax syntax) =>
 			this.BindExpression(syntax.Expression);
@@ -51,7 +38,7 @@ namespace WSharp.Runtime.Compiler.Binding
 
 			if (boundOperatorKind == null)
 			{
-				this.diagnostics.ReportUndefinedLineCountOperator(syntax.OperatorToken.Span, syntax.OperatorToken.Text, boundLeft.Type, boundRight.Type);
+				this.Diagnostics.ReportUndefinedLineCountOperator(syntax.OperatorToken.Span, syntax.OperatorToken.Text, boundLeft.Type, boundRight.Type);
 				return boundLeft;
 			}
 
@@ -83,7 +70,7 @@ namespace WSharp.Runtime.Compiler.Binding
 
 			if (boundOperator == null)
 			{
-				this.diagnostics.ReportUndefinedBinaryOperator(syntax.OperatorToken.Span, syntax.OperatorToken.Text, boundLeft.Type, boundRight.Type);
+				this.Diagnostics.ReportUndefinedBinaryOperator(syntax.OperatorToken.Span, syntax.OperatorToken.Text, boundLeft.Type, boundRight.Type);
 				return boundLeft;
 			}
 
@@ -97,7 +84,7 @@ namespace WSharp.Runtime.Compiler.Binding
 
 			if (boundOperator == null)
 			{
-				this.diagnostics.ReportUndefinedUnaryOperator(syntax.OperatorToken.Span, syntax.OperatorToken.Text, boundOperand.Type);
+				this.Diagnostics.ReportUndefinedUnaryOperator(syntax.OperatorToken.Span, syntax.OperatorToken.Text, boundOperand.Type);
 				return boundOperand;
 			}
 
@@ -109,5 +96,7 @@ namespace WSharp.Runtime.Compiler.Binding
 			var value = syntax.Value ?? BigInteger.Zero;
 			return new BoundLiteralExpression(value);
 		}
+
+		public DiagnosticBag Diagnostics { get; } = new DiagnosticBag();
 	}
 }

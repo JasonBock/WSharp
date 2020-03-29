@@ -29,10 +29,11 @@
 
 		// Expressions
 		LiteralExpression,
+		NameExpression,
 		UnaryExpression,
 		BinaryExpression,
 		ParenthesizedExpression,
 		UpdateLineCountExpression,
-		LineExpression,
+		LineExpression
 	}
 }
