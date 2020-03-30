@@ -5,7 +5,7 @@ namespace WSharp.Runtime.Compiler.Syntax
 {
 	public static class SyntaxFacts
 	{
-		public static IEnumerable<SyntaxKind> GetUnaryOperators()
+		public static IEnumerable<SyntaxKind> GetUnaryOperatorKinds()
 		{
 			foreach (var kind in (SyntaxKind[])Enum.GetValues(typeof(SyntaxKind)))
 			{
@@ -29,7 +29,7 @@ namespace WSharp.Runtime.Compiler.Syntax
 			}
 		}
 
-		public static IEnumerable<SyntaxKind> GetBinaryOperators()
+		public static IEnumerable<SyntaxKind> GetBinaryOperatorKinds()
 		{
 			foreach (var kind in (SyntaxKind[])Enum.GetValues(typeof(SyntaxKind)))
 			{

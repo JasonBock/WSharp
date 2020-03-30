@@ -6,6 +6,48 @@ namespace WSharp.Runtime.Tests.Compiler.Syntax
 {
 	public static class ParserTests
 	{
+		[TestCaseSource(nameof(ParserTests.GetUnaryOperatorPairsData))]
+		public static void HonorPrecedenceWhenParsingUnaryExpression((SyntaxKind unaryKind, SyntaxKind binaryKind) value)
+		{
+			var unaryPrecedence = SyntaxFacts.GetUnaryOperatorPrecedence(value.unaryKind);
+			var binaryPrecedence = SyntaxFacts.GetBinaryOperatorPrecedence(value.binaryKind);
+			var unaryText = SyntaxFacts.GetText(value.unaryKind);
+			var binaryText = SyntaxFacts.GetText(value.binaryKind);
+
+			var text = $"1 2#({unaryText}3{binaryText}4)";
+			var expression = SyntaxTree.Parse(text).Root;
+
+			Assert.Multiple(() =>
+			{
+				using var enumerator = new AssertingEnumerator(expression);
+				if (unaryPrecedence >= binaryPrecedence)
+				{
+					enumerator.AssertNode(SyntaxKind.LineExpression);
+					enumerator.AssertNode(SyntaxKind.LiteralExpression);
+					enumerator.AssertToken(SyntaxKind.NumberToken, "1");
+					enumerator.AssertNode(SyntaxKind.UpdateLineCountExpression);
+					enumerator.AssertNode(SyntaxKind.LiteralExpression);
+					enumerator.AssertToken(SyntaxKind.NumberToken, "2");
+					enumerator.AssertToken(SyntaxKind.UpdateLineCountToken, "#");
+					enumerator.AssertNode(SyntaxKind.ParenthesizedExpression);
+					enumerator.AssertToken(SyntaxKind.OpenParenthesisToken, "(");
+					enumerator.AssertNode(SyntaxKind.BinaryExpression);
+					enumerator.AssertNode(SyntaxKind.UnaryExpression);
+					enumerator.AssertToken(value.unaryKind, unaryText);
+					enumerator.AssertNode(SyntaxKind.LiteralExpression);
+					enumerator.AssertToken(SyntaxKind.NumberToken, "3");
+					enumerator.AssertToken(value.binaryKind, binaryText);
+					enumerator.AssertNode(SyntaxKind.LiteralExpression);
+					enumerator.AssertToken(SyntaxKind.NumberToken, "4");
+					enumerator.AssertToken(SyntaxKind.CloseParenthesisToken, ")");
+				}
+				else
+				{
+					Assert.Fail("All the unary operators have higher precedence than the binary ones.");
+				}
+			});
+		}
+
 		[TestCaseSource(nameof(ParserTests.GetBinaryOperatorPairsData))]
 		public static void HonorPrecedenceWhenParsingBinaryExpression((SyntaxKind operator1, SyntaxKind operator2) value)
 		{
@@ -69,11 +111,22 @@ namespace WSharp.Runtime.Tests.Compiler.Syntax
 			});
 		}
 
+		public static IEnumerable<(SyntaxKind, SyntaxKind)> GetUnaryOperatorPairsData()
+		{
+			foreach (var unary in SyntaxFacts.GetUnaryOperatorKinds())
+			{
+				foreach (var binary in SyntaxFacts.GetBinaryOperatorKinds())
+				{
+					yield return (unary, binary);
+				}
+			}
+		}
+
 		public static IEnumerable<(SyntaxKind, SyntaxKind)> GetBinaryOperatorPairsData()
 		{
-			foreach (var operator1 in SyntaxFacts.GetBinaryOperators())
+			foreach (var operator1 in SyntaxFacts.GetBinaryOperatorKinds())
 			{
-				foreach (var operator2 in SyntaxFacts.GetBinaryOperators())
+				foreach (var operator2 in SyntaxFacts.GetBinaryOperatorKinds())
 				{
 					yield return (operator1, operator2);
 				}
