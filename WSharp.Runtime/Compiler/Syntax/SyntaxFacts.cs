@@ -1,9 +1,21 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace WSharp.Runtime.Compiler.Syntax
 {
 	public static class SyntaxFacts
 	{
+		public static IEnumerable<SyntaxKind> GetUnaryOperators()
+		{
+			foreach (var kind in (SyntaxKind[])Enum.GetValues(typeof(SyntaxKind)))
+			{
+				if (kind.GetUnaryOperatorPrecedence() > 0)
+				{
+					yield return kind;
+				}
+			}
+		}
+
 		public static int GetUnaryOperatorPrecedence(this SyntaxKind @this)
 		{
 			switch (@this)
@@ -14,6 +26,17 @@ namespace WSharp.Runtime.Compiler.Syntax
 					return 6;
 				default:
 					return 0;
+			}
+		}
+
+		public static IEnumerable<SyntaxKind> GetBinaryOperators()
+		{
+			foreach (var kind in (SyntaxKind[])Enum.GetValues(typeof(SyntaxKind)))
+			{
+				if(kind.GetBinaryOperatorPrecedence() > 0)
+				{
+					yield return kind;
+				}
 			}
 		}
 
