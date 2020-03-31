@@ -1,5 +1,6 @@
 ﻿using NUnit.Framework;
 using WSharp.Runtime.Compiler;
+using WSharp.Runtime.Compiler.Text;
 
 namespace WSharp.Runtime.Tests.Compiler
 {

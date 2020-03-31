@@ -17,9 +17,9 @@ namespace WSharp
 8 defer (N(7)<100) -1#N(1),-2#N(2),-7#100,-3;
 9 defer (3 || 6) 1,3; 
 		*/
-		internal static ImmutableList<Line> Generate()
+		internal static ImmutableArray<Line> Generate()
 		{
-			var builder = ImmutableList.CreateBuilder<Line>();
+			var builder = ImmutableArray.CreateBuilder<Line>();
 
 			// 1 again (1) defer (3 || N(1)<=N(2) || N(7)>99) 2#N(1),3,7;
 			builder.Add(new Line(1, BigInteger.One, actions =>

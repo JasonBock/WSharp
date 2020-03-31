@@ -12,9 +12,9 @@ namespace WSharp
 3 defer (4 || N(2)==N(3)) print(N(1)+" bottles of beer on the wall.");
 4 1#98,2#98,3#98; 
  		*/
-		internal static ImmutableList<Line> Generate()
+		internal static ImmutableArray<Line> Generate()
 		{
-			var builder = ImmutableList.CreateBuilder<Line>();
+			var builder = ImmutableArray.CreateBuilder<Line>();
 
 			// 1 defer (4 || N(1)<N(2) || N(2)<N(3)) print(N(1)+" bottles of beer on the wall, "+N(1)+" bottles of beer,");
 			builder.Add(new Line(1, new BigInteger(1), actions =>

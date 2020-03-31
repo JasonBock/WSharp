@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Numerics;
+using WSharp.Runtime.Compiler.Text;
 
 namespace WSharp.Runtime.Compiler.Syntax
 {
@@ -8,10 +9,10 @@ namespace WSharp.Runtime.Compiler.Syntax
 		private SyntaxKind kind;
 		private int position;
 		private int start;
-		private readonly string text;
+		private readonly SourceText text;
 		private object? value;
 
-		public Lexer(string text) =>
+		public Lexer(SourceText text) =>
 			this.text = text ?? throw new ArgumentNullException(nameof(text));
 
 		public SyntaxToken Lex()
@@ -135,7 +136,7 @@ namespace WSharp.Runtime.Compiler.Syntax
 
 			if (string.IsNullOrWhiteSpace(text))
 			{
-				text = this.text.Substring(this.start, length);
+				text = this.text.ToString(this.start, length);
 			}
 
 			return new SyntaxToken(this.kind, this.start, text, this.value);
@@ -149,7 +150,7 @@ namespace WSharp.Runtime.Compiler.Syntax
 			}
 
 			var length = this.position - this.start;
-			var text = this.text.Substring(this.start, length);
+			var text = this.text.ToString(this.start, length);
 			this.kind = SyntaxFacts.GetKeywordKind(text);
 		}
 
@@ -171,7 +172,7 @@ namespace WSharp.Runtime.Compiler.Syntax
 			}
 
 			var length = this.position - this.start;
-			var text = this.text.Substring(this.start, length);
+			var text = this.text.ToString(this.start, length);
 
 			if (!BigInteger.TryParse(text, out var value))
 			{

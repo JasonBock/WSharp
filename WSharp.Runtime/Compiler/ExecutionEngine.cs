@@ -17,7 +17,7 @@ namespace WSharp.Runtime
 		private bool shouldStatementBeKept;
 		private readonly TextWriter writer;
 
-		public ExecutionEngine(ImmutableList<Line> lines, Random random, TextWriter writer)
+		public ExecutionEngine(ImmutableArray<Line> lines, Random random, TextWriter writer)
 		{
 			this.random = random ?? throw new ArgumentNullException(nameof(random));
 			this.writer = writer ?? throw new ArgumentNullException(nameof(writer));
@@ -26,7 +26,7 @@ namespace WSharp.Runtime
 			{
 				throw new ArgumentNullException(nameof(lines));
 			}
-			else if (lines.Count == 0)
+			else if (lines.Length == 0)
 			{
 				throw new ArgumentException("Must pass in at least one line.", nameof(lines));
 			}
@@ -34,7 +34,7 @@ namespace WSharp.Runtime
 			{
 				var messages = new List<string>();
 
-				for (var i = 0; i < lines.Count; i++)
+				for (var i = 0; i < lines.Length; i++)
 				{
 					if (lines[i] == null)
 					{
@@ -44,7 +44,7 @@ namespace WSharp.Runtime
 
 				if (messages.Count > 0)
 				{
-					throw new ExecutionEngineLinesException(messages.ToImmutableList());
+					throw new ExecutionEngineLinesException(messages.ToImmutableArray());
 				}
 			}
 

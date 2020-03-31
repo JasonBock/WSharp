@@ -1,17 +1,25 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
+using System.Collections.Immutable;
+using WSharp.Runtime.Compiler.Text;
 
 namespace WSharp.Runtime.Compiler.Syntax
 {
 	public sealed class SyntaxTree
 	{
-		public SyntaxTree(IEnumerable<Diagnostic> diagnostics, ExpressionSyntax root, SyntaxToken endOfFIleToken) => 
-			(this.Diagnostics, this.Root, this.EndOfFileToken) = (diagnostics.ToArray(), root, endOfFIleToken);
+		public SyntaxTree(SourceText text, IEnumerable<Diagnostic> diagnostics, ExpressionSyntax root, SyntaxToken endOfFIleToken) => 
+			(this.Text, this.Diagnostics, this.Root, this.EndOfFileToken) = 
+				(text, diagnostics.ToImmutableArray(), root, endOfFIleToken);
 
-		public static SyntaxTree Parse(string text) => 
+		public static SyntaxTree Parse(string text) =>
+			SyntaxTree.Parse(SourceText.From(text));
+
+		public static SyntaxTree Parse(SourceText text) =>
 			new Parser(text).Parse();
 
-		public static IEnumerable<SyntaxToken> ParseTokens(string text)
+		public static IEnumerable<SyntaxToken> ParseTokens(string text) => 
+			SyntaxTree.ParseTokens(SourceText.From(text));
+
+		public static IEnumerable<SyntaxToken> ParseTokens(SourceText text)
 		{
 			var lexer = new Lexer(text);
 
@@ -30,8 +38,9 @@ namespace WSharp.Runtime.Compiler.Syntax
 			}
 		}
 
-		public IReadOnlyList<Diagnostic> Diagnostics { get; }
+		public ImmutableArray<Diagnostic> Diagnostics { get; }
 		public SyntaxToken EndOfFileToken { get; }
 		public ExpressionSyntax Root { get; }
+		public SourceText Text { get; }
 	}
 }

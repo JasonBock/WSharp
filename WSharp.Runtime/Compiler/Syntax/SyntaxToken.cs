@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using WSharp.Runtime.Compiler.Text;
 
 namespace WSharp.Runtime.Compiler.Syntax
 {
@@ -16,7 +17,7 @@ namespace WSharp.Runtime.Compiler.Syntax
 
 		public override SyntaxKind Kind { get; }
 		public int Position { get; }
-		public TextSpan Span => new TextSpan(this.Position, this.Text.Length);
+		public override TextSpan Span => new TextSpan(this.Position, this.Text.Length);
 		public string Text { get; }
 		public object? Value { get; }
 	}

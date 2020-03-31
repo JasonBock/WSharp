@@ -135,7 +135,7 @@ namespace WSharp.Runtime.Tests.Compiler.Syntax
 		{
 			var fixedTokens = Enum.GetValues(typeof(SyntaxKind))
 				.Cast<SyntaxKind>()
-				.Select(kind => (kind: kind, text: SyntaxFacts.GetText(kind)))
+				.Select(kind => (kind, text: SyntaxFacts.GetText(kind)))
 				.Where(_ => !string.IsNullOrWhiteSpace(_.text));
 
 			var dynamicTokens = new[]

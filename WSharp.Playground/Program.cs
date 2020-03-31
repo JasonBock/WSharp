@@ -16,36 +16,6 @@ namespace WSharp.Playground
 {
 	public static class Program
 	{
-		public const string Branch = "└──";
-		public const string Down = "│  ";
-		public const string Center = "├──";
-		public const string Space = "   ";
-
-		private static void Print(SyntaxNode node, string indent = "", bool isLast = true)
-		{
-			var marker = isLast ? Program.Branch : Program.Center;
-
-			Console.Out.Write(indent);
-			Console.Out.Write(marker);
-			Console.Out.Write(node.Kind);
-
-			if (node is SyntaxToken token && token.Value != null)
-			{
-				Console.Write($" {token.Value}");
-			}
-
-			Console.Out.WriteLine();
-
-			indent += isLast ? Program.Space : Program.Down;
-
-			var lastChild = node.GetChildren().LastOrDefault();
-
-			foreach (var child in node.GetChildren())
-			{
-				Program.Print(child, indent, child == lastChild);
-			}
-		}
-
 		public static void Main() =>
 			Program.RunRepl();
 
@@ -88,25 +58,31 @@ namespace WSharp.Playground
 					{
 						using (ConsoleColor.DarkGray.Bind(() => Console.ForegroundColor))
 						{
-							Program.Print(tree.Root);
+							tree.Root.WriteTo(Console.Out);
 						}
 					}
 
 					if (diagnostics.Any())
 					{
+						var text = tree.Text;
+
 						foreach (var diagnostic in diagnostics)
 						{
+							var lineIndex = text.GetLineIndex(diagnostic.Span.Start);
+							var lineNumber = lineIndex + 1;
+							var character = diagnostic.Span.Start - text.Lines[lineIndex].Start + 1;
+
 							Console.Out.WriteLine();
 							using (ConsoleColor.DarkRed.Bind(() => Console.ForegroundColor))
 							{
-								Console.Out.WriteLine(diagnostic);
+								Console.Out.WriteLine($"({lineNumber}, {character}): {diagnostic}");
 							}
 
 							var prefix = line.Substring(0, diagnostic.Span.Start);
 							var error = line.Substring(diagnostic.Span.Start, diagnostic.Span.Length);
 							var suffix = line.Substring(diagnostic.Span.End);
 
-							Console.Out.Write(Program.Space);
+							Console.Out.Write(SyntaxNode.Space);
 							Console.Out.Write(prefix);
 
 							using (ConsoleColor.DarkRed.Bind(() => Console.ForegroundColor))

@@ -76,6 +76,8 @@ namespace WSharp.Runtime.Compiler.Syntax
 				SyntaxKind.FalseKeyword => "false",
 				SyntaxKind.TrueKeyword => "true",
 				SyntaxKind.OpenParenthesisToken => "(",
+				SyntaxKind.CloseParenthesisToken => ")",
+				SyntaxKind.CommaToken => ",",
 				SyntaxKind.BangEqualsToken => "!=",
 				SyntaxKind.EqualsEqualsToken => "==",
 				SyntaxKind.PipePipeToken => "||",
@@ -85,6 +87,8 @@ namespace WSharp.Runtime.Compiler.Syntax
 				SyntaxKind.StarToken => "*",
 				SyntaxKind.MinusToken => "-",
 				SyntaxKind.PlusToken => "+",
+				SyntaxKind.UpdateLineCountToken => "#",
+				SyntaxKind.SemicolonToken => ";",
 				_ => string.Empty
 			};
 	}

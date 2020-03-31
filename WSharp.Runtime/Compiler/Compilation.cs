@@ -20,13 +20,13 @@ namespace WSharp.Runtime.Compiler
 
 			if(diagnostics.Length > 0)
 			{
-				return new EvaluationResult(diagnostics, ImmutableList<Line>.Empty);
+				return new EvaluationResult(diagnostics.ToImmutableArray(), ImmutableArray<Line>.Empty);
 			}
 
 			var evaluator = new Evaluator();
 			var lines = evaluator.Evaluate(new List<BoundExpression> { expression });
 
-			return new EvaluationResult(Array.Empty<Diagnostic>(), lines);
+			return new EvaluationResult(ImmutableArray<Diagnostic>.Empty, lines);
 		}
 
 		public SyntaxTree Tree { get; }

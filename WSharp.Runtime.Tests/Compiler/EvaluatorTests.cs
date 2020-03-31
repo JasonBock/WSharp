@@ -15,8 +15,8 @@ namespace WSharp.Runtime.Tests.Compiler
 
 			Assert.Multiple(() =>
 			{
-				Assert.That(result.Diagnostics.Count, Is.EqualTo(0), nameof(result.Diagnostics));
-				Assert.That(result.Lines.Count, Is.EqualTo(1), nameof(result.Lines));
+				Assert.That(result.Diagnostics.Length, Is.EqualTo(0), nameof(result.Diagnostics));
+				Assert.That(result.Lines.Length, Is.EqualTo(1), nameof(result.Lines));
 			});
 		}
 	}

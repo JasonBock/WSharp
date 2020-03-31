@@ -24,11 +24,11 @@ namespace WSharp.Runtime.Tests
 		{
 			const string message = "a";
 			var exception = new ExecutionEngineLinesException(
-				new List<string>(new[] { message }).ToImmutableList());
+				new List<string>(new[] { message }).ToImmutableArray());
 
 			Assert.Multiple(() =>
 			{
-				Assert.That(exception.Messages.Count, Is.EqualTo(1), nameof(exception.Messages.Count));
+				Assert.That(exception.Messages.Length, Is.EqualTo(1), nameof(exception.Messages.Length));
 				Assert.That(exception.Messages[0], Is.EqualTo(message), nameof(message));
 			});
 		}

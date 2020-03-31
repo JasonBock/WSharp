@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using WSharp.Runtime.Compiler.Syntax;
+using WSharp.Runtime.Compiler.Text;
 
 namespace WSharp.Runtime.Compiler
 {

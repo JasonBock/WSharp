@@ -1,4 +1,6 @@
-﻿namespace WSharp.Runtime.Compiler
+﻿using WSharp.Runtime.Compiler.Text;
+
+namespace WSharp.Runtime.Compiler
 {
 	public sealed class Diagnostic
 	{
