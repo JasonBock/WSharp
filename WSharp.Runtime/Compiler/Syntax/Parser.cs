@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using WSharp.Runtime.Compiler.Text;
 
@@ -50,19 +51,24 @@ namespace WSharp.Runtime.Compiler.Syntax
 			return current;
 		}
 
-		public SyntaxTree Parse()
+		public CompilationUnitSyntax ParseCompilationUnit()
 		{
-			var lineNumber = this.Match(SyntaxKind.NumberToken);
-			var lineExpressions = new LineExpressionSyntax(new LiteralExpressionSyntax(lineNumber), this.ParseLineExpressions());
+			var lineStatement = this.ParseLineStatement();
 			var endOfFileToken = this.Match(SyntaxKind.EndOfFileToken);
-
-			return new SyntaxTree(this.Text, this.Diagnostics, lineExpressions, endOfFileToken);
+			return new CompilationUnitSyntax(lineStatement, endOfFileToken);
 		}
 
-		private List<ExpressionSyntax> ParseLineExpressions()
+		private LineStatementSyntax ParseLineStatement()
+		{
+			var lineNumber = this.ParsePrimaryExpression();
+			var lines = this.ParseLineStatements();
+			return new LineStatementSyntax(new ExpressionStatementSyntax(lineNumber), lines);
+		}
+
+		private List<ExpressionStatementSyntax> ParseLineStatements()
 		{
 			var semiColonFound = false;
-			var lineExpressions = new List<ExpressionSyntax>();
+			var lineStatements = new List<ExpressionStatementSyntax>();
 
 			while (this.position < this.tokens.Length)
 			{
@@ -77,11 +83,14 @@ namespace WSharp.Runtime.Compiler.Syntax
 					// and immediately create a UpdateLineCountExpressionSyntax. This may be odd because we don't have the "#" in this case,
 					// so it may be more correct to have a "UnaryLineCountExpressionSyntax" node that just takes the line number.
 					// From that, the binder can infer what to do from that point....maybe.
+
+					// TODO: May want to move this into its own ParseLineStatement() 
+					// as I'll eventually have to handle method invocations.
 					var lineNumber = this.ParseBinaryExpression();
 					var operatorToken = this.Match(SyntaxKind.UpdateLineCountToken);
 					var updateLineCountToken = this.ParseBinaryExpression();
-					lineExpressions.Add(new UpdateLineCountExpressionSyntax(
-						lineNumber, operatorToken, updateLineCountToken));
+					lineStatements.Add(new ExpressionStatementSyntax(new UpdateLineCountExpressionSyntax(
+						lineNumber, operatorToken, updateLineCountToken)));
 				}
 
 				var next = this.Peek(0);
@@ -111,7 +120,7 @@ namespace WSharp.Runtime.Compiler.Syntax
 				}
 			}
 
-			return lineExpressions;
+			return lineStatements;
 		}
 
 		private ExpressionSyntax ParsePrimaryExpression()

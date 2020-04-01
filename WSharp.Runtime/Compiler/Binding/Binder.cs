@@ -8,7 +8,24 @@ namespace WSharp.Runtime.Compiler.Binding
 	// TODO: Consider making this internal
 	public sealed class Binder
 	{
-		public BoundExpression BindExpression(ExpressionSyntax syntax) =>
+		public BoundStatement BindCompilationUnit(CompilationUnitSyntax syntax) =>
+			this.BindStatement(syntax.Statement);
+
+		private BoundStatement BindStatement(StatementSyntax syntax) =>
+			syntax.Kind switch
+			{
+				SyntaxKind.LineStatement => this.BindLineStatement((LineStatementSyntax)syntax),
+				SyntaxKind.ExpressionStatement => this.BindExpressionStatement((ExpressionStatementSyntax)syntax),
+				_ => throw new BindingException($"Unexpected syntax {syntax.Kind}"),
+			};
+
+		private BoundStatement BindExpressionStatement(ExpressionStatementSyntax syntax)
+		{
+			var expression = this.BindExpression(syntax.Expression);
+			return new BoundExpressionStatement(expression);
+		}
+
+		private BoundExpression BindExpression(ExpressionSyntax syntax) =>
 			syntax.Kind switch
 			{
 				SyntaxKind.ParenthesizedExpression => this.BindParenthesizedExpression((ParenthesizedExpressionSyntax)syntax),
@@ -16,18 +33,17 @@ namespace WSharp.Runtime.Compiler.Binding
 				SyntaxKind.UnaryExpression => this.BindUnaryExpression((UnaryExpressionSyntax)syntax),
 				SyntaxKind.BinaryExpression => this.BindBinaryExpression((BinaryExpressionSyntax)syntax),
 				SyntaxKind.UpdateLineCountExpression => this.BindUpdateLineCountExpression((UpdateLineCountExpressionSyntax)syntax),
-				SyntaxKind.LineExpression => this.BindLineExpression((LineExpressionSyntax)syntax),
 				_ => throw new BindingException($"Unexpected syntax {syntax.Kind}"),
 			};
 
 		private BoundExpression BindParenthesizedExpression(ParenthesizedExpressionSyntax syntax) =>
 			this.BindExpression(syntax.Expression);
 
-		private BoundExpression BindLineExpression(LineExpressionSyntax syntax)
+		private BoundStatement BindLineStatement(LineStatementSyntax syntax)
 		{
-			var boundLineNumber = this.BindExpression(syntax.Number);
-			var boundLines = syntax.Expressions.Select(_ => this.BindExpression(_)).ToList();
-			return new BoundLineExpression(boundLineNumber, boundLines);
+			var boundLineNumber = this.BindStatement(syntax.Number);
+			var boundLines = syntax.Statements.Select(_ => this.BindStatement(_)).ToList();
+			return new BoundLineStatement(boundLineNumber, boundLines);
 		}
 
 		private BoundExpression BindUpdateLineCountExpression(UpdateLineCountExpressionSyntax syntax)

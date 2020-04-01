@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using WSharp.Runtime.Compiler.Binding;
@@ -14,7 +13,7 @@ namespace WSharp.Runtime.Compiler
 		public EvaluationResult Evaluate()
 		{
 			var binder = new Binder();
-			var expression = binder.BindExpression(this.Tree.Root);
+			var statement = binder.BindCompilationUnit(this.Tree.Root);
 
 			var diagnostics = this.Tree.Diagnostics.Concat(binder.Diagnostics).ToArray();
 
@@ -23,8 +22,8 @@ namespace WSharp.Runtime.Compiler
 				return new EvaluationResult(diagnostics.ToImmutableArray(), ImmutableArray<Line>.Empty);
 			}
 
-			var evaluator = new Evaluator();
-			var lines = evaluator.Evaluate(new List<BoundExpression> { expression });
+			var evaluator = new Evaluator(new List<BoundStatement> { statement });
+			var lines = evaluator.Evaluate();
 
 			return new EvaluationResult(ImmutableArray<Diagnostic>.Empty, lines);
 		}

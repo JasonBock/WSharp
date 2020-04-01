@@ -7,7 +7,40 @@ namespace WSharp.Runtime.Compiler
 {
 	public sealed class Evaluator
 	{
-		private object Evaluate(BoundExpression node, IExecutionEngineActions? actions = null) =>
+		private object lastValue = new object();
+
+		public Evaluator(List<BoundStatement> root) => this.Root = root;
+
+		public ImmutableArray<Line> Evaluate()
+		{
+			var builder = ImmutableArray.CreateBuilder<Line>();
+
+			foreach (var statement in this.Root)
+			{
+				this.EvaluateStatement(statement);
+
+				builder.Add((Line)this.lastValue);
+			}
+
+			return builder.ToImmutable();
+		}
+
+		private void EvaluateStatement(BoundStatement node, IExecutionEngineActions? actions = null)
+		{
+			switch (node)
+			{
+				case BoundLineStatement line:
+					this.EvaluateLineStatement(actions, line);
+					break;
+				case BoundExpressionStatement expression:
+					this.lastValue = this.EvaluateExpression(expression.Expression, actions);
+					break;
+				default:
+					throw new EvaluationException($"Unexpected operator {node.Kind}");
+			};
+		}
+
+		private object EvaluateExpression(BoundExpression node, IExecutionEngineActions? actions = null) =>
 			node switch
 			{
 				BoundUpdateLineCountExpression line => this.EvaluateUpdateLineCountExpression(actions, line),
@@ -17,18 +50,33 @@ namespace WSharp.Runtime.Compiler
 				_ => throw new EvaluationException($"Unexpected operator {node.Kind}")
 			};
 
+		private void EvaluateLineStatement(IExecutionEngineActions? actions, BoundLineStatement line)
+		{
+			this.EvaluateStatement(line.Number);
+
+			var lineNumber = (BigInteger)this.lastValue;
+
+			this.lastValue = new Line(lineNumber, BigInteger.One, actions =>
+			{
+				foreach (var statement in line.Statements)
+				{
+					this.EvaluateStatement(statement, actions);
+				}
+			});
+		}
+
 		private object EvaluateUpdateLineCountExpression(IExecutionEngineActions? actions, BoundUpdateLineCountExpression line)
 		{
-			var lineToUpdate = (BigInteger)this.Evaluate(line.Left, actions);
-			var count = (BigInteger)this.Evaluate(line.Right, actions);
+			var lineToUpdate = (BigInteger)this.EvaluateExpression(line.Left, actions);
+			var count = (BigInteger)this.EvaluateExpression(line.Right, actions);
 			actions!.UpdateCount(lineToUpdate, count);
 			return BigInteger.Zero;
 		}
 
 		private object EvaluateBinaryExpression(IExecutionEngineActions? actions, BoundBinaryExpression binary)
 		{
-			var left = this.Evaluate(binary.Left, actions);
-			var right = this.Evaluate(binary.Right, actions);
+			var left = this.EvaluateExpression(binary.Left, actions);
+			var right = this.EvaluateExpression(binary.Right, actions);
 
 			return binary.Operator.OperatorKind switch
 			{
@@ -46,7 +94,7 @@ namespace WSharp.Runtime.Compiler
 
 		private object EvaluateUnaryExpression(IExecutionEngineActions? actions, BoundUnaryExpression unary)
 		{
-			var operand = this.Evaluate(unary.Operand, actions);
+			var operand = this.EvaluateExpression(unary.Operand, actions);
 
 			return unary.Operator.OperatorKind switch
 			{
@@ -59,31 +107,6 @@ namespace WSharp.Runtime.Compiler
 
 		private object EvaluateLiteralExpression(BoundLiteralExpression literal) => literal.Value;
 
-		public ImmutableArray<Line> Evaluate(List<BoundExpression> expressions)
-		{
-			var builder = ImmutableArray.CreateBuilder<Line>();
-
-			foreach (var expression in expressions)
-			{
-				if (expression is BoundLineExpression line)
-				{
-					var lineNumber = (BigInteger)this.Evaluate(line.Number);
-
-					builder.Add(new Line(lineNumber, BigInteger.One, actions =>
-					{
-						foreach (var lineExpression in line.Expressions)
-						{
-							this.Evaluate(expression, actions);
-						}
-					}));
-				}
-				else
-				{
-					throw new EvaluationException($"Unexpected expression {expression.Kind}");
-				}
-			}
-
-			return builder.ToImmutable();
-		}
+		public List<BoundStatement> Root { get; }
 	}
 }

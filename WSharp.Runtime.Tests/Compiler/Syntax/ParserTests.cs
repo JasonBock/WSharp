@@ -15,16 +15,19 @@ namespace WSharp.Runtime.Tests.Compiler.Syntax
 			var binaryText = SyntaxFacts.GetText(value.binaryKind);
 
 			var text = $"1 2#({unaryText}3{binaryText}4)";
-			var expression = SyntaxTree.Parse(text).Root;
 
 			Assert.Multiple(() =>
 			{
+				var expression = ParserTests.ParseExpression(text);
+
 				using var enumerator = new AssertingEnumerator(expression);
 				if (unaryPrecedence >= binaryPrecedence)
 				{
-					enumerator.AssertNode(SyntaxKind.LineExpression);
+					enumerator.AssertNode(SyntaxKind.LineStatement);
+					enumerator.AssertNode(SyntaxKind.ExpressionStatement);
 					enumerator.AssertNode(SyntaxKind.LiteralExpression);
 					enumerator.AssertToken(SyntaxKind.NumberToken, "1");
+					enumerator.AssertNode(SyntaxKind.ExpressionStatement);
 					enumerator.AssertNode(SyntaxKind.UpdateLineCountExpression);
 					enumerator.AssertNode(SyntaxKind.LiteralExpression);
 					enumerator.AssertToken(SyntaxKind.NumberToken, "2");
@@ -57,16 +60,19 @@ namespace WSharp.Runtime.Tests.Compiler.Syntax
 			var operator2Text = SyntaxFacts.GetText(value.operator2);
 
 			var text = $"1 2#(3 {operator1Text} 4 {operator2Text} 5)";
-			var expression = SyntaxTree.Parse(text).Root;
 
 			Assert.Multiple(() =>
 			{
+				var expression = ParserTests.ParseExpression(text);
+
 				using var enumerator = new AssertingEnumerator(expression);
 				if (operator1Precedence >= operator2Precedence)
 				{
-					enumerator.AssertNode(SyntaxKind.LineExpression);
+					enumerator.AssertNode(SyntaxKind.LineStatement);
+					enumerator.AssertNode(SyntaxKind.ExpressionStatement);
 					enumerator.AssertNode(SyntaxKind.LiteralExpression);
 					enumerator.AssertToken(SyntaxKind.NumberToken, "1");
+					enumerator.AssertNode(SyntaxKind.ExpressionStatement);
 					enumerator.AssertNode(SyntaxKind.UpdateLineCountExpression);
 					enumerator.AssertNode(SyntaxKind.LiteralExpression);
 					enumerator.AssertToken(SyntaxKind.NumberToken, "2");
@@ -87,9 +93,11 @@ namespace WSharp.Runtime.Tests.Compiler.Syntax
 				}
 				else
 				{
-					enumerator.AssertNode(SyntaxKind.LineExpression);
+					enumerator.AssertNode(SyntaxKind.LineStatement);
+					enumerator.AssertNode(SyntaxKind.ExpressionStatement);
 					enumerator.AssertNode(SyntaxKind.LiteralExpression);
 					enumerator.AssertToken(SyntaxKind.NumberToken, "1");
+					enumerator.AssertNode(SyntaxKind.ExpressionStatement);
 					enumerator.AssertNode(SyntaxKind.UpdateLineCountExpression);
 					enumerator.AssertNode(SyntaxKind.LiteralExpression);
 					enumerator.AssertToken(SyntaxKind.NumberToken, "2");
@@ -109,6 +117,13 @@ namespace WSharp.Runtime.Tests.Compiler.Syntax
 					enumerator.AssertToken(SyntaxKind.CloseParenthesisToken, ")");
 				}
 			});
+		}
+
+		private static LineStatementSyntax ParseExpression(string text)
+		{
+			var statement = SyntaxTree.Parse(text).Root.Statement;
+			Assert.That(statement, Is.TypeOf<LineStatementSyntax>(), nameof(statement));
+			return (LineStatementSyntax)statement;
 		}
 
 		public static IEnumerable<(SyntaxKind, SyntaxKind)> GetUnaryOperatorPairsData()

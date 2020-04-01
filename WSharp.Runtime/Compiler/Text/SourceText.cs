@@ -95,7 +95,7 @@ namespace WSharp.Runtime.Compiler.Text
 				return 2;
 			}
 
-			if(character == '\r' && character == '\n')
+			if(character == '\r' || character == '\n')
 			{
 				return 1;
 			}

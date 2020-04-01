@@ -2,10 +2,14 @@
 {
 	public enum BoundNodeKind
 	{
+		// Statements
+		ExpressionStatement,
+		LineStatement,
+
+		// Expressions
 		UnaryExpression,
 		LiteralExpression,
 		BinaryExpression,
 		UpdateLineCountExpression,
-		LineExpression
 	}
 }

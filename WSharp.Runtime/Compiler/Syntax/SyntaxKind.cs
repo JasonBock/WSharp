@@ -27,6 +27,13 @@
 		FalseKeyword,
 		TrueKeyword,
 
+		// Nodes
+		CompilationUnit,
+
+		// Statements
+		LineStatement,
+		ExpressionStatement,
+
 		// Expressions
 		LiteralExpression,
 		NameExpression,
@@ -34,6 +41,5 @@
 		BinaryExpression,
 		ParenthesizedExpression,
 		UpdateLineCountExpression,
-		LineExpression
 	}
 }

@@ -6,15 +6,21 @@ namespace WSharp.Runtime.Compiler.Syntax
 {
 	public sealed class SyntaxTree
 	{
-		public SyntaxTree(SourceText text, IEnumerable<Diagnostic> diagnostics, ExpressionSyntax root, SyntaxToken endOfFIleToken) => 
-			(this.Text, this.Diagnostics, this.Root, this.EndOfFileToken) = 
-				(text, diagnostics.ToImmutableArray(), root, endOfFIleToken);
+		private SyntaxTree(SourceText text)
+		{
+			var parser = new Parser(text);
+			var root = parser.ParseCompilationUnit();
+			var diagnostics = parser.Diagnostics.ToImmutableArray();
+
+			(this.Text, this.Diagnostics, this.Root) =
+				(text, diagnostics.ToImmutableArray(), root);
+		}
 
 		public static SyntaxTree Parse(string text) =>
 			SyntaxTree.Parse(SourceText.From(text));
 
 		public static SyntaxTree Parse(SourceText text) =>
-			new Parser(text).Parse();
+			new SyntaxTree(text);
 
 		public static IEnumerable<SyntaxToken> ParseTokens(string text) => 
 			SyntaxTree.ParseTokens(SourceText.From(text));
@@ -39,8 +45,7 @@ namespace WSharp.Runtime.Compiler.Syntax
 		}
 
 		public ImmutableArray<Diagnostic> Diagnostics { get; }
-		public SyntaxToken EndOfFileToken { get; }
-		public ExpressionSyntax Root { get; }
+		public CompilationUnitSyntax Root { get; }
 		public SourceText Text { get; }
 	}
 }

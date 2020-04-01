@@ -32,7 +32,10 @@ namespace WSharp.Playground
 
 			while (true)
 			{
-				Console.Out.Write("> ");
+				using (ConsoleColor.Green.Bind(() => Console.ForegroundColor))
+				{
+					Console.Out.Write("» ");
+				}
 				var line = Console.In.ReadLine();
 
 				if (!string.IsNullOrWhiteSpace(line))
