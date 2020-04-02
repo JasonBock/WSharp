@@ -52,6 +52,10 @@ namespace WSharp.Runtime.Compiler.Syntax
 					return 4;
 				case SyntaxKind.EqualsEqualsToken:
 				case SyntaxKind.BangEqualsToken:
+				case SyntaxKind.LessToken:
+				case SyntaxKind.LessOrEqualsToken:
+				case SyntaxKind.GreaterToken:
+				case SyntaxKind.GreaterOrEqualsToken:
 					return 3;
 				case SyntaxKind.AmpersandAmpersandToken:
 					return 2;
@@ -83,6 +87,10 @@ namespace WSharp.Runtime.Compiler.Syntax
 				SyntaxKind.PipePipeToken => "||",
 				SyntaxKind.AmpersandAmpersandToken => "&&",
 				SyntaxKind.BangToken => "!",
+				SyntaxKind.LessToken => "<",
+				SyntaxKind.LessOrEqualsToken => "<=",
+				SyntaxKind.GreaterToken => ">",
+				SyntaxKind.GreaterOrEqualsToken => ">=",
 				SyntaxKind.SlashToken => "/",
 				SyntaxKind.StarToken => "*",
 				SyntaxKind.MinusToken => "-",

@@ -11,8 +11,8 @@
 			return new TextSpan(start, length);
 		}
 
-		public override string ToString() => $"{nameof(this.Start)} = {this.Start}, {nameof(this.Length)} = {this.Length}";
-
+		public override string ToString() => $"{this.Start}..{this.End}";
+		
 		public int End => this.Start + this.Length;
 		public int Length { get; }
 		public int Start { get; }

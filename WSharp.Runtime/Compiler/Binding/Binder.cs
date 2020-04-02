@@ -16,7 +16,7 @@ namespace WSharp.Runtime.Compiler.Binding
 			{
 				SyntaxKind.LineStatement => this.BindLineStatement((LineStatementSyntax)syntax),
 				SyntaxKind.ExpressionStatement => this.BindExpressionStatement((ExpressionStatementSyntax)syntax),
-				_ => throw new BindingException($"Unexpected syntax {syntax.Kind}"),
+				_ => throw new BindingException($"Unexpected statement syntax {syntax.Kind}"),
 			};
 
 		private BoundStatement BindExpressionStatement(ExpressionStatementSyntax syntax)
@@ -29,12 +29,28 @@ namespace WSharp.Runtime.Compiler.Binding
 			syntax.Kind switch
 			{
 				SyntaxKind.ParenthesizedExpression => this.BindParenthesizedExpression((ParenthesizedExpressionSyntax)syntax),
+				SyntaxKind.NameExpression => this.BindNameExpression((NameExpressionSyntax)syntax),
 				SyntaxKind.LiteralExpression => this.BindLiteralExpression((LiteralExpressionSyntax)syntax),
 				SyntaxKind.UnaryExpression => this.BindUnaryExpression((UnaryExpressionSyntax)syntax),
 				SyntaxKind.BinaryExpression => this.BindBinaryExpression((BinaryExpressionSyntax)syntax),
 				SyntaxKind.UpdateLineCountExpression => this.BindUpdateLineCountExpression((UpdateLineCountExpressionSyntax)syntax),
-				_ => throw new BindingException($"Unexpected syntax {syntax.Kind}"),
+				_ => throw new BindingException($"Unexpected expression syntax {syntax.Kind}"),
 			};
+
+		private BoundExpression BindNameExpression(NameExpressionSyntax syntax)
+		{
+			var name = syntax.IdentifierToken.Text;
+
+			if(string.IsNullOrWhiteSpace(name))
+			{
+				return new BoundLiteralExpression(0);
+			}
+			else
+			{
+				// TODO: This should be a method invocation on the context. For now, do this:
+				return new BoundLiteralExpression(0);
+			}
+		}
 
 		private BoundExpression BindParenthesizedExpression(ParenthesizedExpressionSyntax syntax) =>
 			this.BindExpression(syntax.Expression);

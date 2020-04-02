@@ -95,6 +95,30 @@ namespace WSharp.Runtime.Compiler.Syntax
 						this.kind = SyntaxKind.BangToken;
 					}
 					break;
+				case '<':
+					this.position++;
+					if (this.Current == '=')
+					{
+						this.kind = SyntaxKind.LessOrEqualsToken;
+						this.position++;
+					}
+					else
+					{
+						this.kind = SyntaxKind.LessToken;
+					}
+					break;
+				case '>':
+					this.position++;
+					if (this.Current == '=')
+					{
+						this.kind = SyntaxKind.GreaterOrEqualsToken;
+						this.position++;
+					}
+					else
+					{
+						this.kind = SyntaxKind.GreaterToken;
+					}
+					break;
 				case '0':
 				case '1':
 				case '2':

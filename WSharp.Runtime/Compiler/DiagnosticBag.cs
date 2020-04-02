@@ -22,24 +22,24 @@ namespace WSharp.Runtime.Compiler
 			this.diagnostics.Add(new Diagnostic(span, message));
 
 		public void ReportInvalidNumber(TextSpan span, string text, Type type) =>
-			this.Report(span, $"The number {text} isn't a valid {type}.");
+			this.Report(span, $"The number '{text}' isn't a valid '{type}'.");
 
 		public void ReportBadCharacter(int position, char character) => 
 			this.Report(new TextSpan(position, 1), $"Bad character input: '{character}'.");
 
 		public void ReportUnexpectedToken(TextSpan span, SyntaxKind actualKind, SyntaxKind expectedKind) => 
-			this.Report(span, $"Unexpected token <{actualKind}>, expected <{expectedKind}>.");
+			this.Report(span, $"Unexpected token <{actualKind}>, expected <{expectedKind}>."); 
 
 		public void ReportMissingSemicolon(TextSpan span) => 
 			this.Report(span, "; expected.");
 
 		public void ReportUndefinedUnaryOperator(TextSpan span, string operatorText, Type operandType) =>
-			this.Report(span, $"Unary operator '{operatorText}' is not defined for type {operandType}.");
+			this.Report(span, $"Unary operator '{operatorText}' is not defined for type '{operandType}'.");
 
 		public void ReportUndefinedBinaryOperator(TextSpan span, string operatorText, Type leftType, Type rightType) => 
-			this.Report(span, $"Binary operator '{operatorText}' is not defined for types {leftType} and {rightType}.");
+			this.Report(span, $"Binary operator '{operatorText}' is not defined for types '{leftType}' and '{rightType}'.");
 
 		public void ReportUndefinedLineCountOperator(TextSpan span, string operatorText, Type leftType, Type rightType) => 
-			this.Report(span, $"Update line count operator '{operatorText}' is not defined for types {leftType} and {rightType}.");
+			this.Report(span, $"Update line count operator '{operatorText}' is not defined for types '{leftType}' and '{rightType}'.");
 	}
 }

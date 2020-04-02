@@ -88,6 +88,10 @@ namespace WSharp.Runtime.Compiler
 				BoundBinaryOperatorKind.LogicalOr => (bool)left || (bool)right,
 				BoundBinaryOperatorKind.Equals => object.Equals(left, right),
 				BoundBinaryOperatorKind.NotEquals => !object.Equals(left, right),
+				BoundBinaryOperatorKind.Less => (BigInteger)left < (BigInteger)right,
+				BoundBinaryOperatorKind.LessOrEqualsTo => (BigInteger)left <= (BigInteger)right,
+				BoundBinaryOperatorKind.Greater => (BigInteger)left > (BigInteger)right,
+				BoundBinaryOperatorKind.GreaterOrEqualsTo => (BigInteger)left >= (BigInteger)right,
 				_ => throw new EvaluationException($"Unexpected binary operator {binary.Operator}")
 			};
 		}

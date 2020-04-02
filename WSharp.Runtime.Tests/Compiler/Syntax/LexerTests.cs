@@ -101,6 +101,10 @@ namespace WSharp.Runtime.Tests.Compiler.Syntax
 				(t1Kind == SyntaxKind.NumberToken && t2Kind == SyntaxKind.NumberToken) ||
 				(t1Kind == SyntaxKind.BangToken && t2Text == "=") ||
 				(t1Kind == SyntaxKind.BangToken && t2Kind == SyntaxKind.EqualsEqualsToken) ||
+				(t1Kind == SyntaxKind.LessToken && t2Text == "=") ||
+				(t1Kind == SyntaxKind.LessToken && t2Kind == SyntaxKind.EqualsEqualsToken) ||
+				(t1Kind == SyntaxKind.GreaterToken && t2Text == "=") ||
+				(t1Kind == SyntaxKind.GreaterToken && t2Kind == SyntaxKind.EqualsEqualsToken) ||
 				(t1Text == "=" && t2Text == "=") ||
 				(t1IsKeyword && t2IsKeyword) ||
 				(t1IsKeyword && t2Kind == SyntaxKind.IdentifierToken) ||
