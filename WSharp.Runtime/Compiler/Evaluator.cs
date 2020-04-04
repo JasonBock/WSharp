@@ -84,6 +84,9 @@ namespace WSharp.Runtime.Compiler
 				BoundBinaryOperatorKind.Subtraction => (BigInteger)left - (BigInteger)right,
 				BoundBinaryOperatorKind.Multiplication => (BigInteger)left * (BigInteger)right,
 				BoundBinaryOperatorKind.Division => (BigInteger)left / (BigInteger)right,
+				BoundBinaryOperatorKind.BitwiseAnd => binary.Type == typeof(BigInteger) ? (object)((BigInteger)left & (BigInteger)right) : (bool)left & (bool)right,
+				BoundBinaryOperatorKind.BitwiseOr => binary.Type == typeof(BigInteger) ? (object)((BigInteger)left | (BigInteger)right) : (bool)left | (bool)right,
+				BoundBinaryOperatorKind.BitwiseXor => binary.Type == typeof(BigInteger) ? (object)((BigInteger)left ^ (BigInteger)right) : (bool)left ^ (bool)right,
 				BoundBinaryOperatorKind.LogicalAnd => (bool)left && (bool)right,
 				BoundBinaryOperatorKind.LogicalOr => (bool)left || (bool)right,
 				BoundBinaryOperatorKind.Equals => object.Equals(left, right),
@@ -105,6 +108,7 @@ namespace WSharp.Runtime.Compiler
 				BoundUnaryOperatorKind.Identity => (BigInteger)operand,
 				BoundUnaryOperatorKind.Negation => -(BigInteger)operand,
 				BoundUnaryOperatorKind.LogicalNegation => !(bool)operand,
+				BoundUnaryOperatorKind.OnesComplement => ~(BigInteger)operand,
 				_ => throw new EvaluationException($"Unexpected unary operator {unary.Operator}")
 			};
 		}

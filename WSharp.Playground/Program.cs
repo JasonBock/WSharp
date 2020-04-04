@@ -52,6 +52,8 @@ namespace WSharp.Playground
 						continue;
 					}
 
+					// TODO: Add a command, #run, that would actually run the evaluator
+
 					var tree = SyntaxTree.Parse(line);
 					var binder = new Compilation(tree);
 					var result = binder.Evaluate();

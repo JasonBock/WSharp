@@ -8,11 +8,14 @@
 		Division,
 		LogicalAnd,
 		LogicalOr,
+		BitwiseAnd,
+		BitwiseOr,
+		BitwiseXor,
 		Equals,
 		NotEquals,
 		Less,
 		LessOrEqualsTo,
 		Greater,
-		GreaterOrEqualsTo
+		GreaterOrEqualsTo,
 	}
 }

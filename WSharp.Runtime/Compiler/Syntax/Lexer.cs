@@ -62,18 +62,36 @@ namespace WSharp.Runtime.Compiler.Syntax
 					this.kind = SyntaxKind.SemicolonToken;
 					this.position++;
 					break;
+				case '~':
+					this.kind = SyntaxKind.TildeToken;
+					this.position++;
+					break;
+				case '^':
+					this.kind = SyntaxKind.HatToken;
+					this.position++;
+					break;
 				case '&':
-					if (this.Lookahead == '&')
+					this.position++;
+					if (this.Current == '&')
 					{
 						this.kind = SyntaxKind.AmpersandAmpersandToken;
-						this.position += 2;
+						this.position++;
+					}
+					else
+					{
+						this.kind = SyntaxKind.AmpersandToken;
 					}
 					break;
 				case '|':
-					if (this.Lookahead == '|')
+					this.position++;
+					if (this.Current == '|')
 					{
 						this.kind = SyntaxKind.PipePipeToken;
-						this.position += 2;
+						this.position++;
+					}
+					else
+					{
+						this.kind = SyntaxKind.PipeToken;
 					}
 					break;
 				case '=':
