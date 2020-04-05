@@ -28,6 +28,7 @@ namespace WSharp.Playground
 
 		private static void RunRepl()
 		{
+			var showProgram = true;
 			var showTree = true;
 
 			while (true)
@@ -43,7 +44,13 @@ namespace WSharp.Playground
 					if (line == "#showTree")
 					{
 						showTree = !showTree;
-						Console.Out.WriteLine(showTree ? "Showing parse trees." : "Not showing parse trees");
+						Console.Out.WriteLine(showTree ? "Showing parse trees." : "Not showing parse trees.");
+						continue;
+					}
+					else if (line == "#showProgram")
+					{
+						showProgram = !showProgram;
+						Console.Out.WriteLine(showProgram ? "Showing program." : "Not showing program.");
 						continue;
 					}
 					else if (line == "#cls")
@@ -53,17 +60,28 @@ namespace WSharp.Playground
 					}
 
 					// TODO: Add a command, #run, that would actually run the evaluator
+					// Also #loadFile which has an argument of a file path, that loads code from the file.
 
 					var tree = SyntaxTree.Parse(line);
-					var binder = new Compilation(tree);
-					var result = binder.Evaluate();
+					var compilation = new Compilation(tree);
+					var result = compilation.Evaluate();
 					var diagnostics = result.Diagnostics;
 
 					if (showTree)
 					{
+						Console.Out.WriteLine("Tree:");
 						using (ConsoleColor.DarkGray.Bind(() => Console.ForegroundColor))
 						{
 							tree.Root.WriteTo(Console.Out);
+						}
+					}
+
+					if (showProgram)
+					{
+						Console.Out.WriteLine("Program:");
+						using (ConsoleColor.DarkGray.Bind(() => Console.ForegroundColor))
+						{
+							compilation.EmitTree(Console.Out);
 						}
 					}
 
@@ -87,7 +105,7 @@ namespace WSharp.Playground
 							var error = line.Substring(diagnostic.Span.Start, diagnostic.Span.Length);
 							var suffix = line.Substring(diagnostic.Span.End);
 
-							Console.Out.Write(SyntaxNode.Space);
+							Console.Out.Write(TreePrint.Space);
 							Console.Out.Write(prefix);
 
 							using (ConsoleColor.DarkRed.Bind(() => Console.ForegroundColor))

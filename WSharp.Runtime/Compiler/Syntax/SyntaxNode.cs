@@ -7,11 +7,6 @@ namespace WSharp.Runtime.Compiler.Syntax
 {
 	public abstract class SyntaxNode
 	{
-		public const string Branch = "└──";
-		public const string Down = "│  ";
-		public const string Center = "├──";
-		public const string Space = "   ";
-
 		public abstract IEnumerable<SyntaxNode> GetChildren();
 
 		public void WriteTo(TextWriter writer) => 
@@ -19,7 +14,7 @@ namespace WSharp.Runtime.Compiler.Syntax
 
 		private static void Print(TextWriter writer, SyntaxNode node, string indent = "", bool isLast = true)
 		{
-			var marker = isLast ? SyntaxNode.Branch : SyntaxNode.Center;
+			var marker = isLast ? TreePrint.Branch : TreePrint.Center;
 
 			writer.Write(indent);
 			writer.Write(marker);
@@ -32,7 +27,7 @@ namespace WSharp.Runtime.Compiler.Syntax
 
 			writer.WriteLine();
 
-			indent += isLast ? SyntaxNode.Space : SyntaxNode.Down;
+			indent += isLast ? TreePrint.Space : TreePrint.Down;
 
 			var lastChild = node.GetChildren().LastOrDefault();
 

@@ -14,7 +14,9 @@
   </PropertyGroup>
   <ItemGroup>
     <None Remove="Compiler\Binding\BoundBinaryExpression.cs~RF33d6021.TMP" />
+    <None Remove="Compiler\Binding\BoundBinaryOperatorKind.cs~RF269cae16.TMP" />
     <None Remove="Compiler\Binding\BoundLineExpression.cs~RF27274bd.TMP" />
+    <None Remove="Compiler\Binding\BoundLiteralExpression.cs~RF26b68283.TMP" />
     <None Remove="Compiler\NumberExpressionSyntax.cs~RF1c5580e9.TMP" />
     <None Remove="Compiler\SyntaxKind.cs~RF1d699cee.TMP" />
     <None Remove="Compiler\Syntax\SyntaxKind.cs~RF1dad679b.TMP" />

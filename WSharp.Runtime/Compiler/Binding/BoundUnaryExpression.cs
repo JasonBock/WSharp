@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace WSharp.Runtime.Compiler.Binding
 {
@@ -8,11 +9,19 @@ namespace WSharp.Runtime.Compiler.Binding
 		public BoundUnaryExpression(BoundUnaryOperator @operator, BoundExpression operand) => 
 			(this.Operator, this.Operand) = (@operator, operand);
 
-		public BoundUnaryOperator Operator { get; }
-		public BoundExpression Operand { get; }
+		public override IEnumerable<BoundNode> GetChildren()
+		{
+			yield return this.Operand;
+		}
 
-		public override Type Type => this.Operator.ResultType;
+		public override IEnumerable<(string name, object value)> GetProperties()
+		{
+			yield return (nameof(this.Type), this.Type);
+		}
 
 		public override BoundNodeKind Kind => BoundNodeKind.UnaryExpression;
+		public BoundExpression Operand { get; }
+		public BoundUnaryOperator Operator { get; }
+		public override Type Type => this.Operator.ResultType;
 	}
 }
