@@ -50,5 +50,6 @@
 		BinaryExpression,
 		ParenthesizedExpression,
 		UpdateLineCountExpression,
+		UnaryUpdateLineCountExpression,
 	}
 }

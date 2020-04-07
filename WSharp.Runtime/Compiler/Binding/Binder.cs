@@ -36,6 +36,7 @@ namespace WSharp.Runtime.Compiler.Binding
 				SyntaxKind.UnaryExpression => this.BindUnaryExpression((UnaryExpressionSyntax)syntax),
 				SyntaxKind.BinaryExpression => this.BindBinaryExpression((BinaryExpressionSyntax)syntax),
 				SyntaxKind.UpdateLineCountExpression => this.BindUpdateLineCountExpression((UpdateLineCountExpressionSyntax)syntax),
+				SyntaxKind.UnaryUpdateLineCountExpression => this.BindUnaryUpdateLineCountExpression((UnaryUpdateLineCountExpressionSyntax)syntax),
 				_ => throw new BindingException($"Unexpected expression syntax {syntax.Kind}"),
 			};
 
@@ -89,6 +90,12 @@ namespace WSharp.Runtime.Compiler.Binding
 			}
 
 			return new BoundUpdateLineCountExpression(boundLeft, boundOperatorKind.Value, boundRight);
+		}
+
+		private BoundExpression BindUnaryUpdateLineCountExpression(UnaryUpdateLineCountExpressionSyntax syntax)
+		{
+			var boundLineNumber = this.BindExpression(syntax.LineNumber);
+			return new BoundUnaryUpdateLineCountExpression(boundLineNumber);
 		}
 
 		private BoundUpdateLineCountOperatorKind? BindUpdateLineCountOperatorKind(SyntaxKind kind, Type leftType, Type rightType)

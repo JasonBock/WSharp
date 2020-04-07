@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Numerics;
 using WSharp.Runtime.Compiler.Binding;
@@ -38,6 +39,7 @@ namespace WSharp.Runtime.Compiler
 		private object EvaluateExpression(BoundExpression node, IExecutionEngineActions? actions = null) =>
 			node switch
 			{
+				BoundUnaryUpdateLineCountExpression unaryLine => this.EvaluateUnaryUpdateLineCountExpression(actions, unaryLine),
 				BoundUpdateLineCountExpression line => this.EvaluateUpdateLineCountExpression(actions, line),
 				BoundLiteralExpression literal => this.EvaluateLiteralExpression(literal),
 				BoundUnaryExpression unary => this.EvaluateUnaryExpression(actions, unary),
@@ -71,6 +73,15 @@ namespace WSharp.Runtime.Compiler
 					this.EvaluateStatement(statement, actions);
 				}
 			});
+		}
+
+		private object EvaluateUnaryUpdateLineCountExpression(IExecutionEngineActions? actions, BoundUnaryUpdateLineCountExpression unaryLine)
+		{
+			var lineToUpdate = BigInteger.Abs((BigInteger)this.EvaluateExpression(unaryLine.LineNumber, actions));
+			var count = lineToUpdate > BigInteger.Zero ? BigInteger.One : 
+				lineToUpdate < BigInteger.Zero ? -BigInteger.One : BigInteger.Zero;
+			actions!.UpdateCount(lineToUpdate, count);
+			return BigInteger.Zero;
 		}
 
 		private object EvaluateUpdateLineCountExpression(IExecutionEngineActions? actions, BoundUpdateLineCountExpression line)

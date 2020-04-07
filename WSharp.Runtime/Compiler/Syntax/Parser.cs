@@ -91,7 +91,11 @@ namespace WSharp.Runtime.Compiler.Syntax
 				{
 					// TODO: It is possible to have a line (see the Fibonacci program) like this:
 					// 5 4,-3,7;
-					// If a number isn't specified, then that line numbe5r is either increase or decreased based on the sign of the number.
+					//
+					// Which is actually shorthand for this:
+					// 5 4#1,3#-1,7#1;
+					//
+					// If a number isn't specified, then that line number is either increase or decreased based on the sign of the number.
 					// So, if a Peek(1) for UpdateLineCountToken isn't found, but a comma, then we should short-circuit
 					// and immediately create a UpdateLineCountExpressionSyntax. This may be odd because we don't have the "#" in this case,
 					// so it may be more correct to have a "UnaryLineCountExpressionSyntax" node that just takes the line number.
@@ -100,10 +104,20 @@ namespace WSharp.Runtime.Compiler.Syntax
 					// TODO: May want to move this into its own ParseLineStatement() 
 					// as I'll eventually have to handle method invocations.
 					var lineNumber = this.ParseBinaryExpression();
-					var operatorToken = this.Match(SyntaxKind.UpdateLineCountToken);
-					var updateLineCountToken = this.ParseBinaryExpression();
-					lineStatements.Add(new ExpressionStatementSyntax(new UpdateLineCountExpressionSyntax(
-						lineNumber, operatorToken, updateLineCountToken)));
+
+					var nextToken = this.Peek(0);
+
+					if(nextToken.Kind != SyntaxKind.UpdateLineCountToken)
+					{
+						lineStatements.Add(new ExpressionStatementSyntax(new UnaryUpdateLineCountExpressionSyntax(lineNumber)));
+					}
+					else
+					{
+						var operatorToken = this.Match(SyntaxKind.UpdateLineCountToken);
+						var updateLineCountToken = this.ParseBinaryExpression();
+						lineStatements.Add(new ExpressionStatementSyntax(new UpdateLineCountExpressionSyntax(
+							lineNumber, operatorToken, updateLineCountToken)));
+					}
 				}
 
 				var next = this.Peek(0);

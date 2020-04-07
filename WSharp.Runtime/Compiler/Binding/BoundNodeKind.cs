@@ -12,5 +12,6 @@
 		LiteralExpression,
 		BinaryExpression,
 		UpdateLineCountExpression,
+		UnaryUpdateLineCountExpression,
 	}
 }
