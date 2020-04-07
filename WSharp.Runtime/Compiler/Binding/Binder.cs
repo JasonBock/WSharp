@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using WSharp.Runtime.Compiler.Syntax;
@@ -9,11 +10,12 @@ namespace WSharp.Runtime.Compiler.Binding
 	public sealed class Binder
 	{
 		public BoundStatement BindCompilationUnit(CompilationUnitSyntax syntax) =>
-			this.BindStatement(syntax.Statement);
+			this.BindStatement(syntax.LineStatements);
 
 		private BoundStatement BindStatement(StatementSyntax syntax) =>
 			syntax.Kind switch
 			{
+				SyntaxKind.LineStatements => this.BindLineStatements((LineStatementsSyntax)syntax),
 				SyntaxKind.LineStatement => this.BindLineStatement((LineStatementSyntax)syntax),
 				SyntaxKind.ExpressionStatement => this.BindExpressionStatement((ExpressionStatementSyntax)syntax),
 				_ => throw new BindingException($"Unexpected statement syntax {syntax.Kind}"),
@@ -54,6 +56,18 @@ namespace WSharp.Runtime.Compiler.Binding
 
 		private BoundExpression BindParenthesizedExpression(ParenthesizedExpressionSyntax syntax) =>
 			this.BindExpression(syntax.Expression);
+
+		private BoundStatement BindLineStatements(LineStatementsSyntax syntax)
+		{
+			var lineStatements = new List<BoundLineStatement>();
+
+			foreach(var line in syntax.Lines)
+			{
+				lineStatements.Add((BoundLineStatement)this.BindLineStatement(line));
+			}
+
+			return new BoundLineStatements(lineStatements);
+		}
 
 		private BoundStatement BindLineStatement(LineStatementSyntax syntax)
 		{

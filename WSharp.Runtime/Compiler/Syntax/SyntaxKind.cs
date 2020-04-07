@@ -39,6 +39,7 @@
 		CompilationUnit,
 
 		// Statements
+		LineStatements,
 		LineStatement,
 		ExpressionStatement,
 

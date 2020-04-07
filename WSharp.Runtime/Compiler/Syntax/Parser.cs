@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.Immutable;
 using WSharp.Runtime.Compiler.Text;
 
@@ -53,24 +52,38 @@ namespace WSharp.Runtime.Compiler.Syntax
 
 		public CompilationUnitSyntax ParseCompilationUnit()
 		{
-			var lineStatement = this.ParseLineStatement();
+			var lineStatements = this.ParseLineStatements();
 			var endOfFileToken = this.Match(SyntaxKind.EndOfFileToken);
-			return new CompilationUnitSyntax(lineStatement, endOfFileToken);
+			return new CompilationUnitSyntax(lineStatements, endOfFileToken);
+		}
+
+		private LineStatementsSyntax ParseLineStatements()
+		{
+			var lines = new List<LineStatementSyntax>();
+			var lineEnd = this.Text.Lines[^1].End;
+
+			while (this.Current.Span.End < lineEnd)
+			{
+				lines.Add(this.ParseLineStatement());
+			}
+
+			return new LineStatementsSyntax(lines);
 		}
 
 		private LineStatementSyntax ParseLineStatement()
 		{
 			var lineNumber = this.ParsePrimaryExpression();
-			var lines = this.ParseLineStatements();
+			var lines = this.ParseLineExpressionStatements();
 			return new LineStatementSyntax(new ExpressionStatementSyntax(lineNumber), lines);
 		}
 
-		private List<ExpressionStatementSyntax> ParseLineStatements()
+		private List<ExpressionStatementSyntax> ParseLineExpressionStatements()
 		{
 			var semiColonFound = false;
 			var lineStatements = new List<ExpressionStatementSyntax>();
+			var lineIndex = this.Text.GetLineIndex(this.Current.Position);
 
-			while (this.position < this.tokens.Length)
+			while(this.Text.GetLineIndex(this.Current.Position) == lineIndex)
 			{
 				var startToken = this.Current;
 
@@ -78,7 +91,7 @@ namespace WSharp.Runtime.Compiler.Syntax
 				{
 					// TODO: It is possible to have a line (see the Fibonacci program) like this:
 					// 5 4,-3,7;
-					// If a number isn't specified, then that line number is either increase or decreased based on the sign of the number.
+					// If a number isn't specified, then that line numbe5r is either increase or decreased based on the sign of the number.
 					// So, if a Peek(1) for UpdateLineCountToken isn't found, but a comma, then we should short-circuit
 					// and immediately create a UpdateLineCountExpressionSyntax. This may be odd because we don't have the "#" in this case,
 					// so it may be more correct to have a "UnaryLineCountExpressionSyntax" node that just takes the line number.
@@ -104,7 +117,8 @@ namespace WSharp.Runtime.Compiler.Syntax
 					semiColonFound = true;
 					this.position++;
 				}
-				else if (next.Kind == SyntaxKind.EndOfFileToken)
+				else if (next.Kind == SyntaxKind.EndOfFileToken ||
+					this.Text.GetLineIndex(next.Position) != lineIndex)
 				{
 					if (!semiColonFound)
 					{

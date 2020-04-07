@@ -23,6 +23,7 @@ namespace WSharp.Runtime.Tests.Compiler.Syntax
 				using var enumerator = new AssertingEnumerator(expression);
 				if (unaryPrecedence >= binaryPrecedence)
 				{
+					enumerator.AssertNode(SyntaxKind.LineStatements);
 					enumerator.AssertNode(SyntaxKind.LineStatement);
 					enumerator.AssertNode(SyntaxKind.ExpressionStatement);
 					enumerator.AssertNode(SyntaxKind.LiteralExpression);
@@ -68,6 +69,7 @@ namespace WSharp.Runtime.Tests.Compiler.Syntax
 				using var enumerator = new AssertingEnumerator(expression);
 				if (operator1Precedence >= operator2Precedence)
 				{
+					enumerator.AssertNode(SyntaxKind.LineStatements);
 					enumerator.AssertNode(SyntaxKind.LineStatement);
 					enumerator.AssertNode(SyntaxKind.ExpressionStatement);
 					enumerator.AssertNode(SyntaxKind.LiteralExpression);
@@ -93,6 +95,7 @@ namespace WSharp.Runtime.Tests.Compiler.Syntax
 				}
 				else
 				{
+					enumerator.AssertNode(SyntaxKind.LineStatements);
 					enumerator.AssertNode(SyntaxKind.LineStatement);
 					enumerator.AssertNode(SyntaxKind.ExpressionStatement);
 					enumerator.AssertNode(SyntaxKind.LiteralExpression);
@@ -119,11 +122,11 @@ namespace WSharp.Runtime.Tests.Compiler.Syntax
 			});
 		}
 
-		private static LineStatementSyntax ParseExpression(string text)
+		private static LineStatementsSyntax ParseExpression(string text)
 		{
-			var statement = SyntaxTree.Parse(text).Root.Statement;
-			Assert.That(statement, Is.TypeOf<LineStatementSyntax>(), nameof(statement));
-			return (LineStatementSyntax)statement;
+			var statement = SyntaxTree.Parse(text).Root.LineStatements;
+			Assert.That(statement, Is.TypeOf<LineStatementsSyntax>(), nameof(statement));
+			return statement;
 		}
 
 		public static IEnumerable<(SyntaxKind, SyntaxKind)> GetUnaryOperatorPairsData()

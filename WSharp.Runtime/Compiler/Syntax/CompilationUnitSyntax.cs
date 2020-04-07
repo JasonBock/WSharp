@@ -5,17 +5,21 @@ namespace WSharp.Runtime.Compiler.Syntax
 	public sealed class CompilationUnitSyntax
 		: SyntaxNode
 	{
-		public CompilationUnitSyntax(StatementSyntax statement, SyntaxToken endOfFileToken) => 
-			(this.Statement, this.EndOfFileToken) = (statement, endOfFileToken);
+		public CompilationUnitSyntax(LineStatementsSyntax lineStatements, SyntaxToken endOfFileToken) => 
+			(this.LineStatements, this.EndOfFileToken) = (lineStatements, endOfFileToken);
 
 		public SyntaxToken EndOfFileToken { get; }
-		public StatementSyntax Statement { get; }
+		public LineStatementsSyntax LineStatements { get; }
 
 		public override SyntaxKind Kind => SyntaxKind.CompilationUnit;
 
 		public override IEnumerable<SyntaxNode> GetChildren()
 		{
-			yield return this.Statement;
+			foreach(var line in this.LineStatements.Lines)
+			{
+				yield return line;
+			}
+
 			yield return this.EndOfFileToken;
 		}
 	}

@@ -29,7 +29,7 @@ namespace WSharp.Runtime.Compiler
 				return new EvaluationResult(diagnostics.ToImmutableArray(), ImmutableArray<Line>.Empty);
 			}
 
-			var evaluator = new Evaluator(new List<BoundStatement> { this.Statement });
+			var evaluator = new Evaluator(this.Statement);
 			var lines = evaluator.Evaluate();
 
 			return new EvaluationResult(ImmutableArray<Diagnostic>.Empty, lines);

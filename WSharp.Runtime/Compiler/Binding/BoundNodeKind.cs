@@ -3,8 +3,9 @@
 	public enum BoundNodeKind
 	{
 		// Statements
-		ExpressionStatement,
+		LineStatements,
 		LineStatement,
+		ExpressionStatement,
 
 		// Expressions
 		UnaryExpression,

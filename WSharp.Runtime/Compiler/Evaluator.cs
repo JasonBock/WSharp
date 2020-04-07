@@ -9,26 +9,21 @@ namespace WSharp.Runtime.Compiler
 	{
 		private object lastValue = new object();
 
-		public Evaluator(List<BoundStatement> root) => this.Root = root;
+		public Evaluator(BoundStatement root) => this.Root = root;
 
 		public ImmutableArray<Line> Evaluate()
 		{
-			var builder = ImmutableArray.CreateBuilder<Line>();
-
-			foreach (var statement in this.Root)
-			{
-				this.EvaluateStatement(statement);
-
-				builder.Add((Line)this.lastValue);
-			}
-
-			return builder.ToImmutable();
+			this.EvaluateStatement(this.Root);
+			return ((List<Line>)this.lastValue).ToImmutableArray();
 		}
 
 		private void EvaluateStatement(BoundStatement node, IExecutionEngineActions? actions = null)
 		{
 			switch (node)
 			{
+				case BoundLineStatements lineStatements:
+					this.EvaluateLineStatements(actions, lineStatements);
+					break;
 				case BoundLineStatement line:
 					this.EvaluateLineStatement(actions, line);
 					break;
@@ -49,6 +44,19 @@ namespace WSharp.Runtime.Compiler
 				BoundBinaryExpression binary => this.EvaluateBinaryExpression(actions, binary),
 				_ => throw new EvaluationException($"Unexpected operator {node.Kind}")
 			};
+
+		private void EvaluateLineStatements(IExecutionEngineActions? actions, BoundLineStatements lineStatements)
+		{
+			var lines = new List<Line>();
+
+			foreach(var line in lineStatements.LineStatements)
+			{
+				this.EvaluateLineStatement(actions, line);
+				lines.Add((Line)this.lastValue);
+			}
+
+			this.lastValue = lines;
+		}
 
 		private void EvaluateLineStatement(IExecutionEngineActions? actions, BoundLineStatement line)
 		{
@@ -115,6 +123,6 @@ namespace WSharp.Runtime.Compiler
 
 		private object EvaluateLiteralExpression(BoundLiteralExpression literal) => literal.Value;
 
-		public List<BoundStatement> Root { get; }
+		public BoundStatement Root { get; }
 	}
 }
