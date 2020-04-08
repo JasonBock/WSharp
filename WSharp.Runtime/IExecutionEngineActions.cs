@@ -13,6 +13,7 @@ namespace WSharp.Runtime
 		bool DoesLineExist(BigInteger identifier);
 		BigInteger N(BigInteger identifier);
 		void Print(string message);
+		string Read();
 		string U(long number);
 		void UpdateCount(BigInteger identifier, BigInteger delta);
 	}

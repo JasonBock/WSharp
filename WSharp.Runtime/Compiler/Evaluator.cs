@@ -100,7 +100,7 @@ namespace WSharp.Runtime.Compiler
 
 			return binary.Operator.OperatorKind switch
 			{
-				BoundBinaryOperatorKind.Addition => (BigInteger)left + (BigInteger)right,
+				BoundBinaryOperatorKind.Addition => binary.Type == TypeSymbol.Number ? (object)((BigInteger)left + (BigInteger)right) : (string)left + (string)right,
 				BoundBinaryOperatorKind.Subtraction => (BigInteger)left - (BigInteger)right,
 				BoundBinaryOperatorKind.Multiplication => (BigInteger)left * (BigInteger)right,
 				BoundBinaryOperatorKind.Division => (BigInteger)left / (BigInteger)right,

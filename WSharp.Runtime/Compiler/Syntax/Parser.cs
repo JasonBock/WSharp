@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using WSharp.Runtime.Compiler.Text;
 
@@ -155,8 +156,51 @@ namespace WSharp.Runtime.Compiler.Syntax
 					return this.ParseStringLiteralExpression();
 				case SyntaxKind.IdentifierToken:
 				default:
-					return this.ParseNameExpression();
+					return this.ParseNameOrCallExpression();
 			}
+		}
+
+		private ExpressionSyntax ParseNameOrCallExpression()
+		{
+			if(this.Peek(0).Kind == SyntaxKind.IdentifierToken &&
+				this.Peek(1).Kind == SyntaxKind.OpenParenthesisToken)
+			{
+				return this.ParseCallExpresssion();
+			}
+			else
+			{
+				return this.ParseNameExpression();
+			}
+		}
+
+		private ExpressionSyntax ParseCallExpresssion()
+		{
+			var identifier = this.Match(SyntaxKind.IdentifierToken);
+			var openParenthesisToken = this.Match(SyntaxKind.OpenParenthesisToken);
+			var arguments = this.ParseArguments();
+			var closeParenthesisToken = this.Match(SyntaxKind.CloseParenthesisToken);
+
+			return new CallExpressionSyntax(identifier, openParenthesisToken, arguments, closeParenthesisToken);
+		}
+
+		private SeparatedSyntaxList<ExpressionSyntax> ParseArguments()
+		{
+			var nodesAndSeparators = ImmutableArray.CreateBuilder<SyntaxNode>();
+
+			while(this.Current.Kind != SyntaxKind.CloseParenthesisToken &&
+				this.Current.Kind != SyntaxKind.EndOfFileToken)
+			{
+				var expression = this.ParsePrimaryExpression();
+				nodesAndSeparators.Add(expression);
+
+				if(this.Current.Kind != SyntaxKind.CloseParenthesisToken)
+				{
+					var comma = this.Match(SyntaxKind.CommaToken);
+					nodesAndSeparators.Add(comma);
+				}
+			}
+
+			return new SeparatedSyntaxList<ExpressionSyntax>(nodesAndSeparators.ToImmutable());
 		}
 
 		private ExpressionSyntax ParseNumberLiteralExpression()

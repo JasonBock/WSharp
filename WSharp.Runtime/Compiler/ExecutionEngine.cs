@@ -18,12 +18,14 @@ namespace WSharp.Runtime
 		private readonly Random random;
 		private bool shouldStatementBeDeferred;
 		private bool shouldStatementBeKept;
+		private readonly TextReader reader;
 		private readonly TextWriter writer;
 
-		public ExecutionEngine(ImmutableArray<Line> lines, Random random, TextWriter writer)
+		public ExecutionEngine(ImmutableArray<Line> lines, Random random, TextWriter writer, TextReader reader)
 		{
 			this.random = random ?? throw new ArgumentNullException(nameof(random));
 			this.writer = writer ?? throw new ArgumentNullException(nameof(writer));
+			this.reader = reader ?? throw new ArgumentNullException(nameof(reader));
 
 			if (lines == null)
 			{
@@ -130,6 +132,8 @@ namespace WSharp.Runtime
 		public BigInteger N(BigInteger identifier) => this.lines[identifier].Count;
 
 		public void Print(string message) => this.writer.WriteLine(message);
+
+		public string Read() => this.reader.ReadLine() ?? string.Empty;
 
 		public string U(long number) => number.ToString();
 

@@ -52,5 +52,6 @@
 		ParenthesizedExpression,
 		UpdateLineCountExpression,
 		UnaryUpdateLineCountExpression,
+		CallExpression,
 	}
 }

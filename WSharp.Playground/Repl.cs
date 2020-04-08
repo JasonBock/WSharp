@@ -156,7 +156,7 @@ namespace WSharp.Playground
 
 		private static void RunEvaluator(EvaluationResult evaluation)
 		{
-			var engine = new ExecutionEngine(evaluation.Lines, new SecureRandom(), Console.Out);
+			var engine = new ExecutionEngine(evaluation.Lines, new SecureRandom(), Console.Out, Console.In);
 			Console.Out.WriteLine("ExecutionEngine ready...");
 			engine.Execute();
 			Console.Out.WriteLine("ExecutionEngine finished.");
