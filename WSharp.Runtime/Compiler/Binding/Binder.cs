@@ -1,7 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
+using WSharp.Runtime.Compiler.Symbols;
 using WSharp.Runtime.Compiler.Syntax;
 
 namespace WSharp.Runtime.Compiler.Binding
@@ -46,7 +46,7 @@ namespace WSharp.Runtime.Compiler.Binding
 
 			if(string.IsNullOrWhiteSpace(name))
 			{
-				return new BoundLiteralExpression(0);
+				return new BoundErrorExpression();
 			}
 			else
 			{
@@ -81,12 +81,18 @@ namespace WSharp.Runtime.Compiler.Binding
 		{
 			var boundLeft = this.BindExpression(syntax.Left);
 			var boundRight = this.BindExpression(syntax.Right);
+
+			if (boundLeft.Type == TypeSymbol.Error || boundRight.Type == TypeSymbol.Error)
+			{
+				return new BoundErrorExpression();
+			}
+
 			var boundOperatorKind = this.BindUpdateLineCountOperatorKind(syntax.OperatorToken.Kind, boundLeft.Type, boundRight.Type);
 
 			if (boundOperatorKind == null)
 			{
 				this.Diagnostics.ReportUndefinedLineCountOperator(syntax.OperatorToken.Span, syntax.OperatorToken.Text, boundLeft.Type, boundRight.Type);
-				return boundLeft;
+				return new BoundErrorExpression();
 			}
 
 			return new BoundUpdateLineCountExpression(boundLeft, boundOperatorKind.Value, boundRight);
@@ -95,12 +101,18 @@ namespace WSharp.Runtime.Compiler.Binding
 		private BoundExpression BindUnaryUpdateLineCountExpression(UnaryUpdateLineCountExpressionSyntax syntax)
 		{
 			var boundLineNumber = this.BindExpression(syntax.LineNumber);
+
+			if (boundLineNumber.Type == TypeSymbol.Error)
+			{
+				return new BoundErrorExpression();
+			}
+
 			return new BoundUnaryUpdateLineCountExpression(boundLineNumber);
 		}
 
-		private BoundUpdateLineCountOperatorKind? BindUpdateLineCountOperatorKind(SyntaxKind kind, Type leftType, Type rightType)
+		private BoundUpdateLineCountOperatorKind? BindUpdateLineCountOperatorKind(SyntaxKind kind, TypeSymbol leftType, TypeSymbol rightType)
 		{
-			if (leftType != typeof(BigInteger) || rightType != typeof(BigInteger))
+			if (leftType != TypeSymbol.Number || rightType != TypeSymbol.Number)
 			{
 				return null;
 			}
@@ -119,12 +131,18 @@ namespace WSharp.Runtime.Compiler.Binding
 		{
 			var boundLeft = this.BindExpression(syntax.Left);
 			var boundRight = this.BindExpression(syntax.Right);
+
+			if(boundLeft.Type == TypeSymbol.Error || boundRight.Type == TypeSymbol.Error)
+			{
+				return new BoundErrorExpression();
+			}
+
 			var boundOperator = BoundBinaryOperator.Bind(syntax.OperatorToken.Kind, boundLeft.Type, boundRight.Type);
 
 			if (boundOperator == null)
 			{
 				this.Diagnostics.ReportUndefinedBinaryOperator(syntax.OperatorToken.Span, syntax.OperatorToken.Text, boundLeft.Type, boundRight.Type);
-				return boundLeft;
+				return new BoundErrorExpression();
 			}
 
 			return new BoundBinaryExpression(boundLeft, boundOperator, boundRight);
@@ -133,12 +151,18 @@ namespace WSharp.Runtime.Compiler.Binding
 		private BoundExpression BindUnaryExpression(UnaryExpressionSyntax syntax)
 		{
 			var boundOperand = this.BindExpression(syntax.Operand);
+
+			if (boundOperand.Type == TypeSymbol.Error)
+			{
+				return new BoundErrorExpression();
+			}
+
 			var boundOperator = BoundUnaryOperator.Bind(syntax.OperatorToken.Kind, boundOperand.Type);
 
 			if (boundOperator == null)
 			{
 				this.Diagnostics.ReportUndefinedUnaryOperator(syntax.OperatorToken.Span, syntax.OperatorToken.Text, boundOperand.Type);
-				return boundOperand;
+				return new BoundErrorExpression();
 			}
 
 			return new BoundUnaryExpression(boundOperator, boundOperand);

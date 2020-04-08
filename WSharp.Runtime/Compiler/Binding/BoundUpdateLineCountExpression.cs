@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using WSharp.Runtime.Compiler.Symbols;
 
 namespace WSharp.Runtime.Compiler.Binding
 {
@@ -24,6 +25,6 @@ namespace WSharp.Runtime.Compiler.Binding
 		public BoundExpression Left { get; }
 		public BoundUpdateLineCountOperatorKind OperatorKind { get; }
 		public BoundExpression Right { get; }
-		public override Type Type => this.Left.Type;
+		public override TypeSymbol Type => this.Left.Type;
 	}
 }

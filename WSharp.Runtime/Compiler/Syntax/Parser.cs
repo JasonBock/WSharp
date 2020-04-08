@@ -89,18 +89,6 @@ namespace WSharp.Runtime.Compiler.Syntax
 
 				if (!semiColonFound)
 				{
-					// TODO: It is possible to have a line (see the Fibonacci program) like this:
-					// 5 4,-3,7;
-					//
-					// Which is actually shorthand for this:
-					// 5 4#1,3#-1,7#1;
-					//
-					// If a number isn't specified, then that line number is either increase or decreased based on the sign of the number.
-					// So, if a Peek(1) for UpdateLineCountToken isn't found, but a comma, then we should short-circuit
-					// and immediately create a UpdateLineCountExpressionSyntax. This may be odd because we don't have the "#" in this case,
-					// so it may be more correct to have a "UnaryLineCountExpressionSyntax" node that just takes the line number.
-					// From that, the binder can infer what to do from that point....maybe.
-
 					// TODO: May want to move this into its own ParseLineStatement() 
 					// as I'll eventually have to handle method invocations.
 					var lineNumber = this.ParseBinaryExpression();
@@ -163,6 +151,8 @@ namespace WSharp.Runtime.Compiler.Syntax
 					return this.ParseBooleanLiteralExpression();
 				case SyntaxKind.NumberToken:
 					return this.ParseNumberLiteralExpression();
+				case SyntaxKind.StringToken:
+					return this.ParseStringLiteralExpression();
 				case SyntaxKind.IdentifierToken:
 				default:
 					return this.ParseNameExpression();
@@ -191,11 +181,11 @@ namespace WSharp.Runtime.Compiler.Syntax
 			return new LiteralExpressionSyntax(keywordToken, isTrue);
 		}
 
-		private ExpressionSyntax ParseNameExpression()
-		{
-			var identifierToken = this.Match(SyntaxKind.IdentifierToken);
-			return new NameExpressionSyntax(identifierToken);
-		}
+		private ExpressionSyntax ParseStringLiteralExpression() =>
+			new LiteralExpressionSyntax(this.Match(SyntaxKind.StringToken));
+
+		private ExpressionSyntax ParseNameExpression() =>
+			new NameExpressionSyntax(this.Match(SyntaxKind.IdentifierToken));
 
 		private ExpressionSyntax ParseBinaryExpression(int parentPrecendence = 0)
 		{
@@ -243,7 +233,6 @@ namespace WSharp.Runtime.Compiler.Syntax
 		}
 
 		private SyntaxToken Current => this.Peek(0);
-
 		public DiagnosticBag Diagnostics { get; } = new DiagnosticBag();
 		public SourceText Text { get; }
 	}

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using WSharp.Runtime.Compiler.Symbols;
 
 namespace WSharp.Runtime.Compiler.Binding
 {
@@ -21,6 +22,6 @@ namespace WSharp.Runtime.Compiler.Binding
 
 		public override BoundNodeKind Kind => BoundNodeKind.UnaryUpdateLineCountExpression;
 		public BoundExpression LineNumber { get; }
-		public override Type Type => this.LineNumber.Type;
+		public override TypeSymbol Type => this.LineNumber.Type;
 	}
 }

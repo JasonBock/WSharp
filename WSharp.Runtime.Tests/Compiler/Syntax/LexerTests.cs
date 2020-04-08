@@ -3,11 +3,32 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using WSharp.Runtime.Compiler.Syntax;
+using WSharp.Runtime.Compiler.Text;
 
 namespace WSharp.Runtime.Tests.Compiler.Syntax
 {
 	public static class LexerTests
 	{
+		[Test]
+		public static void LexerLexesUnterminatedString()
+		{
+			var text = "\"text";
+			var (tokensResult, diagnostics) = SyntaxTree.ParseTokens(text);
+			var tokens = tokensResult.ToArray();
+
+			Assert.Multiple(() =>
+			{
+				Assert.That(tokens.Length, Is.EqualTo(1), $"{nameof(tokens)}.{nameof(tokens.Length)}");
+				var token = tokens[0];
+				Assert.That(token.Kind, Is.EqualTo(SyntaxKind.StringToken), nameof(token.Kind));
+				Assert.That(token.Text, Is.EqualTo(text), nameof(token.Text));
+				Assert.That(diagnostics.Length, Is.EqualTo(1), $"{nameof(diagnostics)}.{nameof(diagnostics.Length)}");
+				var diagnostic = diagnostics[0];
+				Assert.That(diagnostic.Span, Is.EqualTo(new TextSpan(0, 1)), nameof(diagnostic.Span));
+				Assert.That(diagnostic.Message, Is.EqualTo("Unterminated string literal."), nameof(diagnostic.Message));
+			});
+		}
+
 		[Test]
 		public static void LexerLexesAllTokens()
 		{
@@ -31,7 +52,8 @@ namespace WSharp.Runtime.Tests.Compiler.Syntax
 		[TestCaseSource(nameof(LexerTests.GetTokensData))]
 		public static void LexerLexesToken((SyntaxKind kind, string text) value)
 		{
-			var tokens = SyntaxTree.ParseTokens(value.text).ToArray();
+			var (tokensResult, _) = SyntaxTree.ParseTokens(value.text);
+			var tokens = tokensResult.ToArray();
 
 			Assert.Multiple(() =>
 			{
@@ -46,7 +68,8 @@ namespace WSharp.Runtime.Tests.Compiler.Syntax
 		public static void LexerLexesTokenPairs((SyntaxKind t1Kind, string t1Text, SyntaxKind t2Kind, string t2Text) value)
 		{
 			var text = $"{value.t1Text}{value.t2Text}";
-			var tokens = SyntaxTree.ParseTokens(text).ToArray();
+			var (tokensResult, _) = SyntaxTree.ParseTokens(text);
+			var tokens = tokensResult.ToArray();
 
 			Assert.Multiple(() =>
 			{
@@ -64,7 +87,8 @@ namespace WSharp.Runtime.Tests.Compiler.Syntax
 		public static void LexerLexesTokenPairsWithSeparators((SyntaxKind t1Kind, string t1Text, SyntaxKind separatorKind, string separatorText, SyntaxKind t2Kind, string t2Text) value)
 		{
 			var text = $"{value.t1Text}{value.separatorText}{value.t2Text}";
-			var tokens = SyntaxTree.ParseTokens(text).ToArray();
+			var (tokensResult, _) = SyntaxTree.ParseTokens(text);
+			var tokens = tokensResult.ToArray();
 
 			Assert.Multiple(() =>
 			{
@@ -99,6 +123,7 @@ namespace WSharp.Runtime.Tests.Compiler.Syntax
 
 			return (t1Kind == SyntaxKind.IdentifierToken && t2Kind == SyntaxKind.IdentifierToken) ||
 				(t1Kind == SyntaxKind.NumberToken && t2Kind == SyntaxKind.NumberToken) ||
+				(t1Kind == SyntaxKind.StringToken && t2Kind == SyntaxKind.StringToken) ||
 				(t1Kind == SyntaxKind.BangToken && t2Text == "=") ||
 				(t1Kind == SyntaxKind.BangToken && t2Kind == SyntaxKind.EqualsEqualsToken) ||
 				(t1Kind == SyntaxKind.LessToken && t2Text == "=") ||
@@ -152,6 +177,8 @@ namespace WSharp.Runtime.Tests.Compiler.Syntax
 				(SyntaxKind.IdentifierToken, "abc"),
 				(SyntaxKind.NumberToken, "1"),
 				(SyntaxKind.NumberToken, "123"),
+				(SyntaxKind.StringToken, "\"Test\""),
+				(SyntaxKind.StringToken, "\"Te\"\"st\""),
 			};
 
 			return fixedTokens.Concat(dynamicTokens);

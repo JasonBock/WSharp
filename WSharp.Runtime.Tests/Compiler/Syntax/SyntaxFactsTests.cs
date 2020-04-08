@@ -15,7 +15,9 @@ namespace WSharp.Runtime.Tests.Compiler.Syntax
 
 			if(!string.IsNullOrWhiteSpace(text))
 			{
-				var tokens = SyntaxTree.ParseTokens(text).ToArray();
+				var (tokensResult, _) = SyntaxTree.ParseTokens(text);
+				var tokens = tokensResult.ToArray();
+
 				Assert.Multiple(() =>
 				{
 					Assert.That(tokens.Length, Is.EqualTo(1), nameof(tokens.Length));

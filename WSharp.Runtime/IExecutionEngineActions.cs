@@ -2,6 +2,10 @@
 
 namespace WSharp.Runtime
 {
+	// TODO: Need to have a Read() method here. From the docs:
+	// A basic read statement reads from STDIN. read() reads a variable amount of data - if the data form a number, 
+	// it reads to the end of the number and returns that number. If the first character it reads is non-numeric, 
+	// it returns the Unicode numeric value of that character.
 	public interface IExecutionEngineActions
 	{
 		bool Again(bool shouldKeep);

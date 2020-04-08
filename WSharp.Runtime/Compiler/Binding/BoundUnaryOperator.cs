@@ -1,5 +1,4 @@
-﻿using System;
-using System.Numerics;
+﻿using WSharp.Runtime.Compiler.Symbols;
 using WSharp.Runtime.Compiler.Syntax;
 
 namespace WSharp.Runtime.Compiler.Binding
@@ -8,19 +7,19 @@ namespace WSharp.Runtime.Compiler.Binding
 	{
 		private static readonly BoundUnaryOperator[] operators =
 		{
-			new BoundUnaryOperator(SyntaxKind.BangToken, BoundUnaryOperatorKind.LogicalNegation, typeof(bool)),
-			new BoundUnaryOperator(SyntaxKind.PlusToken, BoundUnaryOperatorKind.Identity, typeof(BigInteger)),
-			new BoundUnaryOperator(SyntaxKind.MinusToken, BoundUnaryOperatorKind.Negation, typeof(BigInteger)),
-			new BoundUnaryOperator(SyntaxKind.TildeToken, BoundUnaryOperatorKind.OnesComplement, typeof(BigInteger)),
+			new BoundUnaryOperator(SyntaxKind.BangToken, BoundUnaryOperatorKind.LogicalNegation, TypeSymbol.Boolean),
+			new BoundUnaryOperator(SyntaxKind.PlusToken, BoundUnaryOperatorKind.Identity, TypeSymbol.Number),
+			new BoundUnaryOperator(SyntaxKind.MinusToken, BoundUnaryOperatorKind.Negation, TypeSymbol.Number),
+			new BoundUnaryOperator(SyntaxKind.TildeToken, BoundUnaryOperatorKind.OnesComplement, TypeSymbol.Number),
 		};
 
-		private BoundUnaryOperator(SyntaxKind syntaxKind, BoundUnaryOperatorKind operatorKind, Type operandType)
+		private BoundUnaryOperator(SyntaxKind syntaxKind, BoundUnaryOperatorKind operatorKind, TypeSymbol operandType)
 			: this(syntaxKind, operatorKind, operandType, operandType) { }
 
-		private BoundUnaryOperator(SyntaxKind syntaxKind, BoundUnaryOperatorKind operatorKind, Type operandType, Type resultType) =>
+		private BoundUnaryOperator(SyntaxKind syntaxKind, BoundUnaryOperatorKind operatorKind, TypeSymbol operandType, TypeSymbol resultType) =>
 			(this.SyntaxKind, this.OperatorKind, this.OperandType, this.ResultType) = (syntaxKind, operatorKind, operandType, resultType);
 
-		public static BoundUnaryOperator? Bind(SyntaxKind syntaxKind, Type operandType)
+		public static BoundUnaryOperator? Bind(SyntaxKind syntaxKind, TypeSymbol operandType)
 		{
 			foreach(var @operator in BoundUnaryOperator.operators)
 			{
@@ -34,8 +33,8 @@ namespace WSharp.Runtime.Compiler.Binding
 		}
 
 		public BoundUnaryOperatorKind OperatorKind { get; }
-		public Type OperandType { get; }
-		public Type ResultType { get; }
+		public TypeSymbol OperandType { get; }
+		public TypeSymbol ResultType { get; }
 		public SyntaxKind SyntaxKind { get; }
 	}
 }

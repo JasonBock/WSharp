@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Numerics;
+using System.Text;
+using WSharp.Runtime.Compiler.Symbols;
 using WSharp.Runtime.Compiler.Text;
 
 namespace WSharp.Runtime.Compiler.Syntax
@@ -137,6 +139,9 @@ namespace WSharp.Runtime.Compiler.Syntax
 						this.kind = SyntaxKind.GreaterToken;
 					}
 					break;
+				case '"':
+					this.ReadString();
+					break;
 				case '0':
 				case '1':
 				case '2':
@@ -184,6 +189,46 @@ namespace WSharp.Runtime.Compiler.Syntax
 			return new SyntaxToken(this.kind, this.start, text, this.value);
 		}
 
+		private void ReadString()
+		{
+			this.position++;
+			var builder = new StringBuilder();
+			var done = false;
+
+			while(!done)
+			{
+				switch(this.Current)
+				{
+					case '\0':
+					case '\r':
+					case '\n':
+						var span = new TextSpan(this.start, 1);
+						this.Diagnostics.ReportUnterminatedString(span);
+						done = true;
+						break;
+					case '"':
+						if(this.Lookahead == '"')
+						{
+							builder.Append(this.Current);
+							this.position += 2;
+						}
+						else
+						{
+							this.position++;
+							done = true;
+						}
+						break;
+					default:
+						builder.Append(this.Current);
+						this.position++;
+						break;
+				}
+			}
+
+			this.kind = SyntaxKind.StringToken;
+			this.value = builder.ToString();
+		}
+
 		private void ReadIdentifierOrKeyword()
 		{
 			while (char.IsLetter(this.Current))
@@ -218,7 +263,7 @@ namespace WSharp.Runtime.Compiler.Syntax
 
 			if (!BigInteger.TryParse(text, out var value))
 			{
-				this.Diagnostics.ReportInvalidNumber(new TextSpan(this.start, length), text, typeof(BigInteger));
+				this.Diagnostics.ReportInvalidNumber(new TextSpan(this.start, length), text, TypeSymbol.Number);
 			}
 
 			this.kind = SyntaxKind.NumberToken;

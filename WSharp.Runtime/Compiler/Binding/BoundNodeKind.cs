@@ -13,5 +13,6 @@
 		BinaryExpression,
 		UpdateLineCountExpression,
 		UnaryUpdateLineCountExpression,
+		ErrorExpression,
 	}
 }

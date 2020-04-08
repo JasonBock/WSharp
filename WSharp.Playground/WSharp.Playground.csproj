@@ -4,6 +4,7 @@
     <Authors>Jason Bock</Authors>
     <Copyright>Copyright © 2020</Copyright>
     <Description>A console app to work on the compiler implementation for WSharp.Runtime.</Description>
+    <Features>strict</Features>
     <LangVersion>latest</LangVersion>
     <Nullable>enable</Nullable>
     <OutputType>Exe</OutputType>

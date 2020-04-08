@@ -1,5 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using WSharp.Runtime.Compiler.Symbols;
 
 namespace WSharp.Runtime.Compiler.Binding
 {
@@ -22,6 +22,6 @@ namespace WSharp.Runtime.Compiler.Binding
 		public override BoundNodeKind Kind => BoundNodeKind.UnaryExpression;
 		public BoundExpression Operand { get; }
 		public BoundUnaryOperator Operator { get; }
-		public override Type Type => this.Operator.ResultType;
+		public override TypeSymbol Type => this.Operator.ResultType;
 	}
 }

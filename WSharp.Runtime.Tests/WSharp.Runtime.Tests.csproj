@@ -2,6 +2,7 @@
   <PropertyGroup>
     <AssemblyName>WSharp.Runtime.Tests</AssemblyName>
     <Copyright>Copyright © 20120</Copyright>
+    <Features>strict</Features>
     <LangVersion>latest</LangVersion>
     <Nullable>enable</Nullable>
     <RootNamespace>WSharp.Runtime.Tests</RootNamespace>

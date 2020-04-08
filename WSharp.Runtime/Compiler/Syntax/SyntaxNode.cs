@@ -12,6 +12,14 @@ namespace WSharp.Runtime.Compiler.Syntax
 		public void WriteTo(TextWriter writer) => 
 			SyntaxNode.Print(writer, this);
 
+		public SyntaxToken GetLastToken()
+		{
+			if (this is SyntaxToken token)
+				return token;
+
+			return this.GetChildren().Last().GetLastToken();
+		}
+
 		private static void Print(TextWriter writer, SyntaxNode node, string indent = "", bool isLast = true)
 		{
 			var marker = isLast ? TreePrint.Branch : TreePrint.Center;
@@ -44,6 +52,8 @@ namespace WSharp.Runtime.Compiler.Syntax
 			return writer.ToString();
 		}
 
+		public abstract SyntaxKind Kind { get; }
+
 		public virtual TextSpan Span
 		{
 			get
@@ -53,7 +63,5 @@ namespace WSharp.Runtime.Compiler.Syntax
 				return TextSpan.FromBounds(first.Start, last.End);
 			}
 		}
-
-		public abstract SyntaxKind Kind { get; }
 	}
 }

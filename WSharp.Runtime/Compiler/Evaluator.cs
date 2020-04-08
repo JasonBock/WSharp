@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Numerics;
 using WSharp.Runtime.Compiler.Binding;
+using WSharp.Runtime.Compiler.Symbols;
 
 namespace WSharp.Runtime.Compiler
 {
@@ -103,9 +104,9 @@ namespace WSharp.Runtime.Compiler
 				BoundBinaryOperatorKind.Subtraction => (BigInteger)left - (BigInteger)right,
 				BoundBinaryOperatorKind.Multiplication => (BigInteger)left * (BigInteger)right,
 				BoundBinaryOperatorKind.Division => (BigInteger)left / (BigInteger)right,
-				BoundBinaryOperatorKind.BitwiseAnd => binary.Type == typeof(BigInteger) ? (object)((BigInteger)left & (BigInteger)right) : (bool)left & (bool)right,
-				BoundBinaryOperatorKind.BitwiseOr => binary.Type == typeof(BigInteger) ? (object)((BigInteger)left | (BigInteger)right) : (bool)left | (bool)right,
-				BoundBinaryOperatorKind.BitwiseXor => binary.Type == typeof(BigInteger) ? (object)((BigInteger)left ^ (BigInteger)right) : (bool)left ^ (bool)right,
+				BoundBinaryOperatorKind.BitwiseAnd => binary.Type == TypeSymbol.Number ? (object)((BigInteger)left & (BigInteger)right) : (bool)left & (bool)right,
+				BoundBinaryOperatorKind.BitwiseOr => binary.Type == TypeSymbol.Number ? (object)((BigInteger)left | (BigInteger)right) : (bool)left | (bool)right,
+				BoundBinaryOperatorKind.BitwiseXor => binary.Type == TypeSymbol.Number ? (object)((BigInteger)left ^ (BigInteger)right) : (bool)left ^ (bool)right,
 				BoundBinaryOperatorKind.LogicalAnd => (bool)left && (bool)right,
 				BoundBinaryOperatorKind.LogicalOr => (bool)left || (bool)right,
 				BoundBinaryOperatorKind.Equals => object.Equals(left, right),

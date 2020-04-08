@@ -1,13 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
+using WSharp.Runtime.Compiler.Symbols;
 
 namespace WSharp.Runtime.Compiler.Binding
 {
 	internal sealed class BoundLiteralExpression
 		: BoundExpression
 	{
-		public BoundLiteralExpression(object value) => this.Value = value;
+		public BoundLiteralExpression(object value)
+		{
+			this.Value = value;
+			this.Type = value is bool ? TypeSymbol.Boolean :
+				value is BigInteger ? TypeSymbol.Number :
+				value is string ? TypeSymbol.String : throw new BindingException($"Unexpected literal '{value}' of type {value.GetType()}.");
+ 		}
 
 		public override IEnumerable<BoundNode> GetChildren() => 
 			Enumerable.Empty<BoundNode>();
@@ -19,7 +27,7 @@ namespace WSharp.Runtime.Compiler.Binding
 		}
 
 		public override BoundNodeKind Kind => BoundNodeKind.LiteralExpression;
-		public override Type Type => this.Value.GetType();
+		public override TypeSymbol Type { get; }
 		public object Value { get; }
 	}
 }

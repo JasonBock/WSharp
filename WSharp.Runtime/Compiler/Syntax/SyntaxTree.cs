@@ -22,26 +22,31 @@ namespace WSharp.Runtime.Compiler.Syntax
 		public static SyntaxTree Parse(SourceText text) =>
 			new SyntaxTree(text);
 
-		public static IEnumerable<SyntaxToken> ParseTokens(string text) => 
+		public static (ImmutableArray<SyntaxToken> tokens, ImmutableArray<Diagnostic> diagnostics) ParseTokens(string text) => 
 			SyntaxTree.ParseTokens(SourceText.From(text));
 
-		public static IEnumerable<SyntaxToken> ParseTokens(SourceText text)
+		public static (ImmutableArray<SyntaxToken> tokens, ImmutableArray<Diagnostic> diagnostics) ParseTokens(SourceText text)
 		{
-			var lexer = new Lexer(text);
-
-			while (true)
+			static IEnumerable<SyntaxToken> LexTokens(Lexer lexer)
 			{
-				var token = lexer.Lex();
+				while (true)
+				{
+					var token = lexer.Lex();
 
-				if (token.Kind != SyntaxKind.EndOfFileToken)
-				{
-					yield return token;
-				}
-				else
-				{
-					break;
+					if (token.Kind != SyntaxKind.EndOfFileToken)
+					{
+						yield return token;
+					}
+					else
+					{
+						break;
+					}
 				}
 			}
+
+			var lexer = new Lexer(text);
+			var tokens = LexTokens(lexer).ToImmutableArray();
+			return (tokens, lexer.Diagnostics.ToImmutableArray());
 		}
 
 		public ImmutableArray<Diagnostic> Diagnostics { get; }

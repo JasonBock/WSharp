@@ -1,6 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
+using WSharp.Runtime.Compiler.Symbols;
 
 namespace WSharp.Runtime.Compiler.Binding
 {
@@ -25,6 +24,6 @@ namespace WSharp.Runtime.Compiler.Binding
 		public BoundExpression Left { get; }
 		public BoundBinaryOperator Operator { get; }
 		public BoundExpression Right { get; }
-		public override Type Type => this.Operator.ResultType;
+		public override TypeSymbol Type => this.Operator.ResultType;
 	}
 }
