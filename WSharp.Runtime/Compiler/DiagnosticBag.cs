@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using WSharp.Runtime.Compiler.Symbols;
 using WSharp.Runtime.Compiler.Syntax;
@@ -56,5 +57,8 @@ namespace WSharp.Runtime.Compiler
 
 		internal void ReportWrongArgumentType(TextSpan span, string name, TypeSymbol expectedType, TypeSymbol actualType) =>
 			this.Report(span, $"Parameter '{name}' requires a value of type {expectedType} but was given a value of type {actualType}.");
+
+		internal void ReportCannotConvert(TextSpan span, TypeSymbol fromType, TypeSymbol toType) =>
+			this.Report(span, $"Cannot convert type '{fromType}' to '{toType}'.");
 	}
 }

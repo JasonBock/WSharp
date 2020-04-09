@@ -57,6 +57,11 @@ namespace WSharp.Runtime.Compiler.Binding
 
 		private BoundExpression BindCallExpression(CallExpressionSyntax syntax)
 		{
+			if(syntax.Arguments.Count == 1 && TypeSymbol.Lookup(syntax.Identifier.Text) is TypeSymbol type)
+			{
+				return this.BindConversion(type, syntax.Arguments[0]);
+			}
+
 			var functions = BuiltinFunctions.GetAll();
 			var function = functions.SingleOrDefault(_ => _.Name == syntax.Identifier.Text);
 
@@ -95,6 +100,20 @@ namespace WSharp.Runtime.Compiler.Binding
 			}
 
 			return new BoundCallExpression(function, boundArguments.ToImmutable());
+		}
+
+		private BoundExpression BindConversion(TypeSymbol type, ExpressionSyntax syntax)
+		{
+			var expression = this.BindExpression(syntax);
+			var conversion = Conversion.Classify(expression.Type, type);
+
+			if(!conversion.Exists)
+			{
+				this.Diagnostics.ReportCannotConvert(syntax.Span, expression.Type, type);
+				return new BoundErrorExpression();
+			}
+
+			return new BoundConversionExpression(type, expression);
 		}
 
 		private BoundExpression BindNameExpression(NameExpressionSyntax syntax)
@@ -169,7 +188,7 @@ namespace WSharp.Runtime.Compiler.Binding
 
 		private BoundUpdateLineCountOperatorKind? BindUpdateLineCountOperatorKind(SyntaxKind kind, TypeSymbol leftType, TypeSymbol rightType)
 		{
-			if (leftType != TypeSymbol.Number || rightType != TypeSymbol.Number)
+			if (leftType != TypeSymbol.Integer || rightType != TypeSymbol.Integer)
 			{
 				return null;
 			}

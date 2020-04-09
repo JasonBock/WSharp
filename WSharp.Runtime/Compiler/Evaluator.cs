@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Numerics;
 using WSharp.Runtime.Compiler.Binding;
@@ -45,8 +46,37 @@ namespace WSharp.Runtime.Compiler
 				BoundLiteralExpression literal => this.EvaluateLiteralExpression(literal),
 				BoundUnaryExpression unary => this.EvaluateUnaryExpression(actions, unary),
 				BoundBinaryExpression binary => this.EvaluateBinaryExpression(actions, binary),
+				BoundConversionExpression conversion => this.EvaluateConversionExpression(actions, conversion),
 				_ => throw new EvaluationException($"Unexpected operator {node.Kind}")
 			};
+
+		private object EvaluateConversionExpression(IExecutionEngineActions? actions, BoundConversionExpression conversion)
+		{
+			var value = this.EvaluateExpression(conversion.Expression, actions);
+
+			// TODO: Can this be converted to a switch expression?
+			if(conversion.Type == TypeSymbol.Boolean)
+			{
+				return Convert.ToBoolean(value);
+			}
+			else if (conversion.Type == TypeSymbol.Integer)
+			{
+				return value switch
+				{
+					bool boolValue => boolValue ? BigInteger.One : BigInteger.Zero,
+					string stringValue => BigInteger.Parse(stringValue),
+					_ => throw new EvaluationException($"Unexpected type {conversion.Type}")
+				};
+			}
+			else if (conversion.Type == TypeSymbol.String)
+			{
+				return Convert.ToString(value)!;
+			}
+			else
+			{
+				throw new EvaluationException($"Unexpected type {conversion.Type}");
+			}
+		}
 
 		private object EvaluateCallExpression(IExecutionEngineActions? actions, BoundCallExpression call)
 		{
@@ -121,13 +151,13 @@ namespace WSharp.Runtime.Compiler
 
 			return binary.Operator.OperatorKind switch
 			{
-				BoundBinaryOperatorKind.Addition => binary.Type == TypeSymbol.Number ? (object)((BigInteger)left + (BigInteger)right) : (string)left + (string)right,
+				BoundBinaryOperatorKind.Addition => binary.Type == TypeSymbol.Integer ? (object)((BigInteger)left + (BigInteger)right) : (string)left + (string)right,
 				BoundBinaryOperatorKind.Subtraction => (BigInteger)left - (BigInteger)right,
 				BoundBinaryOperatorKind.Multiplication => (BigInteger)left * (BigInteger)right,
 				BoundBinaryOperatorKind.Division => (BigInteger)left / (BigInteger)right,
-				BoundBinaryOperatorKind.BitwiseAnd => binary.Type == TypeSymbol.Number ? (object)((BigInteger)left & (BigInteger)right) : (bool)left & (bool)right,
-				BoundBinaryOperatorKind.BitwiseOr => binary.Type == TypeSymbol.Number ? (object)((BigInteger)left | (BigInteger)right) : (bool)left | (bool)right,
-				BoundBinaryOperatorKind.BitwiseXor => binary.Type == TypeSymbol.Number ? (object)((BigInteger)left ^ (BigInteger)right) : (bool)left ^ (bool)right,
+				BoundBinaryOperatorKind.BitwiseAnd => binary.Type == TypeSymbol.Integer ? (object)((BigInteger)left & (BigInteger)right) : (bool)left & (bool)right,
+				BoundBinaryOperatorKind.BitwiseOr => binary.Type == TypeSymbol.Integer ? (object)((BigInteger)left | (BigInteger)right) : (bool)left | (bool)right,
+				BoundBinaryOperatorKind.BitwiseXor => binary.Type == TypeSymbol.Integer ? (object)((BigInteger)left ^ (BigInteger)right) : (bool)left ^ (bool)right,
 				BoundBinaryOperatorKind.LogicalAnd => (bool)left && (bool)right,
 				BoundBinaryOperatorKind.LogicalOr => (bool)left || (bool)right,
 				BoundBinaryOperatorKind.Equals => object.Equals(left, right),

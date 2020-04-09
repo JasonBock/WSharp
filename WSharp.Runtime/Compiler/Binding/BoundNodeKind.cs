@@ -15,5 +15,6 @@
 		UnaryUpdateLineCountExpression,
 		CallExpression,
 		ErrorExpression,
+		ConversionExpression,
 	}
 }

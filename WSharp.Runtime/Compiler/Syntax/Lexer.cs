@@ -263,7 +263,7 @@ namespace WSharp.Runtime.Compiler.Syntax
 
 			if (!BigInteger.TryParse(text, out var value))
 			{
-				this.Diagnostics.ReportInvalidNumber(new TextSpan(this.start, length), text, TypeSymbol.Number);
+				this.Diagnostics.ReportInvalidNumber(new TextSpan(this.start, length), text, TypeSymbol.Integer);
 			}
 
 			this.kind = SyntaxKind.NumberToken;

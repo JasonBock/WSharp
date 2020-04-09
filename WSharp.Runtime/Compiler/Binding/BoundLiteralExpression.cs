@@ -13,7 +13,7 @@ namespace WSharp.Runtime.Compiler.Binding
 		{
 			this.Value = value;
 			this.Type = value is bool ? TypeSymbol.Boolean :
-				value is BigInteger ? TypeSymbol.Number :
+				value is BigInteger ? TypeSymbol.Integer :
 				value is string ? TypeSymbol.String : throw new BindingException($"Unexpected literal '{value}' of type {value.GetType()}.");
  		}
 
