@@ -15,13 +15,13 @@ namespace WSharp.Runtime
 		: IExecutionEngineActions
 	{
 		private readonly Dictionary<BigInteger, Line> lines;
-		private readonly Random random;
 		private bool shouldStatementBeDeferred;
 		private bool shouldStatementBeKept;
+		private SecureRandom random = new SecureRandom();
 		private readonly TextReader reader;
 		private readonly TextWriter writer;
 
-		public ExecutionEngine(ImmutableArray<Line> lines, Random random, TextWriter writer, TextReader reader)
+		public ExecutionEngine(ImmutableArray<Line> lines, SecureRandom random, TextWriter writer, TextReader reader)
 		{
 			this.random = random ?? throw new ArgumentNullException(nameof(random));
 			this.writer = writer ?? throw new ArgumentNullException(nameof(writer));
@@ -132,6 +132,8 @@ namespace WSharp.Runtime
 		public BigInteger N(BigInteger identifier) => this.lines[identifier].Count;
 
 		public void Print(string message) => this.writer.WriteLine(message);
+
+		public BigInteger Random(BigInteger maximum) => this.random.GetBigInteger((uint)maximum);
 
 		public string Read() => this.reader.ReadLine() ?? string.Empty;
 

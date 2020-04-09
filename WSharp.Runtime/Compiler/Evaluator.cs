@@ -59,6 +59,10 @@ namespace WSharp.Runtime.Compiler
 				actions!.Print((string)this.EvaluateExpression(call.Arguments[0]));
 				return new object();
 			}
+			else if (call.Function == BuiltinFunctions.Random)
+			{
+				return actions!.Random((BigInteger)this.EvaluateExpression(call.Arguments[0]));
+			}
 			else
 			{
 				throw new EvaluationException($"Unexpected function {call.Function.Name}");

@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
-using WSharp.Runtime.Compiler.Binding;
 using WSharp.Runtime.Compiler.Symbols;
 using WSharp.Runtime.Compiler.Syntax;
 using WSharp.Runtime.Compiler.Text;
@@ -33,7 +31,10 @@ namespace WSharp.Runtime.Compiler
 			this.Report(new TextSpan(position, 1), $"Bad character input: '{character}'.");
 
 		public void ReportUnexpectedToken(TextSpan span, SyntaxKind actualKind, SyntaxKind expectedKind) => 
-			this.Report(span, $"Unexpected token <{actualKind}>, expected <{expectedKind}>."); 
+			this.Report(span, $"Unexpected token <{actualKind}>, expected <{expectedKind}>.");
+
+		public void ReportExpressionMustHaveValue(TextSpan span) =>
+			this.Report(span, "Expression must have a value.");
 
 		public void ReportMissingSemicolon(TextSpan span) => 
 			this.Report(span, "; expected.");

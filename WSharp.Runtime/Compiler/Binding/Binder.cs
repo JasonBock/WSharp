@@ -25,11 +25,23 @@ namespace WSharp.Runtime.Compiler.Binding
 
 		private BoundStatement BindExpressionStatement(ExpressionStatementSyntax syntax)
 		{
-			var expression = this.BindExpression(syntax.Expression);
+			var expression = this.BindExpression(syntax.Expression, true);
 			return new BoundExpressionStatement(expression);
 		}
 
-		private BoundExpression BindExpression(ExpressionSyntax syntax) =>
+		private BoundExpression BindExpression(ExpressionSyntax syntax, bool canBeVoid = false)
+		{
+			var result = this.BindExpressionInternal(syntax);
+
+			if (!canBeVoid && result.Type == TypeSymbol.Void)
+			{
+				this.Diagnostics.ReportExpressionMustHaveValue(syntax.Span);
+				return new BoundErrorExpression();
+			}
+
+			return result;
+		}
+		private BoundExpression BindExpressionInternal(ExpressionSyntax syntax) =>
 			syntax.Kind switch
 			{
 				SyntaxKind.ParenthesizedExpression => this.BindParenthesizedExpression((ParenthesizedExpressionSyntax)syntax),
