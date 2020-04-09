@@ -90,22 +90,27 @@ namespace WSharp.Runtime.Compiler.Syntax
 
 				if (!semiColonFound)
 				{
-					// TODO: May want to move this into its own ParseLineStatement() 
-					// as I'll eventually have to handle method invocations.
-					var lineNumber = this.ParseBinaryExpression();
-
-					var nextToken = this.Peek(0);
-
-					if(nextToken.Kind != SyntaxKind.UpdateLineCountToken)
+					if(this.Peek(0).Kind == SyntaxKind.IdentifierToken)
 					{
-						lineStatements.Add(new ExpressionStatementSyntax(new UnaryUpdateLineCountExpressionSyntax(lineNumber)));
+						lineStatements.Add(new ExpressionStatementSyntax(this.ParseCallExpresssion()));
 					}
 					else
 					{
-						var operatorToken = this.Match(SyntaxKind.UpdateLineCountToken);
-						var updateLineCountToken = this.ParseBinaryExpression();
-						lineStatements.Add(new ExpressionStatementSyntax(new UpdateLineCountExpressionSyntax(
-							lineNumber, operatorToken, updateLineCountToken)));
+						var lineNumber = this.ParseBinaryExpression();
+
+						var nextToken = this.Peek(0);
+
+						if (nextToken.Kind != SyntaxKind.UpdateLineCountToken)
+						{
+							lineStatements.Add(new ExpressionStatementSyntax(new UnaryUpdateLineCountExpressionSyntax(lineNumber)));
+						}
+						else
+						{
+							var operatorToken = this.Match(SyntaxKind.UpdateLineCountToken);
+							var updateLineCountToken = this.ParseBinaryExpression();
+							lineStatements.Add(new ExpressionStatementSyntax(new UpdateLineCountExpressionSyntax(
+								lineNumber, operatorToken, updateLineCountToken)));
+						}
 					}
 				}
 

@@ -10,7 +10,7 @@ using WSharp.Runtime.Compiler.Syntax;
 
 namespace WSharp.Playground
 {
-	internal class Repl
+	internal sealed class Repl
 	{
 		private readonly List<string> lines = new List<string>();
 		private bool showProgram = true;
@@ -154,12 +154,7 @@ namespace WSharp.Playground
 			Console.Out.WriteLine();
 		}
 
-		private static void RunEvaluator(EvaluationResult evaluation)
-		{
-			var engine = new ExecutionEngine(evaluation.Lines, new SecureRandom(), Console.Out, Console.In);
-			Console.Out.WriteLine("ExecutionEngine ready...");
-			engine.Execute();
-			Console.Out.WriteLine("ExecutionEngine finished.");
-		}
+		private static void RunEvaluator(EvaluationResult evaluation) => 
+			new ExecutionEngine(evaluation.Lines, new SecureRandom(), Console.Out, Console.In).Execute();
 	}
 }

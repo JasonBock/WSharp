@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Numerics;
 using WSharp.Runtime.Compiler.Binding;
@@ -24,10 +23,10 @@ namespace WSharp.Runtime.Compiler
 			switch (node)
 			{
 				case BoundLineStatements lineStatements:
-					this.EvaluateLineStatements(actions, lineStatements);
+					this.EvaluateLineStatements(lineStatements);
 					break;
 				case BoundLineStatement line:
-					this.EvaluateLineStatement(actions, line);
+					this.EvaluateLineStatement(line);
 					break;
 				case BoundExpressionStatement expression:
 					this.lastValue = this.EvaluateExpression(expression.Expression, actions);
@@ -40,6 +39,7 @@ namespace WSharp.Runtime.Compiler
 		private object EvaluateExpression(BoundExpression node, IExecutionEngineActions? actions = null) =>
 			node switch
 			{
+				BoundCallExpression call => this.EvaluateCallExpression(actions, call),
 				BoundUnaryUpdateLineCountExpression unaryLine => this.EvaluateUnaryUpdateLineCountExpression(actions, unaryLine),
 				BoundUpdateLineCountExpression line => this.EvaluateUpdateLineCountExpression(actions, line),
 				BoundLiteralExpression literal => this.EvaluateLiteralExpression(literal),
@@ -48,20 +48,37 @@ namespace WSharp.Runtime.Compiler
 				_ => throw new EvaluationException($"Unexpected operator {node.Kind}")
 			};
 
-		private void EvaluateLineStatements(IExecutionEngineActions? actions, BoundLineStatements lineStatements)
+		private object EvaluateCallExpression(IExecutionEngineActions? actions, BoundCallExpression call)
+		{
+			if(call.Function == BuiltinFunctions.Read)
+			{
+				return actions!.Read();
+			}
+			else if(call.Function == BuiltinFunctions.Print)
+			{
+				actions!.Print((string)this.EvaluateExpression(call.Arguments[0]));
+				return new object();
+			}
+			else
+			{
+				throw new EvaluationException($"Unexpected function {call.Function.Name}");
+			}
+		}
+
+		private void EvaluateLineStatements(BoundLineStatements lineStatements)
 		{
 			var lines = new List<Line>();
 
 			foreach(var line in lineStatements.LineStatements)
 			{
-				this.EvaluateLineStatement(actions, line);
+				this.EvaluateLineStatement(line);
 				lines.Add((Line)this.lastValue);
 			}
 
 			this.lastValue = lines;
 		}
 
-		private void EvaluateLineStatement(IExecutionEngineActions? actions, BoundLineStatement line)
+		private void EvaluateLineStatement(BoundLineStatement line)
 		{
 			this.EvaluateStatement(line.Number);
 

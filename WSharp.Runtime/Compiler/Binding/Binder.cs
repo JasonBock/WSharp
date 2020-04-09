@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Numerics;
 using WSharp.Runtime.Compiler.Symbols;
@@ -37,8 +39,51 @@ namespace WSharp.Runtime.Compiler.Binding
 				SyntaxKind.BinaryExpression => this.BindBinaryExpression((BinaryExpressionSyntax)syntax),
 				SyntaxKind.UpdateLineCountExpression => this.BindUpdateLineCountExpression((UpdateLineCountExpressionSyntax)syntax),
 				SyntaxKind.UnaryUpdateLineCountExpression => this.BindUnaryUpdateLineCountExpression((UnaryUpdateLineCountExpressionSyntax)syntax),
+				SyntaxKind.CallExpression => this.BindCallExpression((CallExpressionSyntax)syntax),
 				_ => throw new BindingException($"Unexpected expression syntax {syntax.Kind}"),
 			};
+
+		private BoundExpression BindCallExpression(CallExpressionSyntax syntax)
+		{
+			var functions = BuiltinFunctions.GetAll();
+			var function = functions.SingleOrDefault(_ => _.Name == syntax.Identifier.Text);
+
+			if(function == null)
+			{
+				this.Diagnostics.ReportUndefinedFunction(syntax.Identifier);
+				return new BoundErrorExpression();
+			}
+
+			if(syntax.Arguments.Count != function.Parameters.Length)
+			{
+				this.Diagnostics.ReportWrongArgumentCount(syntax.Span, function.Name, 
+					function.Parameters.Length, syntax.Arguments.Count);
+				return new BoundErrorExpression();
+			}
+
+			var boundArguments = ImmutableArray.CreateBuilder<BoundExpression>();
+
+			foreach (var argument in syntax.Arguments)
+			{
+				var boundArgument = this.BindExpression(argument);
+				boundArguments.Add(boundArgument);
+			}
+
+			for (var i = 0; i < syntax.Arguments.Count; i++)
+			{
+				var argument = boundArguments[i];
+				var parameter = function.Parameters[i];
+
+				if(argument.Type != parameter.Type)
+				{
+					this.Diagnostics.ReportWrongArgumentType(syntax.Span, parameter.Name, 
+						parameter.Type, argument.Type);
+					return new BoundErrorExpression();
+				}
+			}
+
+			return new BoundCallExpression(function, boundArguments.ToImmutable());
+		}
 
 		private BoundExpression BindNameExpression(NameExpressionSyntax syntax)
 		{

@@ -4,8 +4,10 @@
 		: Symbol
 	{
 		public ParameterSymbol(string name, TypeSymbol type)
-			: base(name) { }
+			: base(name) => this.Type = type;
 
 		public override SymbolKind Kind => SymbolKind.Parameter;
+
+		public TypeSymbol Type { get; }
 	}
 }

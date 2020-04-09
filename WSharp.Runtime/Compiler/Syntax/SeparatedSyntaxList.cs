@@ -11,7 +11,15 @@ namespace WSharp.Runtime.Compiler.Syntax
 		public SeparatedSyntaxList(ImmutableArray<SyntaxNode> nodesAndSeparators) => 
 			this.NodesAndSeparators = nodesAndSeparators;
 
-		public SyntaxToken GetSeparator(int index) => (SyntaxToken)this.NodesAndSeparators[(index * 2) + 1];
+		public SyntaxToken? GetSeparator(int index)
+		{
+			if(index == this.Count - 1)
+			{
+				return null;
+			}
+
+			return (SyntaxToken)this.NodesAndSeparators[(index * 2) + 1];
+		}
 
 		public IEnumerator<T> GetEnumerator()
 		{
@@ -22,7 +30,6 @@ namespace WSharp.Runtime.Compiler.Syntax
 		}
 
 		IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
-
 
 		public T this[int index] => (T)this.NodesAndSeparators[index * 2];
 		public ImmutableArray<SyntaxNode> GetAllNodes() => this.NodesAndSeparators;

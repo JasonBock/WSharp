@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using WSharp.Runtime.Compiler.Binding;
 using WSharp.Runtime.Compiler.Symbols;
 using WSharp.Runtime.Compiler.Syntax;
 using WSharp.Runtime.Compiler.Text;
@@ -45,5 +46,14 @@ namespace WSharp.Runtime.Compiler
 
 		public void ReportUndefinedLineCountOperator(TextSpan span, string operatorText, TypeSymbol leftType, TypeSymbol rightType) => 
 			this.Report(span, $"Update line count operator '{operatorText}' is not defined for types '{leftType}' and '{rightType}'.");
+
+		public void ReportWrongArgumentCount(TextSpan span, string name, int expectedCount, int actualCount) =>
+			this.Report(span, $"Function '{name}' requires {expectedCount} argument(s) but was given {actualCount}.");
+
+		public void ReportUndefinedFunction(SyntaxToken identifier) =>
+			this.Report(identifier.Span, $"Function '{identifier.Text}' doesn't exist.");
+
+		internal void ReportWrongArgumentType(TextSpan span, string name, TypeSymbol expectedType, TypeSymbol actualType) =>
+			this.Report(span, $"Parameter '{name}' requires a value of type {expectedType} but was given a value of type {actualType}.");
 	}
 }
