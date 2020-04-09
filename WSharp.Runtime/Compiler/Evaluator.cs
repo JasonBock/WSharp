@@ -56,12 +56,12 @@ namespace WSharp.Runtime.Compiler
 			}
 			else if(call.Function == BuiltinFunctions.Print)
 			{
-				actions!.Print((string)this.EvaluateExpression(call.Arguments[0]));
+				actions!.Print((string)this.EvaluateExpression(call.Arguments[0], actions));
 				return new object();
 			}
 			else if (call.Function == BuiltinFunctions.Random)
 			{
-				return actions!.Random((BigInteger)this.EvaluateExpression(call.Arguments[0]));
+				return actions!.Random((BigInteger)this.EvaluateExpression(call.Arguments[0], actions));
 			}
 			else
 			{
