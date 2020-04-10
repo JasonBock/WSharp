@@ -59,7 +59,7 @@ namespace WSharp.Runtime.Compiler.Binding
 		{
 			if(syntax.Arguments.Count == 1 && TypeSymbol.Lookup(syntax.Identifier.Text) is TypeSymbol type)
 			{
-				return this.BindConversion(type, syntax.Arguments[0]);
+				return this.BindConversion(syntax.Arguments[0], type);
 			}
 
 			var functions = BuiltinFunctions.GetAll();
@@ -102,15 +102,24 @@ namespace WSharp.Runtime.Compiler.Binding
 			return new BoundCallExpression(function, boundArguments.ToImmutable());
 		}
 
-		private BoundExpression BindConversion(TypeSymbol type, ExpressionSyntax syntax)
+		private BoundExpression BindConversion(ExpressionSyntax syntax, TypeSymbol type)
 		{
 			var expression = this.BindExpression(syntax);
 			var conversion = Conversion.Classify(expression.Type, type);
 
 			if(!conversion.Exists)
 			{
-				this.Diagnostics.ReportCannotConvert(syntax.Span, expression.Type, type);
+				if(expression.Type != TypeSymbol.Error && type != TypeSymbol.Error)
+				{
+					this.Diagnostics.ReportCannotConvert(syntax.Span, expression.Type, type);
+				}
+
 				return new BoundErrorExpression();
+			}
+
+			if (conversion.IsIdentity)
+			{
+				return expression;
 			}
 
 			return new BoundConversionExpression(type, expression);
