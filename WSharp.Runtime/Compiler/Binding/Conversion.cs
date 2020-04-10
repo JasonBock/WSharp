@@ -4,16 +4,14 @@ namespace WSharp.Runtime.Compiler.Binding
 {
 	internal sealed class Conversion
 	{
-		// TODO: Consider using a bit flag, ConversionSettings, to make the construction and state
-		// easier to read.
-		public static readonly Conversion Explicit = new Conversion(exists: true, isIdentity: false, isImplicit: false);
-		public static readonly Conversion Identity = new Conversion(exists: true, isIdentity: true, isImplicit: true);
-		public static readonly Conversion Implicit = new Conversion(exists: true, isIdentity: false, isImplicit: true);
-		public static readonly Conversion None = new Conversion(exists: false, isIdentity: false, isImplicit: false);
+		public static readonly Conversion Explicit = new Conversion(ConversionFlags.Exists);
+		public static readonly Conversion Identity = new Conversion(ConversionFlags.Exists | ConversionFlags.IsIdentity | ConversionFlags.IsImplicit);
+		public static readonly Conversion Implicit = new Conversion(ConversionFlags.Exists | ConversionFlags.IsImplicit);
+		public static readonly Conversion None = new Conversion(ConversionFlags.None);
 
-		private Conversion(bool exists, bool isIdentity, bool isImplicit) =>
+		private Conversion(ConversionFlags flags) =>
 			(this.Exists, this.IsIdentity, this.IsImplicit) =
-				(exists, isIdentity, isImplicit);
+				(flags.HasFlag(ConversionFlags.Exists), flags.HasFlag(ConversionFlags.IsIdentity), flags.HasFlag(ConversionFlags.IsImplicit));
 
 		public static Conversion Classify(TypeSymbol from, TypeSymbol to)
 		{
