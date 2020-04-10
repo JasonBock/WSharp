@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Numerics;
@@ -45,7 +44,6 @@ namespace WSharp.Runtime.Compiler.Binding
 			syntax.Kind switch
 			{
 				SyntaxKind.ParenthesizedExpression => this.BindParenthesizedExpression((ParenthesizedExpressionSyntax)syntax),
-				SyntaxKind.NameExpression => this.BindNameExpression((NameExpressionSyntax)syntax),
 				SyntaxKind.LiteralExpression => this.BindLiteralExpression((LiteralExpressionSyntax)syntax),
 				SyntaxKind.UnaryExpression => this.BindUnaryExpression((UnaryExpressionSyntax)syntax),
 				SyntaxKind.BinaryExpression => this.BindBinaryExpression((BinaryExpressionSyntax)syntax),
@@ -123,21 +121,6 @@ namespace WSharp.Runtime.Compiler.Binding
 			}
 
 			return new BoundConversionExpression(type, expression);
-		}
-
-		private BoundExpression BindNameExpression(NameExpressionSyntax syntax)
-		{
-			var name = syntax.IdentifierToken.Text;
-
-			if(string.IsNullOrWhiteSpace(name))
-			{
-				return new BoundErrorExpression();
-			}
-			else
-			{
-				// TODO: This should be a method invocation on the context. For now, do this:
-				return new BoundLiteralExpression(0);
-			}
 		}
 
 		private BoundExpression BindParenthesizedExpression(ParenthesizedExpressionSyntax syntax) =>

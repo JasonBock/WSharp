@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.Immutable;
 using WSharp.Runtime.Compiler.Text;
 
@@ -92,7 +91,7 @@ namespace WSharp.Runtime.Compiler.Syntax
 				{
 					if(this.Peek(0).Kind == SyntaxKind.IdentifierToken)
 					{
-						lineStatements.Add(new ExpressionStatementSyntax(this.ParseCallExpresssion()));
+						lineStatements.Add(new ExpressionStatementSyntax(this.ParseCallExpression()));
 					}
 					else
 					{
@@ -161,24 +160,11 @@ namespace WSharp.Runtime.Compiler.Syntax
 					return this.ParseStringLiteralExpression();
 				case SyntaxKind.IdentifierToken:
 				default:
-					return this.ParseNameOrCallExpression();
+					return this.ParseCallExpression();
 			}
 		}
 
-		private ExpressionSyntax ParseNameOrCallExpression()
-		{
-			if(this.Peek(0).Kind == SyntaxKind.IdentifierToken &&
-				this.Peek(1).Kind == SyntaxKind.OpenParenthesisToken)
-			{
-				return this.ParseCallExpresssion();
-			}
-			else
-			{
-				return this.ParseNameExpression();
-			}
-		}
-
-		private ExpressionSyntax ParseCallExpresssion()
+		private ExpressionSyntax ParseCallExpression()
 		{
 			var identifier = this.Match(SyntaxKind.IdentifierToken);
 			var openParenthesisToken = this.Match(SyntaxKind.OpenParenthesisToken);
@@ -232,9 +218,6 @@ namespace WSharp.Runtime.Compiler.Syntax
 
 		private ExpressionSyntax ParseStringLiteralExpression() =>
 			new LiteralExpressionSyntax(this.Match(SyntaxKind.StringToken));
-
-		private ExpressionSyntax ParseNameExpression() =>
-			new NameExpressionSyntax(this.Match(SyntaxKind.IdentifierToken));
 
 		private ExpressionSyntax ParseBinaryExpression(int parentPrecendence = 0)
 		{

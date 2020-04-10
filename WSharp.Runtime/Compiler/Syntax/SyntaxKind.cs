@@ -46,7 +46,6 @@
 
 		// Expressions
 		LiteralExpression,
-		NameExpression,
 		UnaryExpression,
 		BinaryExpression,
 		ParenthesizedExpression,
