@@ -8,9 +8,6 @@ using System.Numerics;
 
 namespace WSharp.Runtime
 {
-	// TODO: From the spec, it says, "If the line in question is not on the to-do list, nothing happens."
-	// So we need to ensure that if a line number is given that isn't in the lines dictionary,
-	// we can't fail with a KeyNotFoundException (or whatever it was).
 	public sealed class ExecutionEngine
 		: IExecutionEngineActions
 	{

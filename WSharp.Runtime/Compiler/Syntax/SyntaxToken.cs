@@ -10,8 +10,6 @@ namespace WSharp.Runtime.Compiler.Syntax
 		private SyntaxToken() =>
 			(this.Text, this.Value) = (string.Empty, null);
 
-		// TODO: Maybe add an overload that doesn't take a value.
-		// This constructor would require that that value is not null
 		public SyntaxToken(SyntaxKind kind, int position, string text, object? value) =>
 			(this.Kind, this.Position, this.Text, this.Value) = (kind, position, text, value);
 

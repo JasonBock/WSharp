@@ -32,5 +32,25 @@ namespace WSharp.Runtime.Tests.Compiler.Syntax
 				Assert.That(children[2], Is.EqualTo(close), nameof(children));
 			});
 		}
+
+		[Test]
+		public static void CreateWithIncorrectOpenParenthesisToken()
+		{
+			var open = new SyntaxToken(SyntaxKind.MinusToken, 0, "-", null);
+			var expression = new LiteralExpressionSyntax(new SyntaxToken(SyntaxKind.NumberToken, 1, "1", BigInteger.One));
+			var close = new SyntaxToken(SyntaxKind.CloseParenthesisToken, 2, ")", null);
+
+			Assert.That(() => new ParenthesizedExpressionSyntax(open, expression, close), Throws.TypeOf<ParsingException>());
+		}
+
+		[Test]
+		public static void CreateWithIncorrectCloseParenthesisToken()
+		{
+			var open = new SyntaxToken(SyntaxKind.OpenParenthesisToken, 0, "(", null);
+			var expression = new LiteralExpressionSyntax(new SyntaxToken(SyntaxKind.NumberToken, 1, "1", BigInteger.One));
+			var close = new SyntaxToken(SyntaxKind.MinusToken, 2, "-", null);
+
+			Assert.That(() => new ParenthesizedExpressionSyntax(open, expression, close), Throws.TypeOf<ParsingException>());
+		}
 	}
 }

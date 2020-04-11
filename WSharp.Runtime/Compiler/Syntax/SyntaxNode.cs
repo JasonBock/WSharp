@@ -5,10 +5,6 @@ using WSharp.Runtime.Compiler.Text;
 
 namespace WSharp.Runtime.Compiler.Syntax
 {
-	// TODO: The ToString() can get very heavy to see in a debugger.
-	// Consider adding DebuggerDiagnostic attribute here to have a concise
-	// view of the node. Maybe something like "{this.Kind}, {this.Span}"
-	// Note that no one calls ToString() on this anyway
 	public abstract class SyntaxNode
 	{
 		public abstract IEnumerable<SyntaxNode> GetChildren();
@@ -49,12 +45,7 @@ namespace WSharp.Runtime.Compiler.Syntax
 			}
 		}
 
-		public override string ToString()
-		{
-			using var writer = new StringWriter();
-			this.WriteTo(writer);
-			return writer.ToString();
-		}
+		public override string ToString() => $"{this.Kind}, {this.Span}";
 
 		public abstract SyntaxKind Kind { get; }
 

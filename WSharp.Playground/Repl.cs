@@ -94,7 +94,6 @@ namespace WSharp.Playground
 				using (ConsoleColor.Red.Bind(() => Console.ForegroundColor))
 				Console.Out.WriteLine($"Invalid command: {input}.");
 			}
-			// TODO: Add #loadFile which has an argument of a file path, that loads code from the file.
 		}
 
 		private static void Evaluate(bool showProgram, bool showTree, List<string> lines)
