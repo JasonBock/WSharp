@@ -128,9 +128,10 @@ namespace WSharp.Runtime.Compiler
 
 		private object EvaluateUnaryUpdateLineCountExpression(IExecutionEngineActions? actions, BoundUnaryUpdateLineCountExpression unaryLine)
 		{
-			var lineToUpdate = BigInteger.Abs((BigInteger)this.EvaluateExpression(unaryLine.LineNumber, actions));
-			var count = lineToUpdate > BigInteger.Zero ? BigInteger.One : 
-				lineToUpdate < BigInteger.Zero ? -BigInteger.One : BigInteger.Zero;
+			var lineNumber = (BigInteger)this.EvaluateExpression(unaryLine.LineNumber, actions);
+			var lineToUpdate = BigInteger.Abs(lineNumber);
+			var count = lineNumber > BigInteger.Zero ? BigInteger.One :
+				lineNumber < BigInteger.Zero ? -BigInteger.One : BigInteger.Zero;
 			actions!.UpdateCount(lineToUpdate, count);
 			return BigInteger.Zero;
 		}
