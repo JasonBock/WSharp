@@ -11,7 +11,7 @@ namespace WSharp.Runtime
 		void Print(string message);
 		BigInteger Random(BigInteger maximum);
 		string Read();
-		string U(long number);
+		string U(BigInteger number);
 		void UpdateCount(BigInteger identifier, BigInteger delta);
 	}
 }

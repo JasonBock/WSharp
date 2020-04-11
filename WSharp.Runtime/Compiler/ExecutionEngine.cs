@@ -134,7 +134,7 @@ namespace WSharp.Runtime
 
 		public string Read() => this.reader.ReadLine() ?? string.Empty;
 
-		public string U(long number) => number.ToString();
+		public string U(BigInteger number) => char.ConvertFromUtf32((int)number);
 
 		public void UpdateCount(BigInteger identifier, BigInteger delta) =>
 			this.lines[identifier] = this.lines[identifier].UpdateCount(delta);

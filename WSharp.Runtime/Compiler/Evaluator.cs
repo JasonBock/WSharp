@@ -92,9 +92,13 @@ namespace WSharp.Runtime.Compiler
 			{
 				return actions!.Random((BigInteger)this.EvaluateExpression(call.Arguments[0], actions));
 			}
-			if (call.Function == BuiltinFunctions.N)
+			else if (call.Function == BuiltinFunctions.N)
 			{
 				return actions!.N((BigInteger)this.EvaluateExpression(call.Arguments[0], actions));
+			}
+			else if (call.Function == BuiltinFunctions.U)
+			{
+				return actions!.U((BigInteger)this.EvaluateExpression(call.Arguments[0], actions));
 			}
 			else
 			{
