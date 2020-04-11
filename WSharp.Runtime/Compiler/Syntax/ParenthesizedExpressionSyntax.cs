@@ -2,9 +2,10 @@
 
 namespace WSharp.Runtime.Compiler.Syntax
 {
-	public sealed class ParenthesizedExpressionSyntax 
+	public sealed class ParenthesizedExpressionSyntax
 		: ExpressionSyntax
 	{
+		// TODO: Should I enforce thet the open and close tokes are the right kinds?
 		public ParenthesizedExpressionSyntax(SyntaxToken openParenthesisToken, ExpressionSyntax expression, SyntaxToken closeParenthesisToken) => 
 			(this.OpenParenthesisToken, this.Expression, this.CloseParenthesisToken) = (openParenthesisToken, expression, closeParenthesisToken);
 

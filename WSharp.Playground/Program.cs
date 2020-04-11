@@ -1,8 +1,10 @@
-﻿namespace WSharp.Playground
+﻿using System.Threading.Tasks;
+
+namespace WSharp.Playground
 {
 	public static class Program
 	{
-		public static void Main() =>
-			new Repl().Run();
+		public static async Task Main() =>
+			await (new Repl()).RunAsync();
 	}
 }

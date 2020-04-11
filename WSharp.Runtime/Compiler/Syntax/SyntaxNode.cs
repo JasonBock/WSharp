@@ -8,6 +8,7 @@ namespace WSharp.Runtime.Compiler.Syntax
 	// TODO: The ToString() can get very heavy to see in a debugger.
 	// Consider adding DebuggerDiagnostic attribute here to have a concise
 	// view of the node. Maybe something like "{this.Kind}, {this.Span}"
+	// Note that no one calls ToString() on this anyway
 	public abstract class SyntaxNode
 	{
 		public abstract IEnumerable<SyntaxNode> GetChildren();

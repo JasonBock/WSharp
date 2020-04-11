@@ -144,25 +144,16 @@ namespace WSharp.Runtime.Compiler.Syntax
 			return lineStatements;
 		}
 
-		private ExpressionSyntax ParsePrimaryExpression()
-		{
-			// TODO: Remove var declarations and then possibly switch to pattern matching.
-			switch (this.Current.Kind)
+		private ExpressionSyntax ParsePrimaryExpression() =>
+			this.Current.Kind switch
 			{
-				case SyntaxKind.OpenParenthesisToken:
-					return this.ParseParenthesizedExpression();
-				case SyntaxKind.TrueKeyword:
-				case SyntaxKind.FalseKeyword:
-					return this.ParseBooleanLiteralExpression();
-				case SyntaxKind.NumberToken:
-					return this.ParseNumberLiteralExpression();
-				case SyntaxKind.StringToken:
-					return this.ParseStringLiteralExpression();
-				case SyntaxKind.IdentifierToken:
-				default:
-					return this.ParseCallExpression();
-			}
-		}
+				SyntaxKind.OpenParenthesisToken => this.ParseParenthesizedExpression(),
+				SyntaxKind.TrueKeyword => this.ParseBooleanLiteralExpression(),
+				SyntaxKind.FalseKeyword => this.ParseBooleanLiteralExpression(),
+				SyntaxKind.NumberToken => this.ParseNumberLiteralExpression(),
+				SyntaxKind.StringToken => this.ParseStringLiteralExpression(),
+				_ => this.ParseCallExpression()
+			};
 
 		private ExpressionSyntax ParseCallExpression()
 		{
@@ -181,7 +172,7 @@ namespace WSharp.Runtime.Compiler.Syntax
 			while(this.Current.Kind != SyntaxKind.CloseParenthesisToken &&
 				this.Current.Kind != SyntaxKind.EndOfFileToken)
 			{
-				var expression = this.ParsePrimaryExpression();
+				var expression = this.ParseBinaryExpression();
 				nodesAndSeparators.Add(expression);
 
 				if(this.Current.Kind != SyntaxKind.CloseParenthesisToken)

@@ -11,6 +11,11 @@
     <Version>0.1.0</Version>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="Compiler\EvaluationResultTests.cs~RF150b0ca7.TMP" />
+    <None Remove="Compiler\Symbols\ParameterSymbolTests.cs~RF1494d4dc.TMP" />
+    <None Remove="Compiler\Syntax\SyntaxTokenTests.cs~RF151378c8.TMP" />
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.5.0" />
     <PackageReference Include="NUnit" Version="3.12.0" />
     <PackageReference Include="NUnit3TestAdapter" Version="3.16.1">

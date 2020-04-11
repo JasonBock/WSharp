@@ -54,7 +54,6 @@ namespace WSharp.Runtime.Compiler
 		{
 			var value = this.EvaluateExpression(conversion.Expression, actions);
 
-			// TODO: Can this be converted to a switch expression?
 			if(conversion.Type == TypeSymbol.Boolean)
 			{
 				return Convert.ToBoolean(value);

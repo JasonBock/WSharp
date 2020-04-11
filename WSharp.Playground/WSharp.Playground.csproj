@@ -30,4 +30,12 @@
   <ItemGroup>
     <ProjectReference Include="..\WSharp.Runtime\WSharp.Runtime.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <None Update="Simple2.ws">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Simple1.ws">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
 </Project>

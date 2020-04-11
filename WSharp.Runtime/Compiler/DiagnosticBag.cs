@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using WSharp.Runtime.Compiler.Symbols;
 using WSharp.Runtime.Compiler.Syntax;

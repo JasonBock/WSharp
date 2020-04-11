@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using Spackle;
 using Spackle.Extensions;
 using WSharp.Runtime;
@@ -16,7 +18,7 @@ namespace WSharp.Playground
 		private bool showProgram = true;
 		private bool showTree = true;
 
-		public void Run()
+		public async Task RunAsync()
 		{
 			while (true)
 			{
@@ -31,7 +33,7 @@ namespace WSharp.Playground
 				{
 					if (input.StartsWith("#"))
 					{
-						this.EvaluateMetaCommand(input);
+						await this.EvaluateMetaCommandAsync(input);
 						continue;
 					}
 					else
@@ -46,9 +48,24 @@ namespace WSharp.Playground
 			}
 		}
 
-		private void EvaluateMetaCommand(string input)
+		private async Task EvaluateMetaCommandAsync(string input)
 		{
-			if (input == "#showTree")
+			if (input.StartsWith("#loadFile"))
+			{
+				var fileName = input.Substring("#loadFile".Length).Trim();
+
+				if(File.Exists(fileName))
+				{
+					this.lines.Clear();
+					this.lines.AddRange(await File.ReadAllLinesAsync(fileName));
+				}
+				else
+				{
+					using (ConsoleColor.Red.Bind(() => Console.ForegroundColor))
+					Console.Out.WriteLine($"File {fileName} does not exist.");
+				}
+			}
+			else if (input == "#showTree")
 			{
 				this.showTree = !this.showTree;
 				Console.Out.WriteLine(this.showTree ? "Showing parse trees." : "Not showing parse trees.");
@@ -82,9 +99,6 @@ namespace WSharp.Playground
 
 		private static void Evaluate(bool showProgram, bool showTree, List<string> lines)
 		{
-			// TODO: Add a command, #run, that would actually run the evaluator
-			// This may require a change such that a "complete" submission is when I type #run,
-			// because I may want to enter in multiple lines before doing an evaluation.
 			var tree = SyntaxTree.Parse(string.Join(Environment.NewLine, lines));
 			var compilation = new Compilation(tree);
 			var result = compilation.Evaluate();

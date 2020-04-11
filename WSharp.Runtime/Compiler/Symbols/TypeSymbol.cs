@@ -3,21 +3,26 @@
 	public sealed class TypeSymbol
 		: Symbol
 	{
-		// TODO: Make the symbol names constants and reuse in Lookup().
-		public static readonly TypeSymbol Boolean = new TypeSymbol("boolean");
-		public static readonly TypeSymbol Error = new TypeSymbol("?");
-		public static readonly TypeSymbol Integer = new TypeSymbol("integer");
-		public static readonly TypeSymbol String = new TypeSymbol("string");
-		public static readonly TypeSymbol Void = new TypeSymbol("void");
+		public const string BooleanName = "boolean";
+		public const string ErrorName = "?";
+		public const string IntegerName = "integer";
+		public const string StringName = "string";
+		public const string VoidName = "void";
+
+		public static readonly TypeSymbol Boolean = new TypeSymbol(TypeSymbol.BooleanName);
+		public static readonly TypeSymbol Error = new TypeSymbol(TypeSymbol.ErrorName);
+		public static readonly TypeSymbol Integer = new TypeSymbol(TypeSymbol.IntegerName);
+		public static readonly TypeSymbol String = new TypeSymbol(TypeSymbol.StringName);
+		public static readonly TypeSymbol Void = new TypeSymbol(TypeSymbol.VoidName);
 
 		public static TypeSymbol? Lookup(string name) =>
 			name switch
 			{
-				"boolean" => TypeSymbol.Boolean,
-				"?" => TypeSymbol.Error,
-				"integer" => TypeSymbol.Integer,
-				"string" => TypeSymbol.String,
-				"void" => TypeSymbol.Void,
+				TypeSymbol.BooleanName => TypeSymbol.Boolean,
+				TypeSymbol.ErrorName => TypeSymbol.Error,
+				TypeSymbol.IntegerName => TypeSymbol.Integer,
+				TypeSymbol.StringName => TypeSymbol.String,
+				TypeSymbol.VoidName => TypeSymbol.Void,
 				_ => null,
 			};
 
