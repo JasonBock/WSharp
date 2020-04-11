@@ -7,6 +7,8 @@ namespace WSharp.Runtime.Compiler.Symbols
 {
 	internal static class BuiltinFunctions
 	{
+		public static readonly FunctionSymbol N = new FunctionSymbol(
+			"N", ImmutableArray.Create(new ParameterSymbol("lineNumber", TypeSymbol.Integer)), TypeSymbol.Integer);
 		public static readonly FunctionSymbol Random = new FunctionSymbol(
 			"random", ImmutableArray.Create(new ParameterSymbol("maximum", TypeSymbol.Integer)), TypeSymbol.Integer);
 		public static readonly FunctionSymbol Read = new FunctionSymbol(

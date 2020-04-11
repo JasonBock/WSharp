@@ -92,6 +92,10 @@ namespace WSharp.Runtime.Compiler
 			{
 				return actions!.Random((BigInteger)this.EvaluateExpression(call.Arguments[0], actions));
 			}
+			if (call.Function == BuiltinFunctions.N)
+			{
+				return actions!.N((BigInteger)this.EvaluateExpression(call.Arguments[0], actions));
+			}
 			else
 			{
 				throw new EvaluationException($"Unexpected function {call.Function.Name}");
@@ -138,9 +142,10 @@ namespace WSharp.Runtime.Compiler
 
 		private object EvaluateUpdateLineCountExpression(IExecutionEngineActions? actions, BoundUpdateLineCountExpression line)
 		{
-			var lineToUpdate = (BigInteger)this.EvaluateExpression(line.Left, actions);
+			var lineNumber = (BigInteger)this.EvaluateExpression(line.Left, actions);
+			var lineToUpdate = BigInteger.Abs(lineNumber);
 			var count = (BigInteger)this.EvaluateExpression(line.Right, actions);
-			actions!.UpdateCount(lineToUpdate, count);
+			actions!.UpdateCount(lineToUpdate, lineNumber >= BigInteger.Zero ? count : -count);
 			return BigInteger.Zero;
 		}
 
