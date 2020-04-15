@@ -120,7 +120,7 @@ namespace WSharp.Runtime.Compiler.Binding
 				return expression;
 			}
 
-			return new BoundConversionExpression(type, expression);
+			return new BoundConversionExpression(expression, type);
 		}
 
 		private BoundExpression BindParenthesizedExpression(ParenthesizedExpressionSyntax syntax) =>

@@ -7,6 +7,8 @@ namespace WSharp.Runtime.Compiler.Symbols
 {
 	internal static class BuiltinFunctions
 	{
+		public static readonly FunctionSymbol Exists = new FunctionSymbol(
+			"exists", ImmutableArray.Create(new ParameterSymbol("lineNumber", TypeSymbol.Integer)), TypeSymbol.Boolean);
 		public static readonly FunctionSymbol N = new FunctionSymbol(
 			"N", ImmutableArray.Create(new ParameterSymbol("lineNumber", TypeSymbol.Integer)), TypeSymbol.Integer);
 		public static readonly FunctionSymbol Print = new FunctionSymbol(

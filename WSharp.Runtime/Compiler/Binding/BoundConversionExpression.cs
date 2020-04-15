@@ -7,9 +7,8 @@ namespace WSharp.Runtime.Compiler.Binding
 	internal sealed class BoundConversionExpression
 		: BoundExpression
 	{
-		public BoundConversionExpression(TypeSymbol type, BoundExpression expression) =>
-			(this.Type, this.Expression) = (type, expression);
-
+		public BoundConversionExpression(BoundExpression expression, TypeSymbol type) =>
+			(this.Expression, this.Type) = (expression, type);
 
 		public override IEnumerable<BoundNode> GetChildren()
 		{

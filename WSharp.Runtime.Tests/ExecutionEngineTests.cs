@@ -154,11 +154,11 @@ namespace WSharp.Runtime.Tests
 		[Test]
 		public static void CallU()
 		{
-			const long number = 3;
+			const long number = 65;
 			var lines = ImmutableArray.Create(new Line(1, 3, _ => { }));
 			var engine = new ExecutionEngine(lines, new SecureRandom(), new StringWriter(), new StringReader(string.Empty));
 
-			Assert.That(engine.U(number), Is.EqualTo(number.ToString()));
+			Assert.That(engine.U(number), Is.EqualTo("A"));
 		}
 
 		[Test]

@@ -79,7 +79,11 @@ namespace WSharp.Runtime.Compiler
 
 		private object EvaluateCallExpression(IExecutionEngineActions? actions, BoundCallExpression call)
 		{
-			if(call.Function == BuiltinFunctions.Read)
+			if (call.Function == BuiltinFunctions.Exists)
+			{
+				return actions!.DoesLineExist((BigInteger)this.EvaluateExpression(call.Arguments[0], actions));
+			}
+			if (call.Function == BuiltinFunctions.Read)
 			{
 				return actions!.Read();
 			}
