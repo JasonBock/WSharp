@@ -12,7 +12,7 @@ namespace WSharp.Runtime
 		: IExecutionEngineActions
 	{
 		private readonly Dictionary<BigInteger, Line> lines;
-		private SecureRandom random = new SecureRandom();
+		private readonly SecureRandom random = new SecureRandom();
 		private readonly TextReader reader;
 		private readonly TextWriter writer;
 
