@@ -47,6 +47,7 @@ namespace WSharp.Compiler.Syntax
 			{
 				case SyntaxKind.StarToken:
 				case SyntaxKind.SlashToken:
+				case SyntaxKind.PercentToken:
 					return 5;
 				case SyntaxKind.PlusToken:
 				case SyntaxKind.MinusToken:
@@ -103,6 +104,7 @@ namespace WSharp.Compiler.Syntax
 				SyntaxKind.StarToken => "*",
 				SyntaxKind.MinusToken => "-",
 				SyntaxKind.PlusToken => "+",
+				SyntaxKind.PercentToken => "%",
 				SyntaxKind.UpdateLineCountToken => "#",
 				SyntaxKind.SemicolonToken => ";",
 				_ => string.Empty

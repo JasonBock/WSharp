@@ -144,10 +144,11 @@ namespace WSharp.Compiler
 			{
 				foreach (var statement in line.Statements)
 				{
-					if(!actions.ShouldStatementBeDeferred)
+					if(actions.ShouldStatementBeDeferred)
 					{
-						this.EvaluateStatement(statement, actions);
+						break;
 					}
+					this.EvaluateStatement(statement, actions);
 				}
 			});
 		}
@@ -182,6 +183,7 @@ namespace WSharp.Compiler
 				BoundBinaryOperatorKind.Subtraction => (BigInteger)left - (BigInteger)right,
 				BoundBinaryOperatorKind.Multiplication => (BigInteger)left * (BigInteger)right,
 				BoundBinaryOperatorKind.Division => (BigInteger)left / (BigInteger)right,
+				BoundBinaryOperatorKind.Modulo => (BigInteger)left % (BigInteger)right,
 				BoundBinaryOperatorKind.BitwiseAnd => binary.Type == TypeSymbol.Integer ? (object)((BigInteger)left & (BigInteger)right) : (bool)left & (bool)right,
 				BoundBinaryOperatorKind.BitwiseOr => binary.Type == TypeSymbol.Integer ? (object)((BigInteger)left | (BigInteger)right) : (bool)left | (bool)right,
 				BoundBinaryOperatorKind.BitwiseXor => binary.Type == TypeSymbol.Integer ? (object)((BigInteger)left ^ (BigInteger)right) : (bool)left ^ (bool)right,

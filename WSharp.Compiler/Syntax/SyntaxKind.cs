@@ -12,6 +12,7 @@
 		MinusToken,
 		StarToken,
 		SlashToken,
+		PercentToken,
 		BangToken,
 		LessOrEqualsToken,
 		LessToken,

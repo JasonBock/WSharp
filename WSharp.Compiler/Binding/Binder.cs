@@ -7,8 +7,7 @@ using WSharp.Compiler.Syntax;
 
 namespace WSharp.Compiler.Binding
 {
-	// TODO: Consider making this internal
-	public sealed class Binder
+	internal sealed class Binder
 	{
 		public BoundStatement BindCompilationUnit(CompilationUnitSyntax syntax) =>
 			this.BindStatement(syntax.LineStatements);

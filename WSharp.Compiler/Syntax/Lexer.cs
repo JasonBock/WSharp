@@ -36,7 +36,6 @@ namespace WSharp.Compiler.Syntax
 					this.kind = SyntaxKind.CommaToken;
 					this.position++;
 					break;
-				// TODO: Consider adding in a mod operator, %
 				case '+':
 					this.kind = SyntaxKind.PlusToken;
 					this.position++;
@@ -51,6 +50,10 @@ namespace WSharp.Compiler.Syntax
 					break;
 				case '/':
 					this.kind = SyntaxKind.SlashToken;
+					this.position++;
+					break;
+				case '%':
+					this.kind = SyntaxKind.PercentToken;
 					this.position++;
 					break;
 				case '(':

@@ -15,8 +15,8 @@ namespace WSharp.Playground
 	internal sealed class Repl
 	{
 		private readonly List<string> lines = new List<string>();
-		private bool showProgram = true;
-		private bool showTree = true;
+		private bool showProgram = false;
+		private bool showTree = false;
 
 		public async Task RunAsync()
 		{

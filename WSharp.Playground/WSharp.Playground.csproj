@@ -16,6 +16,7 @@
   <ItemGroup>
     <None Remove="FibonacciSequence.ws~RF8aa121c.TMP" />
     <None Remove="NinetyNineBottles.ws~RF8a4897c.TMP" />
+    <None Remove="Rot13.ws~RF974e11e.TMP" />
     <None Remove="SyntaxKind.cs~RF405f2cf.TMP" />
     <None Remove="SyntaxKind.cs~RF7983112.TMP" />
     <None Remove="SyntaxKind.cs~RF7e5dd69.TMP" />
@@ -33,6 +34,9 @@
     <ProjectReference Include="..\WSharp.Compiler\WSharp.Compiler.csproj" />
   </ItemGroup>
   <ItemGroup>
+    <None Update="Rot13.ws">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="FibonacciSequence.ws">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
