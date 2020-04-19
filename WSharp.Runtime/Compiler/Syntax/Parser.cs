@@ -99,10 +99,10 @@ namespace WSharp.Runtime.Compiler.Syntax
 					{
 						lineStatements.Add(new ExpressionStatementSyntax(this.ParseCallExpression()));
 					}
-					else if(this.Peek(0).Kind == SyntaxKind.NumberToken)
+					else if(this.Peek(0).Kind == SyntaxKind.NumberToken ||
+						(this.Peek(0).Kind == SyntaxKind.MinusToken && this.Peek(1).Kind == SyntaxKind.NumberToken))
 					{
 						var lineNumber = this.ParseBinaryExpression();
-
 						var nextToken = this.Peek(0);
 
 						if (nextToken.Kind != SyntaxKind.UpdateLineCountToken)
