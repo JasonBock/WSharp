@@ -79,11 +79,21 @@ namespace WSharp.Runtime.Compiler
 
 		private object EvaluateCallExpression(IExecutionEngineActions? actions, BoundCallExpression call)
 		{
-			if (call.Function == BuiltinFunctions.Exists)
+			if (call.Function == BuiltinFunctions.Again)
+			{
+				actions!.Again((bool)this.EvaluateExpression(call.Arguments[0], actions));
+				return new object();
+			}
+			else if (call.Function == BuiltinFunctions.Defer)
+			{
+				actions!.Defer((bool)this.EvaluateExpression(call.Arguments[0], actions));
+				return new object();
+			}
+			else if (call.Function == BuiltinFunctions.Exists)
 			{
 				return actions!.DoesLineExist((BigInteger)this.EvaluateExpression(call.Arguments[0], actions));
 			}
-			if (call.Function == BuiltinFunctions.Read)
+			else if (call.Function == BuiltinFunctions.Read)
 			{
 				return actions!.Read();
 			}
@@ -133,7 +143,10 @@ namespace WSharp.Runtime.Compiler
 			{
 				foreach (var statement in line.Statements)
 				{
-					this.EvaluateStatement(statement, actions);
+					if(!actions.ShouldStatementBeDeferred)
+					{
+						this.EvaluateStatement(statement, actions);
+					}
 				}
 			});
 		}

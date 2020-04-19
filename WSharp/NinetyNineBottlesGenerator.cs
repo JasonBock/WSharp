@@ -19,8 +19,8 @@ namespace WSharp
 			// 1 defer (4 || N(1)<N(2) || N(2)<N(3)) print(N(1)+" bottles of beer on the wall, "+N(1)+" bottles of beer,");
 			builder.Add(new Line(1, new BigInteger(1), actions =>
 			{
-				if(!actions.Defer(actions.DoesLineExist(4) || actions.N(1) < actions.N(2) ||
-					actions.N(2) < actions.N(3)))
+				actions.Defer(actions.DoesLineExist(4) || actions.N(1) < actions.N(2) || actions.N(2) < actions.N(3));
+				if (!actions.ShouldStatementBeDeferred)
 				{
 					actions.Print(actions.N(1) + " bottles of beer on the wall, " + actions.N(1) + " bottles of beer,");
 				}
@@ -28,7 +28,8 @@ namespace WSharp
 			// 2 defer (4 || N(1)==N(2)) print("Take one down and pass it around,");
 			builder.Add(new Line(2, new BigInteger(1), actions =>
 			{
-				if (!actions.Defer(actions.DoesLineExist(4) || actions.N(1) == actions.N(2)))
+				actions.Defer(actions.DoesLineExist(4) || actions.N(1) == actions.N(2));
+				if (!actions.ShouldStatementBeDeferred)
 				{
 					actions.Print("Take one down and pass it around,");
 				}
@@ -36,7 +37,8 @@ namespace WSharp
 			// 3 defer (4 || N(2)==N(3)) print(N(1)+" bottles of beer on the wall.");
 			builder.Add(new Line(3, new BigInteger(1), actions =>
 			{
-				if (!actions.Defer(actions.DoesLineExist(4) || actions.N(2) == actions.N(3)))
+				actions.Defer(actions.DoesLineExist(4) || actions.N(2) == actions.N(3));
+				if (!actions.ShouldStatementBeDeferred)
 				{
 					actions.Print(actions.N(1) + " bottles of beer on the wall.");
 				}

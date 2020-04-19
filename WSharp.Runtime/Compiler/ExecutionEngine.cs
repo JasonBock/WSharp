@@ -12,8 +12,6 @@ namespace WSharp.Runtime
 		: IExecutionEngineActions
 	{
 		private readonly Dictionary<BigInteger, Line> lines;
-		private bool shouldStatementBeDeferred;
-		private bool shouldStatementBeKept;
 		private SecureRandom random = new SecureRandom();
 		private readonly TextReader reader;
 		private readonly TextWriter writer;
@@ -58,11 +56,7 @@ namespace WSharp.Runtime
 			}
 		}
 
-		public bool Again(bool shouldKeep)
-		{
-			this.shouldStatementBeKept |= shouldKeep;
-			return shouldKeep;
-		}
+		public void Again(bool shouldKeep) => this.ShouldStatementBeKept |= shouldKeep;
 
 		public BigInteger GetCurrentLineCount()
 		{
@@ -76,19 +70,15 @@ namespace WSharp.Runtime
 			return lineCount;
 		}
 
-		public bool Defer(bool shouldDefer)
-		{
-			this.shouldStatementBeDeferred |= shouldDefer;
-			return shouldDefer;
-		}
+		public void Defer(bool shouldDefer) => this.ShouldStatementBeDeferred |= shouldDefer;
 
 		public bool DoesLineExist(BigInteger identifier) =>
 			this.lines[identifier].Count > 0;
 
 		public void Execute()
 		{
-			this.shouldStatementBeDeferred = false;
-			this.shouldStatementBeKept = false;
+			this.ShouldStatementBeDeferred = false;
+			this.ShouldStatementBeKept = false;
 			var currentLineCount = this.GetCurrentLineCount();
 
 			while (currentLineCount > 0)
@@ -106,14 +96,14 @@ namespace WSharp.Runtime
 					{
 						line.Code(this);
 
-						if (!this.shouldStatementBeKept && !this.shouldStatementBeDeferred)
+						if (!this.ShouldStatementBeKept && !this.ShouldStatementBeDeferred)
 						{
 							var newLine = line.UpdateCount(-1);
 							this.lines[newLine.Identifier] = newLine;
 						}
 
-						this.shouldStatementBeDeferred = false;
-						this.shouldStatementBeKept = false;
+						this.ShouldStatementBeDeferred = false;
+						this.ShouldStatementBeKept = false;
 						break;
 					}
 					else
@@ -138,5 +128,8 @@ namespace WSharp.Runtime
 
 		public void UpdateCount(BigInteger identifier, BigInteger delta) =>
 			this.lines[identifier] = this.lines[identifier].UpdateCount(delta);
+
+		public bool ShouldStatementBeDeferred { get; private set; }
+		public bool ShouldStatementBeKept { get; private set; }
 	}
 }

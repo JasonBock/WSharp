@@ -25,8 +25,8 @@ namespace WSharp
 			builder.Add(new Line(1, BigInteger.One, actions =>
 			{
 				actions.Again(actions.DoesLineExist(1));
-				if (!actions.Defer(actions.DoesLineExist(3) || actions.N(1) <= actions.N(2) ||
-					actions.N(7) > new BigInteger(99)))
+				actions.Defer(actions.DoesLineExist(3) || actions.N(1) <= actions.N(2) || actions.N(7) > new BigInteger(99));
+				if (!actions.ShouldStatementBeDeferred)
 				{
 					actions.UpdateCount(2, actions.N(1));
 					actions.UpdateCount(3, BigInteger.One);
@@ -37,8 +37,8 @@ namespace WSharp
 			builder.Add(new Line(2, BigInteger.One, actions =>
 			{
 				actions.Again(actions.DoesLineExist(2));
-				if (!actions.Defer(actions.DoesLineExist(3) || actions.N(2) <= actions.N(1) ||
-					actions.N(7) > new BigInteger(99)))
+				actions.Defer(actions.DoesLineExist(3) || actions.N(2) <= actions.N(1) || actions.N(7) > new BigInteger(99));
+				if (!actions.ShouldStatementBeDeferred)
 				{
 					actions.UpdateCount(1, actions.N(2));
 					actions.UpdateCount(3, BigInteger.One);
@@ -48,7 +48,8 @@ namespace WSharp
 			// 3 defer (5) print(N(1)+N(2));
 			builder.Add(new Line(3, BigInteger.One, actions =>
 			{
-				if (!actions.Defer(actions.DoesLineExist(5)))
+				actions.Defer(actions.DoesLineExist(5));
+				if (!actions.ShouldStatementBeDeferred)
 				{
 					actions.Print(actions.N(1) + " " + actions.N(2));
 				}
@@ -56,7 +57,8 @@ namespace WSharp
 			// 4 defer (5) print("1");
 			builder.Add(new Line(4, BigInteger.One, actions =>
 			{
-				if (!actions.Defer(actions.DoesLineExist(5)))
+				actions.Defer(actions.DoesLineExist(5));
+				if (!actions.ShouldStatementBeDeferred)
 				{
 					actions.Print("1");
 				}
@@ -71,7 +73,8 @@ namespace WSharp
 			// 6 defer (4) 3;
 			builder.Add(new Line(6, BigInteger.One, actions =>
 			{
-				if (!actions.Defer(actions.DoesLineExist(4)))
+				actions.Defer(actions.DoesLineExist(4));
+				if (!actions.ShouldStatementBeDeferred)
 				{
 					actions.UpdateCount(3, BigInteger.One);
 				}
@@ -84,7 +87,8 @@ namespace WSharp
 			// 8 defer (N(7)<100) -1#N(1),-2#N(2),-7#100,-3;
 			builder.Add(new Line(8, BigInteger.One, actions =>
 			{
-				if (!actions.Defer(actions.N(7) < new BigInteger(100)))
+				actions.Defer(actions.N(7) < new BigInteger(100));
+				if (!actions.ShouldStatementBeDeferred)
 				{
 					actions.UpdateCount(1, BigInteger.MinusOne * actions.N(1));
 					actions.UpdateCount(2, BigInteger.MinusOne * actions.N(2));
@@ -94,7 +98,8 @@ namespace WSharp
 			// 9 defer (3 || 6) 1,3; 
 			builder.Add(new Line(9, BigInteger.One, actions =>
 			{
-				if (!actions.Defer(actions.DoesLineExist(3) || actions.DoesLineExist(6)))
+				actions.Defer(actions.DoesLineExist(3) || actions.DoesLineExist(6));
+				if (!actions.ShouldStatementBeDeferred)
 				{
 					actions.UpdateCount(1, BigInteger.One);
 					actions.UpdateCount(3, BigInteger.One);

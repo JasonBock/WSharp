@@ -36,6 +36,7 @@ namespace WSharp.Runtime.Compiler.Syntax
 					this.kind = SyntaxKind.CommaToken;
 					this.position++;
 					break;
+				// TODO: Consider adding in a mod operator, %
 				case '+':
 					this.kind = SyntaxKind.PlusToken;
 					this.position++;
@@ -97,10 +98,11 @@ namespace WSharp.Runtime.Compiler.Syntax
 					}
 					break;
 				case '=':
-					if (this.Lookahead == '=')
+					this.position++;
+					if (this.Current == '=')
 					{
 						this.kind = SyntaxKind.EqualsEqualsToken;
-						this.position += 2;
+						this.position++;
 					}
 					break;
 				case '!':

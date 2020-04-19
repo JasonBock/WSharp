@@ -8,9 +8,6 @@ namespace WSharp.Runtime.Compiler.Binding
 	{
 		public abstract IEnumerable<BoundNode> GetChildren();
 
-		// TODO: At some point, Minsk removes this from BoundNode. If it completely goes away, OK,
-		// but if it moves somewhere else, I think this one may be OK to implement
-		// with Reflection, so long as it doesn't rely on member ordering in the file.
 		public abstract IEnumerable<(string name, object value)> GetProperties();
 
 		public void WriteTo(TextWriter writer) =>

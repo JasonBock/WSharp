@@ -4,8 +4,8 @@ namespace WSharp.Runtime
 {
 	public interface IExecutionEngineActions
 	{
-		bool Again(bool shouldKeep);
-		bool Defer(bool shouldDefer);
+		void Again(bool shouldKeep);
+		void Defer(bool shouldDefer);
 		bool DoesLineExist(BigInteger identifier);
 		BigInteger N(BigInteger identifier);
 		void Print(string message);
@@ -13,5 +13,8 @@ namespace WSharp.Runtime
 		string Read();
 		string U(BigInteger number);
 		void UpdateCount(BigInteger identifier, BigInteger delta);
+
+		bool ShouldStatementBeDeferred { get; }
+		bool ShouldStatementBeKept { get; }
 	}
 }

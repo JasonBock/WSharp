@@ -7,6 +7,10 @@ namespace WSharp.Runtime.Compiler.Symbols
 {
 	internal static class BuiltinFunctions
 	{
+		public static readonly FunctionSymbol Again = new FunctionSymbol(
+			"again", ImmutableArray.Create(new ParameterSymbol("shouldKeep", TypeSymbol.Boolean)), TypeSymbol.Void);
+		public static readonly FunctionSymbol Defer = new FunctionSymbol(
+			"defer", ImmutableArray.Create(new ParameterSymbol("shouldDefer", TypeSymbol.Boolean)), TypeSymbol.Void);
 		public static readonly FunctionSymbol Exists = new FunctionSymbol(
 			"exists", ImmutableArray.Create(new ParameterSymbol("lineNumber", TypeSymbol.Integer)), TypeSymbol.Boolean);
 		public static readonly FunctionSymbol N = new FunctionSymbol(

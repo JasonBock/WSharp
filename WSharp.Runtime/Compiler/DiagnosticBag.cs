@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using WSharp.Runtime.Compiler.Symbols;
 using WSharp.Runtime.Compiler.Syntax;
@@ -45,6 +46,9 @@ namespace WSharp.Runtime.Compiler
 		public void ReportUndefinedBinaryOperator(TextSpan span, string operatorText, TypeSymbol leftType, TypeSymbol rightType) => 
 			this.Report(span, $"Binary operator '{operatorText}' is not defined for types '{leftType}' and '{rightType}'.");
 
+		internal void ReportMissingLineStatements(TextSpan span) =>
+			this.Report(span, "No line statements exist.");
+
 		public void ReportUndefinedLineCountOperator(TextSpan span, string operatorText, TypeSymbol leftType, TypeSymbol rightType) => 
 			this.Report(span, $"Update line count operator '{operatorText}' is not defined for types '{leftType}' and '{rightType}'.");
 
@@ -59,5 +63,11 @@ namespace WSharp.Runtime.Compiler
 
 		internal void ReportCannotConvert(TextSpan span, TypeSymbol fromType, TypeSymbol toType) =>
 			this.Report(span, $"Cannot convert type '{fromType}' to '{toType}'.");
+
+		internal void ReportUnexpectedArgumentSyntax(TextSpan span) =>
+			this.Report(span, $"Unexpected argument syntax.");
+
+		internal void ReportUnexpectedLineStatementToken(TextSpan span) =>
+			this.Report(span, $"Unexpected line statement token.");
 	}
 }

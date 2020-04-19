@@ -74,6 +74,12 @@ namespace WSharp.Runtime.Compiler.Syntax
 		{
 			var lineNumber = this.ParsePrimaryExpression();
 			var lines = this.ParseLineExpressionStatements();
+
+			if(lines.Count == 0)
+			{
+				this.Diagnostics.ReportMissingLineStatements(lineNumber.Span);
+			}
+
 			return new LineStatementSyntax(new ExpressionStatementSyntax(lineNumber), lines);
 		}
 
@@ -93,7 +99,7 @@ namespace WSharp.Runtime.Compiler.Syntax
 					{
 						lineStatements.Add(new ExpressionStatementSyntax(this.ParseCallExpression()));
 					}
-					else
+					else if(this.Peek(0).Kind == SyntaxKind.NumberToken)
 					{
 						var lineNumber = this.ParseBinaryExpression();
 
@@ -110,6 +116,10 @@ namespace WSharp.Runtime.Compiler.Syntax
 							lineStatements.Add(new ExpressionStatementSyntax(new UpdateLineCountExpressionSyntax(
 								lineNumber, operatorToken, updateLineCountToken)));
 						}
+					}
+					else
+					{
+						this.Diagnostics.ReportUnexpectedLineStatementToken(startToken.Span);
 					}
 				}
 
@@ -169,17 +179,29 @@ namespace WSharp.Runtime.Compiler.Syntax
 		{
 			var nodesAndSeparators = ImmutableArray.CreateBuilder<SyntaxNode>();
 
-			while(this.Current.Kind != SyntaxKind.CloseParenthesisToken &&
+			var parseNextArgument = true;
+
+			while (parseNextArgument &&
+				this.Current.Kind != SyntaxKind.CloseParenthesisToken &&
 				this.Current.Kind != SyntaxKind.EndOfFileToken)
 			{
 				var expression = this.ParseBinaryExpression();
 				nodesAndSeparators.Add(expression);
 
-				if(this.Current.Kind != SyntaxKind.CloseParenthesisToken)
+				if (this.Current.Kind == SyntaxKind.CommaToken)
 				{
 					var comma = this.Match(SyntaxKind.CommaToken);
 					nodesAndSeparators.Add(comma);
 				}
+				else
+				{
+					parseNextArgument = false;
+				}
+			}
+
+			if(nodesAndSeparators.Count > 0 && nodesAndSeparators.Count % 2 == 0)
+			{
+				this.Diagnostics.ReportUnexpectedArgumentSyntax(this.Current.Span);
 			}
 
 			return new SeparatedSyntaxList<ExpressionSyntax>(nodesAndSeparators.ToImmutable());
