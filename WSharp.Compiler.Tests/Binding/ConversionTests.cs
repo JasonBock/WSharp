@@ -1,8 +1,8 @@
 ﻿using NUnit.Framework;
-using WSharp.Runtime.Compiler.Binding;
-using WSharp.Runtime.Compiler.Symbols;
+using WSharp.Compiler.Binding;
+using WSharp.Compiler.Symbols;
 
-namespace WSharp.Runtime.Tests.Compiler.Binding
+namespace WSharp.Compiler.Tests.Compiler.Binding
 {
 	public static class ConversionTests
 	{

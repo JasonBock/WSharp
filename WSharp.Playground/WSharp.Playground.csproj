@@ -30,7 +30,7 @@
     <PackageReference Include="Spackle" Version="9.0.0" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\WSharp.Runtime\WSharp.Runtime.csproj" />
+    <ProjectReference Include="..\WSharp.Compiler\WSharp.Compiler.csproj" />
   </ItemGroup>
   <ItemGroup>
     <None Update="FibonacciSequence.ws">

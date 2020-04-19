@@ -14,6 +14,6 @@
     <Version>0.1.0</Version>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\WSharp.Runtime\WSharp.Runtime.csproj" />
+    <ProjectReference Include="..\WSharp.Compiler\WSharp.Compiler.csproj" />
   </ItemGroup>
 </Project>

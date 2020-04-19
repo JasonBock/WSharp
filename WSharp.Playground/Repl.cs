@@ -6,9 +6,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using Spackle;
 using Spackle.Extensions;
+using WSharp.Compiler;
+using WSharp.Compiler.Syntax;
 using WSharp.Runtime;
-using WSharp.Runtime.Compiler;
-using WSharp.Runtime.Compiler.Syntax;
 
 namespace WSharp.Playground
 {

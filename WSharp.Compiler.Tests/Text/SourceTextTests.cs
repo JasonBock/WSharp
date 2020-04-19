@@ -1,7 +1,7 @@
 ﻿using NUnit.Framework;
-using WSharp.Runtime.Compiler.Text;
+using WSharp.Compiler.Text;
 
-namespace WSharp.Runtime.Tests.Compiler.Text
+namespace WSharp.Compiler.Tests.Compiler.Text
 {
 	public static class SourceTextTests
 	{

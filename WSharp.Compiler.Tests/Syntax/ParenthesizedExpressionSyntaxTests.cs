@@ -1,9 +1,9 @@
 ﻿using NUnit.Framework;
 using System.Collections.Immutable;
 using System.Numerics;
-using WSharp.Runtime.Compiler.Syntax;
+using WSharp.Compiler.Syntax;
 
-namespace WSharp.Runtime.Tests.Compiler.Syntax
+namespace WSharp.Compiler.Tests.Compiler.Syntax
 {
 	public static class ParenthesizedExpressionSyntaxTests
 	{

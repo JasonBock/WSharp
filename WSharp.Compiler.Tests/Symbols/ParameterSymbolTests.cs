@@ -1,7 +1,7 @@
 ﻿using NUnit.Framework;
-using WSharp.Runtime.Compiler.Symbols;
+using WSharp.Compiler.Symbols;
 
-namespace WSharp.Runtime.Tests.Compiler.Symbols
+namespace WSharp.Compiler.Tests.Compiler.Symbols
 {
 	public static class ParameterSymbolTests
 	{

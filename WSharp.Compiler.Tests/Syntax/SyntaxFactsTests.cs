@@ -2,9 +2,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using WSharp.Runtime.Compiler.Syntax;
+using WSharp.Compiler.Syntax;
 
-namespace WSharp.Runtime.Tests.Compiler.Syntax
+namespace WSharp.Compiler.Tests.Compiler.Syntax
 {
 	public static class SyntaxFactsTests
 	{

@@ -149,9 +149,37 @@ namespace WSharp.Runtime.Tests
 			Assert.That(writer.GetStringBuilder().ToString(), Is.EqualTo($"{message}{Environment.NewLine}"));
 		}
 
-		// TODO: Need a test for Read().
-		// TODO: Need a test for Defer().
-		// TODO: Need a test for Again().
+		[Test]
+		public static void CallRead()
+		{
+			const string message = "hello";
+			var lines = ImmutableArray.Create(new Line(1, 3, _ => { }));
+			var engine = new ExecutionEngine(lines, new SecureRandom(), new StringWriter(), new StringReader(message));
+
+			Assert.That(engine.Read(), Is.EqualTo(message));
+		}
+
+		[TestCase(true)]
+		[TestCase(false)]
+		public static void CallDefer(bool shouldDefer)
+		{
+			var lines = ImmutableArray.Create(new Line(1, 3, _ => { }));
+			var engine = new ExecutionEngine(lines, new SecureRandom(), new StringWriter(), new StringReader(string.Empty));
+			engine.Defer(shouldDefer);
+
+			Assert.That(engine.ShouldStatementBeDeferred, Is.EqualTo(shouldDefer), nameof(engine.ShouldStatementBeDeferred));
+		}
+
+		[TestCase(true)]
+		[TestCase(false)]
+		public static void CallAgain(bool shouldKeep)
+		{
+			var lines = ImmutableArray.Create(new Line(1, 3, _ => { }));
+			var engine = new ExecutionEngine(lines, new SecureRandom(), new StringWriter(), new StringReader(string.Empty));
+			engine.Again(shouldKeep);
+
+			Assert.That(engine.ShouldStatementBeKept, Is.EqualTo(shouldKeep), nameof(engine.ShouldStatementBeKept));
+		}
 
 		[Test]
 		public static void CallU()

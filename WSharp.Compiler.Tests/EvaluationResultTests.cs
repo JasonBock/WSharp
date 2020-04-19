@@ -1,8 +1,8 @@
 ﻿using NUnit.Framework;
 using System.Collections.Immutable;
-using WSharp.Runtime.Compiler;
+using WSharp.Runtime;
 
-namespace WSharp.Runtime.Tests.Compiler
+namespace WSharp.Compiler.Tests.Compiler
 {
 	public static class EvaluationResultTests
 	{

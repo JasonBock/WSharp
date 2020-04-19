@@ -1,8 +1,7 @@
 ﻿using NUnit.Framework;
-using WSharp.Runtime.Compiler;
-using WSharp.Runtime.Compiler.Text;
+using WSharp.Compiler.Text;
 
-namespace WSharp.Runtime.Tests.Compiler
+namespace WSharp.Compiler.Tests.Compiler
 {
 	public static class DiagnosticTests
 	{
