@@ -43,5 +43,50 @@ namespace WSharp.Compiler.Tests.Compiler.Text
 				Assert.That(span.End, Is.EqualTo(4), nameof(span.End));
 			});
 		}
+
+		[Test]
+		public static void CompareWhenStartIsGreater()
+		{
+			var target = new TextSpan(2, 1);
+			var other = new TextSpan(1, 1);
+
+			Assert.That(target.CompareTo(other), Is.GreaterThan(0));
+		}
+
+		[Test]
+		public static void CompareWhenStartIsLesser()
+		{
+			var target = new TextSpan(1, 1);
+			var other = new TextSpan(2, 1);
+
+			Assert.That(target.CompareTo(other), Is.LessThan(0));
+		}
+
+		[Test]
+		public static void CompareWhenLengthIsGreater()
+		{
+			var target = new TextSpan(1, 2);
+			var other = new TextSpan(1, 1);
+
+			Assert.That(target.CompareTo(other), Is.GreaterThan(0));
+		}
+
+		[Test]
+		public static void CompareWhenLengthIsLesser()
+		{
+			var target = new TextSpan(1, 1);
+			var other = new TextSpan(1, 2);
+
+			Assert.That(target.CompareTo(other), Is.LessThan(0));
+		}
+
+		[Test]
+		public static void CompareWhenEqual()
+		{
+			var target = new TextSpan(1, 1);
+			var other = new TextSpan(1, 1);
+
+			Assert.That(target.CompareTo(other), Is.EqualTo(0));
+		}
 	}
 }

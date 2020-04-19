@@ -14,11 +14,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WSharp.Playground", "WSharp.Playground\WSharp.Playground.csproj", "{4FC121DA-8894-4412-895C-45C657DF5874}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WSharp.Compiler", "WSharp.Compiler\WSharp.Compiler.csproj", "{C7B20EB8-37FB-4504-A035-976CB672E104}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WSharp.Compiler.Tests", "WSharp.Compiler.Tests\WSharp.Compiler.Tests.csproj", "{51D85697-5F28-4F09-92D7-06E36D8947DF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WSharp.Compiler.Tests", "WSharp.Compiler.Tests\WSharp.Compiler.Tests.csproj", "{51D85697-5F28-4F09-92D7-06E36D8947DF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -38,10 +36,6 @@ Global
 		{16202142-F417-4C07-8E4E-98F33CAE16C0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{16202142-F417-4C07-8E4E-98F33CAE16C0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{16202142-F417-4C07-8E4E-98F33CAE16C0}.Release|Any CPU.Build.0 = Release|Any CPU
-		{4FC121DA-8894-4412-895C-45C657DF5874}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4FC121DA-8894-4412-895C-45C657DF5874}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4FC121DA-8894-4412-895C-45C657DF5874}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4FC121DA-8894-4412-895C-45C657DF5874}.Release|Any CPU.Build.0 = Release|Any CPU
 		{C7B20EB8-37FB-4504-A035-976CB672E104}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{C7B20EB8-37FB-4504-A035-976CB672E104}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C7B20EB8-37FB-4504-A035-976CB672E104}.Release|Any CPU.ActiveCfg = Release|Any CPU
