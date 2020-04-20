@@ -9,10 +9,11 @@ namespace WSharp.Compiler.Tests.Compiler.Syntax
 		[Test]
 		public static void Create()
 		{
+			var tree = SyntaxTree.Parse("!");
 			var value = new object();
-			var token = new SyntaxToken(SyntaxKind.BangToken, 1, "a", value);
+			var token = new SyntaxToken(tree, SyntaxKind.BangToken, 1, "a", value);
 
-			var syntax = new LiteralExpressionSyntax(token);
+			var syntax = new LiteralExpressionSyntax(tree, token);
 
 			Assert.Multiple(() =>
 			{

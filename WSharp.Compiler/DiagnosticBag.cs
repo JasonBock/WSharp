@@ -19,55 +19,55 @@ namespace WSharp.Compiler
 		public void AddRange(DiagnosticBag diagnostics) =>
 			this.diagnostics.AddRange(diagnostics);
 
-		private void Report(TextSpan span, string message) =>
-			this.diagnostics.Add(new Diagnostic(span, message));
+		private void Report(TextLocation location, string message) =>
+			this.diagnostics.Add(new Diagnostic(location, message));
 
-		public void ReportInvalidNumber(TextSpan span, string text, TypeSymbol type) =>
-			this.Report(span, $"The number '{text}' isn't a valid '{type}'.");
+		public void ReportInvalidNumber(TextLocation location, string text, TypeSymbol type) =>
+			this.Report(location, $"The number '{text}' isn't a valid '{type}'.");
 
-		public void ReportUnterminatedString(TextSpan span) =>
-			this.Report(span, $"Unterminated string literal.");
+		public void ReportUnterminatedString(TextLocation location) =>
+			this.Report(location, $"Unterminated string literal.");
 
-		public void ReportBadCharacter(int position, char character) => 
-			this.Report(new TextSpan(position, 1), $"Bad character input: '{character}'.");
+		public void ReportBadCharacter(TextLocation location, char character) => 
+			this.Report(location, $"Bad character input: '{character}'.");
 
-		public void ReportUnexpectedToken(TextSpan span, SyntaxKind actualKind, SyntaxKind expectedKind) => 
-			this.Report(span, $"Unexpected token <{actualKind}>, expected <{expectedKind}>.");
+		public void ReportUnexpectedToken(TextLocation location, SyntaxKind actualKind, SyntaxKind expectedKind) => 
+			this.Report(location, $"Unexpected token <{actualKind}>, expected <{expectedKind}>.");
 
-		public void ReportExpressionMustHaveValue(TextSpan span) =>
-			this.Report(span, "Expression must have a value.");
+		public void ReportExpressionMustHaveValue(TextLocation location) =>
+			this.Report(location, "Expression must have a value.");
 
-		public void ReportMissingSemicolon(TextSpan span) => 
-			this.Report(span, "; expected.");
+		public void ReportMissingSemicolon(TextLocation location) => 
+			this.Report(location, "; expected.");
 
-		public void ReportUndefinedUnaryOperator(TextSpan span, string operatorText, TypeSymbol operandType) =>
-			this.Report(span, $"Unary operator '{operatorText}' is not defined for type '{operandType}'.");
+		public void ReportUndefinedUnaryOperator(TextLocation location, string operatorText, TypeSymbol operandType) =>
+			this.Report(location, $"Unary operator '{operatorText}' is not defined for type '{operandType}'.");
 
-		public void ReportUndefinedBinaryOperator(TextSpan span, string operatorText, TypeSymbol leftType, TypeSymbol rightType) => 
-			this.Report(span, $"Binary operator '{operatorText}' is not defined for types '{leftType}' and '{rightType}'.");
+		public void ReportUndefinedBinaryOperator(TextLocation location, string operatorText, TypeSymbol leftType, TypeSymbol rightType) => 
+			this.Report(location, $"Binary operator '{operatorText}' is not defined for types '{leftType}' and '{rightType}'.");
 
-		internal void ReportMissingLineStatements(TextSpan span) =>
-			this.Report(span, "No line statements exist.");
+		internal void ReportMissingLineStatements(TextLocation location) =>
+			this.Report(location, "No line statements exist.");
 
-		public void ReportUndefinedLineCountOperator(TextSpan span, string operatorText, TypeSymbol leftType, TypeSymbol rightType) => 
-			this.Report(span, $"Update line count operator '{operatorText}' is not defined for types '{leftType}' and '{rightType}'.");
+		public void ReportUndefinedLineCountOperator(TextLocation location, string operatorText, TypeSymbol leftType, TypeSymbol rightType) => 
+			this.Report(location, $"Update line count operator '{operatorText}' is not defined for types '{leftType}' and '{rightType}'.");
 
-		public void ReportWrongArgumentCount(TextSpan span, string name, int expectedCount, int actualCount) =>
-			this.Report(span, $"Function '{name}' requires {expectedCount} argument(s) but was given {actualCount}.");
+		public void ReportWrongArgumentCount(TextLocation location, string name, int expectedCount, int actualCount) =>
+			this.Report(location, $"Function '{name}' requires {expectedCount} argument(s) but was given {actualCount}.");
 
 		public void ReportUndefinedFunction(SyntaxToken identifier) =>
-			this.Report(identifier.Span, $"Function '{identifier.Text}' doesn't exist.");
+			this.Report(identifier.Location, $"Function '{identifier.Text}' doesn't exist.");
 
-		internal void ReportWrongArgumentType(TextSpan span, string name, TypeSymbol expectedType, TypeSymbol actualType) =>
-			this.Report(span, $"Parameter '{name}' requires a value of type {expectedType} but was given a value of type {actualType}.");
+		internal void ReportWrongArgumentType(TextLocation location, string name, TypeSymbol expectedType, TypeSymbol actualType) =>
+			this.Report(location, $"Parameter '{name}' requires a value of type {expectedType} but was given a value of type {actualType}.");
 
-		internal void ReportCannotConvert(TextSpan span, TypeSymbol fromType, TypeSymbol toType) =>
-			this.Report(span, $"Cannot convert type '{fromType}' to '{toType}'.");
+		internal void ReportCannotConvert(TextLocation location, TypeSymbol fromType, TypeSymbol toType) =>
+			this.Report(location, $"Cannot convert type '{fromType}' to '{toType}'.");
 
-		internal void ReportUnexpectedArgumentSyntax(TextSpan span) =>
-			this.Report(span, $"Unexpected argument syntax.");
+		internal void ReportUnexpectedArgumentSyntax(TextLocation location) =>
+			this.Report(location, $"Unexpected argument syntax.");
 
-		internal void ReportUnexpectedLineStatementToken(TextSpan span) =>
-			this.Report(span, $"Unexpected line statement token.");
+		internal void ReportUnexpectedLineStatementToken(TextLocation location) =>
+			this.Report(location, $"Unexpected line statement token.");
 	}
 }

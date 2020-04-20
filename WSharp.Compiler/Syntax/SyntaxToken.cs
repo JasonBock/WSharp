@@ -7,11 +7,10 @@ namespace WSharp.Compiler.Syntax
 	public sealed class SyntaxToken 
 		: SyntaxNode
 	{
-		private SyntaxToken() =>
-			(this.Text, this.Value) = (string.Empty, null);
-
-		public SyntaxToken(SyntaxKind kind, int position, string text, object? value) =>
-			(this.Kind, this.Position, this.Text, this.Value) = (kind, position, text, value);
+		public SyntaxToken(SyntaxTree tree, SyntaxKind kind, int position, string text, object? value)
+			: base(tree) =>
+				(this.Kind, this.Position, this.Text, this.Value) = 
+					(kind, position, text, value);
 
 		public override IEnumerable<SyntaxNode> GetChildren() => Enumerable.Empty<SyntaxNode>();
 

@@ -5,8 +5,9 @@ namespace WSharp.Compiler.Syntax
 	public sealed class LineStatementsSyntax
 		: StatementSyntax
 	{
-		public LineStatementsSyntax(List<LineStatementSyntax> lines) =>
-			this.Lines = lines;
+		public LineStatementsSyntax(SyntaxTree tree, List<LineStatementSyntax> lines)
+			: base(tree) =>
+				this.Lines = lines;
 
 		public override IEnumerable<SyntaxNode> GetChildren()
 		{

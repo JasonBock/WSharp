@@ -10,11 +10,12 @@ namespace WSharp.Compiler.Tests.Compiler.Syntax
 		[Test]
 		public static void Create()
 		{
-			var left = new LiteralExpressionSyntax(new SyntaxToken(SyntaxKind.NumberToken, 0, "1", BigInteger.One));
-			var @operator = new SyntaxToken(SyntaxKind.PlusToken, 1, "+", null);
-			var right = new LiteralExpressionSyntax(new SyntaxToken(SyntaxKind.NumberToken, 2, "2", BigInteger.Parse("2")));
+			var tree = SyntaxTree.Parse("1+2");
+			var left = new LiteralExpressionSyntax(tree, new SyntaxToken(tree, SyntaxKind.NumberToken, 0, "1", BigInteger.One));
+			var @operator = new SyntaxToken(tree, SyntaxKind.PlusToken, 1, "+", null);
+			var right = new LiteralExpressionSyntax(tree, new SyntaxToken(tree, SyntaxKind.NumberToken, 2, "2", BigInteger.Parse("2")));
 
-			var syntax = new BinaryExpressionSyntax(left, @operator, right);
+			var syntax = new BinaryExpressionSyntax(tree, left, @operator, right);
 
 			Assert.Multiple(() =>
 			{

@@ -5,10 +5,11 @@ namespace WSharp.Compiler.Syntax
 	public sealed class CallExpressionSyntax
 		: ExpressionSyntax
 	{
-		public CallExpressionSyntax(SyntaxToken identifier, SyntaxToken openParenthesisToken,
-			SeparatedSyntaxList<ExpressionSyntax> arguments, SyntaxToken closeParenthesisToken) => 
-			(this.Identifier, this.OpenParenthesisToken, this.Arguments, this.CloseParenthesisToken) =
-				(identifier, openParenthesisToken, arguments, closeParenthesisToken);
+		public CallExpressionSyntax(SyntaxTree tree, SyntaxToken identifier, SyntaxToken openParenthesisToken,
+			SeparatedSyntaxList<ExpressionSyntax> arguments, SyntaxToken closeParenthesisToken)
+			: base(tree) => 
+				(this.Identifier, this.OpenParenthesisToken, this.Arguments, this.CloseParenthesisToken) =
+					(identifier, openParenthesisToken, arguments, closeParenthesisToken);
 
 		public SyntaxToken Identifier { get; }
 		public override SyntaxKind Kind => SyntaxKind.CallExpression;

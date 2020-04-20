@@ -1,5 +1,4 @@
-﻿using System;
-using System.Numerics;
+﻿using System.Numerics;
 using System.Text;
 using WSharp.Compiler.Symbols;
 using WSharp.Compiler.Text;
@@ -12,10 +11,14 @@ namespace WSharp.Compiler.Syntax
 		private int position;
 		private int start;
 		private readonly SourceText text;
+		private readonly SyntaxTree tree;
 		private object? value;
 
-		public Lexer(SourceText text) =>
-			this.text = text ?? throw new ArgumentNullException(nameof(text));
+		public Lexer(SyntaxTree tree)
+		{
+			this.text = tree.Text;
+			this.tree = tree;
+		}
 
 		public SyntaxToken Lex()
 		{
@@ -176,7 +179,8 @@ namespace WSharp.Compiler.Syntax
 					}
 					else
 					{
-						this.Diagnostics.ReportBadCharacter(this.position, this.Current);
+						this.Diagnostics.ReportBadCharacter(
+							new TextLocation(this.text, new TextSpan(this.position, 1)), this.Current);
 						this.position++;
 					}
 
@@ -191,7 +195,7 @@ namespace WSharp.Compiler.Syntax
 				text = this.text.ToString(this.start, length);
 			}
 
-			return new SyntaxToken(this.kind, this.start, text, this.value);
+			return new SyntaxToken(this.tree, this.kind, this.start, text, this.value);
 		}
 
 		private void ReadString()
@@ -207,8 +211,8 @@ namespace WSharp.Compiler.Syntax
 					case '\0':
 					case '\r':
 					case '\n':
-						var span = new TextSpan(this.start, 1);
-						this.Diagnostics.ReportUnterminatedString(span);
+						this.Diagnostics.ReportUnterminatedString(
+							new TextLocation(this.text, new TextSpan(this.start, 1)));
 						done = true;
 						break;
 					case '"':
@@ -268,7 +272,9 @@ namespace WSharp.Compiler.Syntax
 
 			if (!BigInteger.TryParse(text, out var value))
 			{
-				this.Diagnostics.ReportInvalidNumber(new TextSpan(this.start, length), text, TypeSymbol.Integer);
+				this.Diagnostics.ReportInvalidNumber(
+					new TextLocation(this.text, new TextSpan(this.start, length)), 
+					text, TypeSymbol.Integer);
 			}
 
 			this.kind = SyntaxKind.NumberToken;

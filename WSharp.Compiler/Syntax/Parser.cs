@@ -9,10 +9,10 @@ namespace WSharp.Compiler.Syntax
 		private int position;
 		private readonly ImmutableArray<SyntaxToken> tokens;
 
-		public Parser(SourceText text)
+		public Parser(SyntaxTree tree)
 		{
 			var tokens = new List<SyntaxToken>();
-			var lexer = new Lexer(text);
+			var lexer = new Lexer(tree);
 
 			SyntaxToken token;
 
@@ -27,7 +27,8 @@ namespace WSharp.Compiler.Syntax
 				}
 			} while (token.Kind != SyntaxKind.EndOfFileToken);
 
-			this.Text = text;
+			this.Tree = tree;
+			this.Text = tree.Text;
 			this.tokens = tokens.ToImmutableArray();
 			this.Diagnostics.AddRange(lexer.Diagnostics);
 		}
@@ -39,8 +40,8 @@ namespace WSharp.Compiler.Syntax
 				return this.Next();
 			}
 
-			this.Diagnostics.ReportUnexpectedToken(this.Current.Span, this.Current.Kind, kind);
-			return new SyntaxToken(kind, this.Current.Position, string.Empty, null);
+			this.Diagnostics.ReportUnexpectedToken(this.Current.Location, this.Current.Kind, kind);
+			return new SyntaxToken(this.Tree, kind, this.Current.Position, string.Empty, null);
 		}
 
 		private SyntaxToken Next()
@@ -54,7 +55,7 @@ namespace WSharp.Compiler.Syntax
 		{
 			var lineStatements = this.ParseLineStatements();
 			var endOfFileToken = this.Match(SyntaxKind.EndOfFileToken);
-			return new CompilationUnitSyntax(lineStatements, endOfFileToken);
+			return new CompilationUnitSyntax(this.Tree, lineStatements, endOfFileToken);
 		}
 
 		private LineStatementsSyntax ParseLineStatements()
@@ -67,7 +68,7 @@ namespace WSharp.Compiler.Syntax
 				lines.Add(this.ParseLineStatement());
 			}
 
-			return new LineStatementsSyntax(lines);
+			return new LineStatementsSyntax(this.Tree, lines);
 		}
 
 		private LineStatementSyntax ParseLineStatement()
@@ -77,10 +78,10 @@ namespace WSharp.Compiler.Syntax
 
 			if(lines.Count == 0)
 			{
-				this.Diagnostics.ReportMissingLineStatements(lineNumber.Span);
+				this.Diagnostics.ReportMissingLineStatements(lineNumber.Location);
 			}
 
-			return new LineStatementSyntax(new ExpressionStatementSyntax(lineNumber), lines);
+			return new LineStatementSyntax(this.Tree, new ExpressionStatementSyntax(this.Tree, lineNumber), lines);
 		}
 
 		private List<ExpressionStatementSyntax> ParseLineExpressionStatements()
@@ -97,7 +98,7 @@ namespace WSharp.Compiler.Syntax
 				{
 					if(this.Peek(0).Kind == SyntaxKind.IdentifierToken)
 					{
-						lineStatements.Add(new ExpressionStatementSyntax(this.ParseCallExpression()));
+						lineStatements.Add(new ExpressionStatementSyntax(this.Tree, this.ParseCallExpression()));
 					}
 					else if(this.Peek(0).Kind == SyntaxKind.NumberToken ||
 						(this.Peek(0).Kind == SyntaxKind.MinusToken && this.Peek(1).Kind == SyntaxKind.NumberToken))
@@ -107,19 +108,21 @@ namespace WSharp.Compiler.Syntax
 
 						if (nextToken.Kind != SyntaxKind.UpdateLineCountToken)
 						{
-							lineStatements.Add(new ExpressionStatementSyntax(new UnaryUpdateLineCountExpressionSyntax(lineNumber)));
+							lineStatements.Add(new ExpressionStatementSyntax(
+								this.Tree, new UnaryUpdateLineCountExpressionSyntax(this.Tree, lineNumber)));
 						}
 						else
 						{
 							var operatorToken = this.Match(SyntaxKind.UpdateLineCountToken);
 							var updateLineCountToken = this.ParseBinaryExpression();
-							lineStatements.Add(new ExpressionStatementSyntax(new UpdateLineCountExpressionSyntax(
-								lineNumber, operatorToken, updateLineCountToken)));
+							lineStatements.Add(new ExpressionStatementSyntax(
+								this.Tree, new UpdateLineCountExpressionSyntax(
+									this.Tree, lineNumber, operatorToken, updateLineCountToken)));
 						}
 					}
 					else
 					{
-						this.Diagnostics.ReportUnexpectedLineStatementToken(startToken.Span);
+						this.Diagnostics.ReportUnexpectedLineStatementToken(startToken.Location);
 					}
 				}
 
@@ -139,7 +142,7 @@ namespace WSharp.Compiler.Syntax
 				{
 					if (!semiColonFound)
 					{
-						this.Diagnostics.ReportMissingSemicolon(new TextSpan(this.Current.Span.Start - 1, 1));
+						this.Diagnostics.ReportMissingSemicolon(new TextLocation(this.Text, new TextSpan(this.Current.Span.Start - 1, 1)));
 					}
 
 					break;
@@ -172,7 +175,7 @@ namespace WSharp.Compiler.Syntax
 			var arguments = this.ParseArguments();
 			var closeParenthesisToken = this.Match(SyntaxKind.CloseParenthesisToken);
 
-			return new CallExpressionSyntax(identifier, openParenthesisToken, arguments, closeParenthesisToken);
+			return new CallExpressionSyntax(this.Tree, identifier, openParenthesisToken, arguments, closeParenthesisToken);
 		}
 
 		private SeparatedSyntaxList<ExpressionSyntax> ParseArguments()
@@ -201,7 +204,7 @@ namespace WSharp.Compiler.Syntax
 
 			if(nodesAndSeparators.Count > 0 && nodesAndSeparators.Count % 2 == 0)
 			{
-				this.Diagnostics.ReportUnexpectedArgumentSyntax(this.Current.Span);
+				this.Diagnostics.ReportUnexpectedArgumentSyntax(this.Current.Location);
 			}
 
 			return new SeparatedSyntaxList<ExpressionSyntax>(nodesAndSeparators.ToImmutable());
@@ -210,7 +213,7 @@ namespace WSharp.Compiler.Syntax
 		private ExpressionSyntax ParseNumberLiteralExpression()
 		{
 			var numberToken = this.Match(SyntaxKind.NumberToken);
-			return new LiteralExpressionSyntax(numberToken);
+			return new LiteralExpressionSyntax(this.Tree, numberToken);
 		}
 
 		private ExpressionSyntax ParseParenthesizedExpression()
@@ -218,7 +221,7 @@ namespace WSharp.Compiler.Syntax
 			var left = this.Match(SyntaxKind.OpenParenthesisToken);
 			var expression = this.ParseBinaryExpression();
 			var right = this.Match(SyntaxKind.CloseParenthesisToken);
-			return new ParenthesizedExpressionSyntax(left, expression, right);
+			return new ParenthesizedExpressionSyntax(this.Tree, left, expression, right);
 		}
 
 		private ExpressionSyntax ParseBooleanLiteralExpression()
@@ -226,11 +229,11 @@ namespace WSharp.Compiler.Syntax
 			var isTrue = this.Current.Kind == SyntaxKind.TrueKeyword;
 			var keywordToken = isTrue ? 
 				this.Match(SyntaxKind.TrueKeyword) : this.Match(SyntaxKind.FalseKeyword);
-			return new LiteralExpressionSyntax(keywordToken, isTrue);
+			return new LiteralExpressionSyntax(this.Tree, keywordToken, isTrue);
 		}
 
 		private ExpressionSyntax ParseStringLiteralExpression() =>
-			new LiteralExpressionSyntax(this.Match(SyntaxKind.StringToken));
+			new LiteralExpressionSyntax(this.Tree, this.Match(SyntaxKind.StringToken));
 
 		private ExpressionSyntax ParseBinaryExpression(int parentPrecendence = 0)
 		{
@@ -242,7 +245,7 @@ namespace WSharp.Compiler.Syntax
 			{
 				var operatorToken = this.Next();
 				var operand = this.ParseBinaryExpression(unaryOperatorPrecedence);
-				left = new UnaryExpressionSyntax(operatorToken, operand);
+				left = new UnaryExpressionSyntax(this.Tree, operatorToken, operand);
 			}
 			else
 			{
@@ -260,7 +263,7 @@ namespace WSharp.Compiler.Syntax
 
 				var operatorToken = this.Next();
 				var right = this.ParseBinaryExpression(precedence);
-				left = new BinaryExpressionSyntax(left, operatorToken, right);
+				left = new BinaryExpressionSyntax(this.Tree, left, operatorToken, right);
 			}
 
 			return left;
@@ -280,5 +283,6 @@ namespace WSharp.Compiler.Syntax
 		private SyntaxToken Current => this.Peek(0);
 		public DiagnosticBag Diagnostics { get; } = new DiagnosticBag();
 		public SourceText Text { get; }
+		public SyntaxTree Tree { get; }
 	}
 }

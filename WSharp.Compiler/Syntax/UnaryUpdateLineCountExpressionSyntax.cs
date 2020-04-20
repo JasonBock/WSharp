@@ -5,8 +5,9 @@ namespace WSharp.Compiler.Syntax
 	public sealed class UnaryUpdateLineCountExpressionSyntax
 		: ExpressionSyntax
 	{
-		public UnaryUpdateLineCountExpressionSyntax(ExpressionSyntax lineNumber) =>
-			this.LineNumber = lineNumber;
+		public UnaryUpdateLineCountExpressionSyntax(SyntaxTree tree, ExpressionSyntax lineNumber)
+			: base(tree) =>
+				this.LineNumber = lineNumber;
 
 		public override IEnumerable<SyntaxNode> GetChildren()
 		{

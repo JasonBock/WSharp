@@ -5,11 +5,12 @@ namespace WSharp.Compiler.Syntax
 	public sealed class LiteralExpressionSyntax 
 		: ExpressionSyntax
 	{
-		public LiteralExpressionSyntax(SyntaxToken literalToken)
-			: this(literalToken, literalToken.Value) { }
+		public LiteralExpressionSyntax(SyntaxTree tree, SyntaxToken literalToken)
+			: this(tree, literalToken, literalToken.Value) { }
 
-		public LiteralExpressionSyntax(SyntaxToken literalToken, object? value) =>
-			(this.LiteralToken, this.Value) = (literalToken, value);
+		public LiteralExpressionSyntax(SyntaxTree tree, SyntaxToken literalToken, object? value)
+			: base(tree) =>
+				(this.LiteralToken, this.Value) = (literalToken, value);
 
 		public override IEnumerable<SyntaxNode> GetChildren()
 		{

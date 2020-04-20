@@ -5,8 +5,9 @@ namespace WSharp.Compiler.Syntax
 	public sealed class BinaryExpressionSyntax 
 		: ExpressionSyntax
 	{
-		public BinaryExpressionSyntax(ExpressionSyntax left, SyntaxToken operatorToken, ExpressionSyntax right) => 
-			(this.Left, this.OperatorToken, this.Right) = (left, operatorToken, right);
+		public BinaryExpressionSyntax(SyntaxTree tree, ExpressionSyntax left, SyntaxToken operatorToken, ExpressionSyntax right)
+			: base(tree) => 
+				(this.Left, this.OperatorToken, this.Right) = (left, operatorToken, right);
 
 		public override IEnumerable<SyntaxNode> GetChildren()
 		{

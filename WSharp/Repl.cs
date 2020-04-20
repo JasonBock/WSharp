@@ -1,14 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 using Spackle;
 using Spackle.Extensions;
 using WSharp.Compiler;
 using WSharp.Compiler.Syntax;
-using WSharp.Extensions;
 using WSharp.Runtime;
 
 namespace WSharp
@@ -61,6 +58,8 @@ namespace WSharp
 			{
 				var fileName = input.Substring("#loadFile".Length).Trim();
 
+				// TODO: We lose the file information because we just read the lines into the list,
+				// so the file name won't show up in the diagnostics.
 				if(File.Exists(fileName))
 				{
 					this.lines.Clear();
@@ -130,7 +129,7 @@ namespace WSharp
 
 			if (diagnostics.Length > 0)
 			{
-				tree.PrintDiagnostics(diagnostics);
+				DiagnosticsPrinter.Print(diagnostics);
 			}
 			else
 			{

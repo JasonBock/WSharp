@@ -5,7 +5,8 @@ namespace WSharp.Compiler.Syntax
 	public sealed class ParenthesizedExpressionSyntax
 		: ExpressionSyntax
 	{
-		public ParenthesizedExpressionSyntax(SyntaxToken openParenthesisToken, ExpressionSyntax expression, SyntaxToken closeParenthesisToken)
+		public ParenthesizedExpressionSyntax(SyntaxTree tree, SyntaxToken openParenthesisToken, ExpressionSyntax expression, SyntaxToken closeParenthesisToken)
+			: base(tree)
 		{
 			if(openParenthesisToken.Kind != SyntaxKind.OpenParenthesisToken)
 			{

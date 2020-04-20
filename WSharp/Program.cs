@@ -5,7 +5,6 @@ using System.IO;
 using System.Threading.Tasks;
 using WSharp.Compiler;
 using WSharp.Compiler.Syntax;
-using WSharp.Extensions;
 using WSharp.Runtime;
 
 namespace WSharp
@@ -42,14 +41,14 @@ namespace WSharp
 				else
 				{
 					var text = await File.ReadAllTextAsync(file.FullName);
-					var tree = SyntaxTree.Parse(text);
+					var tree = await SyntaxTree.LoadAsync(file);
 					var compilation = new Compilation(tree);
 					var evaluation = compilation.Evaluate();
 					var diagnostics = evaluation.Diagnostics;
 
 					if(diagnostics.Length > 0)
 					{
-						tree.PrintDiagnostics(diagnostics);
+						DiagnosticsPrinter.Print(diagnostics);
 					}
 					else
 					{

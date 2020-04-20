@@ -7,10 +7,14 @@ namespace WSharp.Compiler.Syntax
 {
 	public abstract class SyntaxNode
 	{
+		protected SyntaxNode(SyntaxTree tree) => this.Tree = tree;
+
 		public abstract IEnumerable<SyntaxNode> GetChildren();
 
 		public void WriteTo(TextWriter writer) => 
 			SyntaxNode.Print(writer, this);
+
+		public TextLocation Location => new TextLocation(this.Tree.Text, this.Span);
 
 		public SyntaxToken GetLastToken()
 		{
@@ -58,5 +62,7 @@ namespace WSharp.Compiler.Syntax
 				return TextSpan.FromBounds(first.Start, last.End);
 			}
 		}
+
+		public SyntaxTree Tree { get; }
 	}
 }

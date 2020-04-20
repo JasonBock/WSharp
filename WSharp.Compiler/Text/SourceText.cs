@@ -1,11 +1,12 @@
 ﻿using System.Collections.Immutable;
+using System.IO;
 
 namespace WSharp.Compiler.Text
 {
 	public sealed class SourceText
 	{
-		private SourceText(string text) => 
-			(this.Text, this.Lines) = (text, SourceText.ParseLines(this, text));
+		private SourceText(string text, FileInfo? file) => 
+			(this.Text, this.Lines, this.File) = (text, SourceText.ParseLines(this, text), file);
 
 		public char this[int index] => this.Text[index];
 
@@ -103,9 +104,10 @@ namespace WSharp.Compiler.Text
 			return 0;
 		}
 
-		public static SourceText From(string text) => 
-			new SourceText(text);
+		public static SourceText From(string text, FileInfo? file = null) => 
+			new SourceText(text, file);
 
+		public FileInfo? File { get; }
 		private string Text { get; }
 		public ImmutableArray<TextLine> Lines { get; }
 	}

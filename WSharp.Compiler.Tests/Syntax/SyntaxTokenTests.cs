@@ -12,7 +12,8 @@ namespace WSharp.Compiler.Tests.Compiler.Syntax
 			var position = 3;
 			var text = "a";
 
-			var token = new SyntaxToken(kind, position, text, null);
+			var tree = SyntaxTree.Parse("!");
+			var token = new SyntaxToken(tree, kind, position, text, null);
 
 			Assert.Multiple(() =>
 			{
@@ -33,7 +34,8 @@ namespace WSharp.Compiler.Tests.Compiler.Syntax
 			var text = "a";
 			var value = new object();
 
-			var token = new SyntaxToken(kind, position, text, value);
+			var tree = SyntaxTree.Parse("!");
+			var token = new SyntaxToken(tree, kind, position, text, value);
 
 			Assert.Multiple(() =>
 			{

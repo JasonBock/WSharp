@@ -10,11 +10,12 @@ namespace WSharp.Compiler.Tests.Compiler
 		{
 			var span = new TextSpan(3, 4);
 			var message = "diagnostic";
-			var diagnostic = new Diagnostic(span, message);
+			var location = new TextLocation(SourceText.From("1"), span);
+			var diagnostic = new Diagnostic(location, message);
 
 			Assert.Multiple(() =>
 			{
-				Assert.That(diagnostic.Span, Is.EqualTo(span), nameof(diagnostic.Span));
+				Assert.That(diagnostic.Location, Is.EqualTo(location), nameof(diagnostic.Location));
 				Assert.That(diagnostic.Message, Is.EqualTo(message), nameof(diagnostic.Message));
 			});
 		}

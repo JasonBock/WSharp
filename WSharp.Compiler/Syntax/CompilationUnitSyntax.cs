@@ -5,8 +5,9 @@ namespace WSharp.Compiler.Syntax
 	public sealed class CompilationUnitSyntax
 		: SyntaxNode
 	{
-		public CompilationUnitSyntax(LineStatementsSyntax lineStatements, SyntaxToken endOfFileToken) => 
-			(this.LineStatements, this.EndOfFileToken) = (lineStatements, endOfFileToken);
+		public CompilationUnitSyntax(SyntaxTree tree, LineStatementsSyntax lineStatements, SyntaxToken endOfFileToken) 
+			: base(tree) => 
+				(this.LineStatements, this.EndOfFileToken) = (lineStatements, endOfFileToken);
 
 		public SyntaxToken EndOfFileToken { get; }
 		public LineStatementsSyntax LineStatements { get; }

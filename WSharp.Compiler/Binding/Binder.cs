@@ -33,7 +33,7 @@ namespace WSharp.Compiler.Binding
 
 			if (!canBeVoid && result.Type == TypeSymbol.Void)
 			{
-				this.Diagnostics.ReportExpressionMustHaveValue(syntax.Span);
+				this.Diagnostics.ReportExpressionMustHaveValue(syntax.Location);
 				return new BoundErrorExpression();
 			}
 
@@ -70,7 +70,7 @@ namespace WSharp.Compiler.Binding
 
 			if(syntax.Arguments.Count != function.Parameters.Length)
 			{
-				this.Diagnostics.ReportWrongArgumentCount(syntax.Span, function.Name, 
+				this.Diagnostics.ReportWrongArgumentCount(syntax.Location, function.Name, 
 					function.Parameters.Length, syntax.Arguments.Count);
 				return new BoundErrorExpression();
 			}
@@ -90,7 +90,7 @@ namespace WSharp.Compiler.Binding
 
 				if(argument.Type != parameter.Type)
 				{
-					this.Diagnostics.ReportWrongArgumentType(syntax.Span, parameter.Name, 
+					this.Diagnostics.ReportWrongArgumentType(syntax.Location, parameter.Name, 
 						parameter.Type, argument.Type);
 					return new BoundErrorExpression();
 				}
@@ -108,7 +108,7 @@ namespace WSharp.Compiler.Binding
 			{
 				if(expression.Type != TypeSymbol.Error && type != TypeSymbol.Error)
 				{
-					this.Diagnostics.ReportCannotConvert(syntax.Span, expression.Type, type);
+					this.Diagnostics.ReportCannotConvert(syntax.Location, expression.Type, type);
 				}
 
 				return new BoundErrorExpression();
@@ -158,7 +158,7 @@ namespace WSharp.Compiler.Binding
 
 			if (boundOperatorKind == null)
 			{
-				this.Diagnostics.ReportUndefinedLineCountOperator(syntax.OperatorToken.Span, syntax.OperatorToken.Text, boundLeft.Type, boundRight.Type);
+				this.Diagnostics.ReportUndefinedLineCountOperator(syntax.OperatorToken.Location, syntax.OperatorToken.Text, boundLeft.Type, boundRight.Type);
 				return new BoundErrorExpression();
 			}
 
@@ -208,7 +208,7 @@ namespace WSharp.Compiler.Binding
 
 			if (boundOperator == null)
 			{
-				this.Diagnostics.ReportUndefinedBinaryOperator(syntax.OperatorToken.Span, syntax.OperatorToken.Text, boundLeft.Type, boundRight.Type);
+				this.Diagnostics.ReportUndefinedBinaryOperator(syntax.OperatorToken.Location, syntax.OperatorToken.Text, boundLeft.Type, boundRight.Type);
 				return new BoundErrorExpression();
 			}
 
@@ -228,7 +228,7 @@ namespace WSharp.Compiler.Binding
 
 			if (boundOperator == null)
 			{
-				this.Diagnostics.ReportUndefinedUnaryOperator(syntax.OperatorToken.Span, syntax.OperatorToken.Text, boundOperand.Type);
+				this.Diagnostics.ReportUndefinedUnaryOperator(syntax.OperatorToken.Location, syntax.OperatorToken.Text, boundOperand.Type);
 				return new BoundErrorExpression();
 			}
 

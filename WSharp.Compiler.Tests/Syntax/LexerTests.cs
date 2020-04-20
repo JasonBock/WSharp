@@ -24,7 +24,7 @@ namespace WSharp.Compiler.Tests.Compiler.Syntax
 				Assert.That(token.Text, Is.EqualTo(text), nameof(token.Text));
 				Assert.That(diagnostics.Length, Is.EqualTo(1), $"{nameof(diagnostics)}.{nameof(diagnostics.Length)}");
 				var diagnostic = diagnostics[0];
-				Assert.That(diagnostic.Span, Is.EqualTo(new TextSpan(0, 1)), nameof(diagnostic.Span));
+				Assert.That(diagnostic.Location.Span, Is.EqualTo(new TextSpan(0, 1)), nameof(diagnostic.Location));
 				Assert.That(diagnostic.Message, Is.EqualTo("Unterminated string literal."), nameof(diagnostic.Message));
 			});
 		}
