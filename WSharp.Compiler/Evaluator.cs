@@ -55,7 +55,11 @@ namespace WSharp.Compiler
 		{
 			var value = this.EvaluateExpression(conversion.Expression, actions);
 
-			if(conversion.Type == TypeSymbol.Boolean)
+			if (conversion.Type == TypeSymbol.Any)
+			{
+				return value;
+			}
+			else if (conversion.Type == TypeSymbol.Boolean)
 			{
 				return Convert.ToBoolean(value);
 			}
@@ -100,7 +104,7 @@ namespace WSharp.Compiler
 			}
 			else if(call.Function == BuiltinFunctions.Print)
 			{
-				actions!.Print((string)this.EvaluateExpression(call.Arguments[0], actions));
+				actions!.Print(this.EvaluateExpression(call.Arguments[0], actions));
 				return new object();
 			}
 			else if (call.Function == BuiltinFunctions.Random)

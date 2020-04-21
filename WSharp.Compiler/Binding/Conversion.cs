@@ -20,6 +20,16 @@ namespace WSharp.Compiler.Binding
 				return Conversion.Identity;
 			}
 
+			if(from != TypeSymbol.Void && to == TypeSymbol.Any)
+			{
+				return Conversion.Implicit;
+			}
+
+			if(from == TypeSymbol.Any && to != TypeSymbol.Void)
+			{
+				return Conversion.Explicit;
+			}
+
 			if(from == TypeSymbol.Integer || from == TypeSymbol.Boolean)
 			{
 				if(to == TypeSymbol.String)

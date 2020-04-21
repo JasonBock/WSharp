@@ -69,5 +69,8 @@ namespace WSharp.Compiler
 
 		internal void ReportUnexpectedLineStatementToken(TextLocation location) =>
 			this.Report(location, $"Unexpected line statement token.");
+
+		internal void ReportCannotConvertImplicitly(TextLocation location, TypeSymbol fromType, TypeSymbol toType) => 
+			this.Report(location, $"Cannot convert type '{fromType}' to '{toType}'. An explicit conversion exists (are you missing a cast?)");
 	}
 }

@@ -8,7 +8,7 @@ namespace WSharp.Runtime
 		void Defer(bool shouldDefer);
 		bool DoesLineExist(BigInteger identifier);
 		BigInteger N(BigInteger identifier);
-		void Print(string message);
+		void Print(object value);
 		BigInteger Random(BigInteger maximum);
 		string Read();
 		string U(BigInteger number);

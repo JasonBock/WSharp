@@ -118,7 +118,7 @@ namespace WSharp.Runtime
 
 		public BigInteger N(BigInteger identifier) => this.lines[identifier].Count;
 
-		public void Print(string message) => this.writer.WriteLine(message);
+		public void Print(object value) => this.writer.WriteLine(value);
 
 		public BigInteger Random(BigInteger maximum) => this.random.GetBigInteger((uint)maximum);
 

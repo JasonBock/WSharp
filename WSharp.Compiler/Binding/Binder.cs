@@ -4,6 +4,7 @@ using System.Linq;
 using System.Numerics;
 using WSharp.Compiler.Symbols;
 using WSharp.Compiler.Syntax;
+using WSharp.Compiler.Text;
 
 namespace WSharp.Compiler.Binding
 {
@@ -56,7 +57,7 @@ namespace WSharp.Compiler.Binding
 		{
 			if(syntax.Arguments.Count == 1 && TypeSymbol.Lookup(syntax.Identifier.Text) is TypeSymbol type)
 			{
-				return this.BindConversion(syntax.Arguments[0], type);
+				return this.BindConversion(syntax.Arguments[0], type, allowExplicit: true);
 			}
 
 			var functions = BuiltinFunctions.GetAll();
@@ -85,33 +86,35 @@ namespace WSharp.Compiler.Binding
 
 			for (var i = 0; i < syntax.Arguments.Count; i++)
 			{
+				var argumentLocation = syntax.Arguments[i].Location;
 				var argument = boundArguments[i];
 				var parameter = function.Parameters[i];
-
-				if(argument.Type != parameter.Type)
-				{
-					this.Diagnostics.ReportWrongArgumentType(syntax.Location, parameter.Name, 
-						parameter.Type, argument.Type);
-					return new BoundErrorExpression();
-				}
+				boundArguments[i] = this.BindConversion(argumentLocation, argument, parameter.Type);
 			}
 
 			return new BoundCallExpression(function, boundArguments.ToImmutable());
 		}
 
-		private BoundExpression BindConversion(ExpressionSyntax syntax, TypeSymbol type)
+		private BoundExpression BindConversion(ExpressionSyntax syntax, TypeSymbol type, bool allowExplicit = false) => 
+			this.BindConversion(syntax.Location, this.BindExpression(syntax), type, allowExplicit);
+
+		private BoundExpression BindConversion(TextLocation location, BoundExpression expression, TypeSymbol type, bool allowExplicit = false)
 		{
-			var expression = this.BindExpression(syntax);
 			var conversion = Conversion.Classify(expression.Type, type);
 
 			if(!conversion.Exists)
 			{
 				if(expression.Type != TypeSymbol.Error && type != TypeSymbol.Error)
 				{
-					this.Diagnostics.ReportCannotConvert(syntax.Location, expression.Type, type);
+					this.Diagnostics.ReportCannotConvert(location, expression.Type, type);
 				}
 
 				return new BoundErrorExpression();
+			}
+
+			if (!allowExplicit && conversion.IsExplicit)
+			{
+				this.Diagnostics.ReportCannotConvertImplicitly(location, expression.Type, type);
 			}
 
 			if (conversion.IsIdentity)
