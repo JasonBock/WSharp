@@ -1,17 +1,17 @@
-﻿using Spackle;
-using Spackle.Extensions;
+﻿using Spackle.Extensions;
 using System;
+using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.IO;
 using System.Threading.Tasks;
 using WSharp.Compiler;
 using WSharp.Compiler.Syntax;
-using WSharp.Runtime;
 
 namespace WSharp
 {
 	public static class Program
 	{
-		public static async Task Main(FileInfo? file, Interaction interaction = Interaction.Interpret)
+		public static async Task<int> Main(FileInfo? file, string? moduleName, FileInfo[] references, FileInfo? outputPath, Interaction interaction)
 		{
 			if(interaction == Interaction.Interpret)
 			{
@@ -25,38 +25,77 @@ namespace WSharp
 				{
 					await repl.RunAsync();
 				}
+
+				return 0;
 			}
 			else
 			{
-				if(file == null)
+				if (Program.ValidateParameters(file, references))
 				{
-					using (ConsoleColor.Red.Bind(() => Console.ForegroundColor))
-					Console.Out.WriteLine($"No file was provided.");
-				}
-				else if(!file.Exists)
-				{
-					using (ConsoleColor.Red.Bind(() => Console.ForegroundColor))
-					Console.Out.WriteLine($"File {file} does not exist.");
-				}
-				else
-				{
-					var text = await File.ReadAllTextAsync(file.FullName);
-					var tree = await SyntaxTree.LoadAsync(file);
-					var compilation = new Compilation(tree);
-					var evaluation = compilation.Evaluate();
-					var diagnostics = evaluation.Diagnostics;
+					moduleName ??= file!.Name.Replace(file!.Extension, string.Empty);
+					outputPath ??= new FileInfo(Path.ChangeExtension(file!.Name, ".exe"));
 
-					if(diagnostics.Length > 0)
+					var tree = await SyntaxTree.LoadAsync(file!);
+					var compilation = new Compilation(tree);
+
+					if (compilation.Diagnostics.Count > 0)
 					{
-						DiagnosticsPrinter.Print(diagnostics);
+						DiagnosticsPrinter.Print(compilation.Diagnostics.ToImmutableArray());
+						return 1;
 					}
 					else
 					{
-						// TODO: This is where we'd actually emit something.
-						var engine = new ExecutionEngine(evaluation.Lines, new SecureRandom(), Console.Out, Console.In);
-						engine.Execute();
+						var result = compilation.Emit(moduleName, references, outputPath);
+
+						if (result.Diagnostics.Length > 0)
+						{
+							DiagnosticsPrinter.Print(result.Diagnostics);
+							return 1;
+						}
 					}
 				}
+
+				return 0;
+			}
+		}
+
+		private static bool ValidateParameters(FileInfo? file, FileInfo[] references)
+		{
+			var errors = new List<string>();
+
+			if (file == null)
+			{
+				errors.Add($"No file was provided.");
+			}
+			else if (!file.Exists)
+			{
+				errors.Add($"File {file} does not exist.");
+			}
+
+			if(references.Length > 0)
+			{
+				foreach(var reference in references)
+				{
+					if(!reference.Exists)
+					{
+						errors.Add($"Reference {reference} does not exist.");
+					}
+				}
+			}
+
+			if (errors.Count > 0)
+			{
+				using (ConsoleColor.Red.Bind(() => Console.ForegroundColor))
+				foreach (var error in errors)
+				{
+					Console.Out.WriteLine(error);
+				}
+
+				return false;
+			}
+			else
+			{
+				return true;
 			}
 		}
 	}

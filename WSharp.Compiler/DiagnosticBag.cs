@@ -1,6 +1,9 @@
-﻿using System;
+﻿using Mono.Cecil;
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using WSharp.Compiler.Symbols;
 using WSharp.Compiler.Syntax;
 using WSharp.Compiler.Text;
@@ -21,6 +24,32 @@ namespace WSharp.Compiler
 
 		private void Report(TextLocation location, string message) =>
 			this.diagnostics.Add(new Diagnostic(location, message));
+
+		public void ReportInvalidReference(FileInfo reference) =>
+			this.Report(default, $"The reference is not a valid .NET assembly: '{reference.FullName}'.");
+
+		public void ReportRequiredTypeNotFound(string wheneverName, string metadataName) => 
+			this.Report(default,
+				!string.IsNullOrWhiteSpace(wheneverName) ?
+					$"The required type '{wheneverName}' ('{metadataName}') cannot be resolved.'" :
+					$"The required type '{wheneverName}' cannot be resolved.'");
+
+		public void ReportRequiredTypeAmbiguous(string wheneverName, string metadataName, TypeDefinition[] foundTypes)
+		{
+			var assemblyNames = foundTypes.Select(_ => _.Module.Assembly.Name.Name);
+			var assemblyNameList = string.Join(", ", assemblyNames);
+			this.Report(default, 
+				!string.IsNullOrWhiteSpace(wheneverName) ?
+					$"The required type '{wheneverName}' ('{metadataName}') was found in multiple references: {assemblyNameList}." :
+					$"The required type '{wheneverName}' was found in multiple references: {assemblyNameList}.");
+		}
+
+		public void ReportRequiredMethodNotFound(string typeName, string methodName, string[] parameterTypeNames)
+		{
+			var parameterTypeNameList = string.Join(", ", parameterTypeNames);
+			var message = $"The required method '{typeName}.{methodName}({parameterTypeNameList})' cannot be resolved among the given references.";
+			this.Report(default, message);
+		}
 
 		public void ReportInvalidNumber(TextLocation location, string text, TypeSymbol type) =>
 			this.Report(location, $"The number '{text}' isn't a valid '{type}'.");
@@ -72,5 +101,7 @@ namespace WSharp.Compiler
 
 		internal void ReportCannotConvertImplicitly(TextLocation location, TypeSymbol fromType, TypeSymbol toType) => 
 			this.Report(location, $"Cannot convert type '{fromType}' to '{toType}'. An explicit conversion exists (are you missing a cast?)");
+
+		public int Count => this.diagnostics.Count;
 	}
 }

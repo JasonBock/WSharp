@@ -1,8 +1,8 @@
-﻿using System.Collections.Generic;
-using System.Collections.Immutable;
+﻿using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 using WSharp.Compiler.Binding;
+using WSharp.Compiler.Emit;
 using WSharp.Compiler.Syntax;
 using WSharp.Runtime;
 
@@ -15,7 +15,7 @@ namespace WSharp.Compiler
 			this.Tree = tree;
 			var binder = new Binder();
 			this.Statement = binder.BindCompilationUnit(this.Tree.Root);
-			this.BinderDiagnostics = binder.Diagnostics;
+			this.Diagnostics = binder.Diagnostics;
 		}
 
 		public void EmitTree(TextWriter writer) => 
@@ -23,7 +23,7 @@ namespace WSharp.Compiler
 
 		public EvaluationResult Evaluate()
 		{
-			var diagnostics = this.Tree.Diagnostics.Concat(this.BinderDiagnostics).ToArray();
+			var diagnostics = this.Tree.Diagnostics.Concat(this.Diagnostics).ToArray();
 
 			if(diagnostics.Length > 0)
 			{
@@ -36,7 +36,11 @@ namespace WSharp.Compiler
 			return new EvaluationResult(ImmutableArray<Diagnostic>.Empty, lines);
 		}
 
-		private DiagnosticBag BinderDiagnostics { get; }
+		// TODO: Put some kind of guard here to not emit if Diagnostics has issues.
+		public EmitResult Emit(string moduleName, FileInfo[] references, FileInfo outputPath) => 
+			Emitter.Emit(this.Statement, moduleName, references, outputPath);
+
+		public DiagnosticBag Diagnostics { get; }
 		public BoundStatement Statement { get; }
 		public SyntaxTree Tree { get; }
 	}

@@ -2,6 +2,6 @@
 {
 	public enum Interaction
 	{
-		Compile, Interpret
+		Interpret, Compile
 	}
 }
