@@ -12,26 +12,26 @@ namespace WSharp
 		internal static void Print(ImmutableArray<Diagnostic> diagnostics)
 		{
 			foreach (var diagnostic in diagnostics
-				.Where(_ => _.Location is null))
+				.Where(_ => _.Location.Text is null))
 			{
 				using (ConsoleColor.DarkRed.Bind(() => Console.ForegroundColor))
 				Console.Out.WriteLine(diagnostic.Message);
 			}
 
 			foreach (var diagnostic in diagnostics
-				.Where(_ => _.Location is { })
-				.OrderBy(_ => _.Location!.Value.Text.File?.FullName)
-				.ThenBy(_ => _.Location!.Value.Span.Start)
-				.ThenBy(_ => _.Location!.Value.Span.Length))
+				.Where(_ => _.Location.Text is { })
+				.OrderBy(_ => _.Location.Text.File?.FullName)
+				.ThenBy(_ => _.Location.Span.Start)
+				.ThenBy(_ => _.Location.Span.Length))
 			{
-				var text = diagnostic.Location!.Value.Text;
-				var fileName = diagnostic.Location!.Value.Text.File?.FullName ?? string.Empty;
-				var startLine = diagnostic.Location!.Value.StartLine + 1;
-				var startCharacter = diagnostic.Location!.Value.StartCharacter + 1;
-				var endLine = diagnostic.Location!.Value.EndLine + 1;
-				var endCharacter = diagnostic.Location!.Value.EndCharacter + 1;
+				var text = diagnostic.Location.Text;
+				var fileName = diagnostic.Location.Text.File?.FullName ?? string.Empty;
+				var startLine = diagnostic.Location.StartLine + 1;
+				var startCharacter = diagnostic.Location.StartCharacter + 1;
+				var endLine = diagnostic.Location.EndLine + 1;
+				var endCharacter = diagnostic.Location.EndCharacter + 1;
 
-				var span = diagnostic.Location!.Value.Span;
+				var span = diagnostic.Location.Span;
 				var lineIndex = text.GetLineIndex(span.Start);
 				var line = text.Lines[lineIndex];
 

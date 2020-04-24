@@ -32,7 +32,7 @@ namespace WSharp.Compiler
 			this.Report(default,
 				!string.IsNullOrWhiteSpace(wheneverName) ?
 					$"The required type '{wheneverName}' ('{metadataName}') cannot be resolved.'" :
-					$"The required type '{wheneverName}' cannot be resolved.'");
+					$"The required type '{metadataName}' cannot be resolved.'");
 
 		public void ReportRequiredTypeAmbiguous(string wheneverName, string metadataName, TypeDefinition[] foundTypes)
 		{
@@ -41,7 +41,7 @@ namespace WSharp.Compiler
 			this.Report(default, 
 				!string.IsNullOrWhiteSpace(wheneverName) ?
 					$"The required type '{wheneverName}' ('{metadataName}') was found in multiple references: {assemblyNameList}." :
-					$"The required type '{wheneverName}' was found in multiple references: {assemblyNameList}.");
+					$"The required type '{metadataName}' was found in multiple references: {assemblyNameList}.");
 		}
 
 		public void ReportRequiredMethodNotFound(string typeName, string methodName, string[] parameterTypeNames)

@@ -13,6 +13,9 @@ namespace WSharp
 	{
 		public static async Task<int> Main(FileInfo? file, string? moduleName, FileInfo[] references, FileInfo? outputPath, Interaction interaction)
 		{
+			interaction = Interaction.Compile;
+			file = new FileInfo("HelloWorld.ws");
+
 			if(interaction == Interaction.Interpret)
 			{
 				var repl = new Repl();
@@ -72,7 +75,7 @@ namespace WSharp
 				errors.Add($"File {file} does not exist.");
 			}
 
-			if(references.Length > 0)
+			if(references is { } && references.Length > 0)
 			{
 				foreach(var reference in references)
 				{

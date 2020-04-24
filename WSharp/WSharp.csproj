@@ -14,28 +14,13 @@
     <Version>0.1.0</Version>
   </PropertyGroup>
   <ItemGroup>
-    <None Remove="NinetyNineBottles.ws~RFed03490.TMP" />
-  </ItemGroup>
-  <ItemGroup>
     <PackageReference Include="System.CommandLine.DragonFruit" Version="0.3.0-alpha.20214.1" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\WSharp.Compiler\WSharp.Compiler.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <None Update="FibonacciSequence.ws">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="NinetyNineBottles.ws">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Rot13.ws">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Simple1.ws">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Simple2.ws">
+    <None Update="*.ws">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
