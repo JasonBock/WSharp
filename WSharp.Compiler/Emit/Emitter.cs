@@ -31,8 +31,8 @@ namespace WSharp.Compiler.Emit
 				//AssemblyDefinition.ReadAssembly(typeof(object).Assembly.Location),
 				//AssemblyDefinition.ReadAssembly(typeof(Console).Assembly.Location),
 				//AssemblyDefinition.ReadAssembly(typeof(ImmutableArray).Assembly.Location),
-				AssemblyDefinition.ReadAssembly(typeof(IExecutionEngineActions).Assembly.Location),
-				AssemblyDefinition.ReadAssembly(typeof(SecureRandom).Assembly.Location),
+				//AssemblyDefinition.ReadAssembly(typeof(IExecutionEngineActions).Assembly.Location),
+				//AssemblyDefinition.ReadAssembly(typeof(SecureRandom).Assembly.Location),
 				//AssemblyDefinition.ReadAssembly(typeof(BigInteger).Assembly.Location)
 			};
 
