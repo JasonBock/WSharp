@@ -28,12 +28,12 @@ namespace WSharp.Compiler.Emit
 		{
 			this.assemblies = new HashSet<AssemblyDefinition>
 			{
-				AssemblyDefinition.ReadAssembly(typeof(object).Assembly.Location),
-				AssemblyDefinition.ReadAssembly(typeof(Console).Assembly.Location),
-				AssemblyDefinition.ReadAssembly(typeof(ImmutableArray).Assembly.Location),
+				//AssemblyDefinition.ReadAssembly(typeof(object).Assembly.Location),
+				//AssemblyDefinition.ReadAssembly(typeof(Console).Assembly.Location),
+				//AssemblyDefinition.ReadAssembly(typeof(ImmutableArray).Assembly.Location),
 				AssemblyDefinition.ReadAssembly(typeof(IExecutionEngineActions).Assembly.Location),
 				AssemblyDefinition.ReadAssembly(typeof(SecureRandom).Assembly.Location),
-				AssemblyDefinition.ReadAssembly(typeof(BigInteger).Assembly.Location)
+				//AssemblyDefinition.ReadAssembly(typeof(BigInteger).Assembly.Location)
 			};
 
 			if (references is { })

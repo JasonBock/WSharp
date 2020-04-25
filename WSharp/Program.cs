@@ -11,9 +11,9 @@ namespace WSharp
 {
 	public static class Program
 	{
-		public static async Task<int> Main(FileInfo? file, string? moduleName, FileInfo[] references, FileInfo? outputPath, Interaction interaction)
+		public static async Task<int> Main(FileInfo? file, FileInfo[] references, FileInfo? outputPath, Interaction interaction)
 		{
-			System.Diagnostics.Debugger.Break();
+			//System.Diagnostics.Debugger.Launch();
 			//interaction = Interaction.Compile;
 			//file = new FileInfo("HelloWorld.ws");
 
@@ -36,7 +36,7 @@ namespace WSharp
 			{
 				if (Program.ValidateParameters(file, references))
 				{
-					moduleName ??= file!.Name.Replace(file!.Extension, string.Empty);
+					var moduleName = file!.Name.Replace(file!.Extension, string.Empty);
 					outputPath ??= new FileInfo(Path.ChangeExtension(file!.Name, ".exe"));
 
 					var tree = await SyntaxTree.LoadAsync(file!);

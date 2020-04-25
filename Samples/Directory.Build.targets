@@ -1,7 +1,7 @@
 <Project>
   <Target Name="CreateManifestResourceNames" />
   <Target Name="CoreCompile" DependsOnTargets="$(CoreCompileDependsOn)">
-    <Exec Command="dotnet run --project &quot;$(MSBuildThisFileDirectory)\..\WSharp\WSharp.csproj&quot; -- @(Compile->'&quot;%(Identity)&quot;', ' ') /o &quot;@(IntermediateAssembly)&quot; @(ReferencePath->'/r &quot;%(Identity)&quot;', ' ')"
+    <Exec Command="dotnet run --project &quot;$(MSBuildThisFileDirectory)\..\WSharp\WSharp.csproj&quot; -- --file @(Compile->'&quot;%(Identity)&quot;', ' ') --interaction Compile --output-path &quot;@(IntermediateAssembly)&quot; --references @(ReferencePath->'&quot;%(Identity)&quot;', ' ')"
           WorkingDirectory="$(MSBuildProjectDirectory)" />
   </Target>
 </Project>
