@@ -1,2 +1,3 @@
-﻿1 print("Hello world from W#!");
-2 print(string(22 + 44));
+﻿1 print("hello");
+2 1#2;
+3 1#-1;

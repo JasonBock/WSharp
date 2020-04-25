@@ -201,7 +201,16 @@ namespace WSharp.Compiler.Emit
 		{
 			foreach (var statement in lineStatement.Statements)
 			{
+				var deferGuardLabel = Instruction.Create(OpCodes.Nop);
+
+				ilProcessor.Emit(OpCodes.Ldarg_0);
+				ilProcessor.Emit(OpCodes.Callvirt, ilProcessor.Body.Method.Module.ImportReference(
+					typeof(IExecutionEngineActions).GetProperty(nameof(IExecutionEngineActions.ShouldStatementBeDeferred))!.GetGetMethod()));
+				ilProcessor.Emit(OpCodes.Brtrue, deferGuardLabel);
+
 				this.EmitStatement(statement, ilProcessor);
+
+				ilProcessor.Append(deferGuardLabel);
 			}
 
 			ilProcessor.Emit(OpCodes.Ret);
@@ -219,15 +228,13 @@ namespace WSharp.Compiler.Emit
 			}
 		}
 
-		private void EmitExpressionStatement(BoundExpressionStatement statement, ILProcessor ilProcessor)
-		{
+		// TODO: I'm not sure I'll ever need to do this...
+		//if (statement.Expression.Type != TypeSymbol.Void)
+		//{
+		//	ilProcessor.Emit(OpCodes.Pop);
+		//}
+		private void EmitExpressionStatement(BoundExpressionStatement statement, ILProcessor ilProcessor) => 
 			this.EmitExpression(statement.Expression, ilProcessor);
-
-			if (statement.Expression.Type != TypeSymbol.Void)
-			{
-				ilProcessor.Emit(OpCodes.Pop);
-			}
-		}
 
 		private void EmitExpression(BoundExpression expression, ILProcessor ilProcessor)
 		{
@@ -261,18 +268,53 @@ namespace WSharp.Compiler.Emit
 
 		private void EmitUpdateLineCountExpression(BoundUpdateLineCountExpression line, ILProcessor ilProcessor)
 		{
+			var lineNumber = new VariableDefinition(
+				ilProcessor.Body.Method.Module.ImportReference(typeof(BigInteger)));
+			var lineToUpdate = new VariableDefinition(
+				ilProcessor.Body.Method.Module.ImportReference(typeof(BigInteger)));
+			var count = new VariableDefinition(
+				ilProcessor.Body.Method.Module.ImportReference(typeof(BigInteger)));
+			ilProcessor.Body.Variables.Add(lineNumber);
+			ilProcessor.Body.Variables.Add(lineToUpdate);
+			ilProcessor.Body.Variables.Add(count);
 
+			this.EmitExpression(line.Left, ilProcessor);
+			ilProcessor.Emit(OpCodes.Stloc, lineNumber);
+			this.EmitExpression(line.Right, ilProcessor);
+			ilProcessor.Emit(OpCodes.Stloc, count);
+
+			ilProcessor.Emit(OpCodes.Ldloc, lineNumber);
+			ilProcessor.Emit(OpCodes.Call, ilProcessor.Body.Method.Module.ImportReference(
+				typeof(BigInteger).GetMethod(nameof(BigInteger.Abs))));
+			ilProcessor.Emit(OpCodes.Stloc, lineToUpdate);
+
+			ilProcessor.Emit(OpCodes.Ldarg_0);
+			ilProcessor.Emit(OpCodes.Ldloc, lineToUpdate);
+			ilProcessor.Emit(OpCodes.Ldloc, lineNumber);
+			ilProcessor.Emit(OpCodes.Call, ilProcessor.Body.Method.Module.ImportReference(
+				typeof(BigInteger).GetProperty(nameof(BigInteger.Zero))!.GetGetMethod()));
+			ilProcessor.Emit(OpCodes.Call, ilProcessor.Body.Method.Module.ImportReference(
+				typeof(BigInteger).GetMethod("op_GreaterThanOrEqual", new[] { typeof(BigInteger), typeof(BigInteger) })!));
+
+			var noNegation = Instruction.Create(OpCodes.Nop);
+			ilProcessor.Emit(OpCodes.Brtrue, noNegation);
+
+			ilProcessor.Emit(OpCodes.Ldloc, count);
+			ilProcessor.Emit(OpCodes.Call, ilProcessor.Body.Method.Module.ImportReference(
+				typeof(BigInteger).GetMethod("op_UnaryNegation", new[] { typeof(BigInteger) })!));
+			var negation = Instruction.Create(OpCodes.Nop);
+			ilProcessor.Emit(OpCodes.Br, negation);
+
+			ilProcessor.Append(noNegation);
+			ilProcessor.Emit(OpCodes.Ldloc, count);
+			ilProcessor.Append(negation);
+
+			ilProcessor.Emit(OpCodes.Callvirt, ilProcessor.Body.Method.Module.ImportReference(
+				typeof(IExecutionEngineActions).GetMethod(nameof(IExecutionEngineActions.UpdateCount))));
 		}
 
 		private void EmitCallExpression(BoundCallExpression call, ILProcessor ilProcessor)
 		{
-			var deferGuardLabel = Instruction.Create(OpCodes.Nop);
-
-			ilProcessor.Emit(OpCodes.Ldarg_0);
-			ilProcessor.Emit(OpCodes.Callvirt, ilProcessor.Body.Method.Module.ImportReference(
-				typeof(IExecutionEngineActions).GetProperty(nameof(IExecutionEngineActions.ShouldStatementBeDeferred))!.GetGetMethod()));
-			ilProcessor.Emit(OpCodes.Brtrue, deferGuardLabel);
-
 			ilProcessor.Emit(OpCodes.Ldarg_0);
 
 			foreach (var argument in call.Arguments)
@@ -280,23 +322,46 @@ namespace WSharp.Compiler.Emit
 				this.EmitExpression(argument, ilProcessor);
 			}
 
-			if(call.Function == BuiltinFunctions.Print)
+			if (call.Function == BuiltinFunctions.Again)
+			{
+				ilProcessor.Emit(OpCodes.Callvirt, ilProcessor.Body.Method.Module.ImportReference(
+					typeof(IExecutionEngineActions).GetMethod(nameof(IExecutionEngineActions.Again))));
+			}
+			else if (call.Function == BuiltinFunctions.Defer)
+			{
+				ilProcessor.Emit(OpCodes.Callvirt, ilProcessor.Body.Method.Module.ImportReference(
+					typeof(IExecutionEngineActions).GetMethod(nameof(IExecutionEngineActions.Defer))));
+			}
+			else if (call.Function == BuiltinFunctions.Exists)
+			{
+				ilProcessor.Emit(OpCodes.Callvirt, ilProcessor.Body.Method.Module.ImportReference(
+					typeof(IExecutionEngineActions).GetMethod(nameof(IExecutionEngineActions.DoesLineExist))));
+			}
+			else if (call.Function == BuiltinFunctions.N)
+			{
+				ilProcessor.Emit(OpCodes.Callvirt, ilProcessor.Body.Method.Module.ImportReference(
+					typeof(IExecutionEngineActions).GetMethod(nameof(IExecutionEngineActions.N))));
+			}
+			else if (call.Function == BuiltinFunctions.Print)
 			{
 				ilProcessor.Emit(OpCodes.Callvirt, ilProcessor.Body.Method.Module.ImportReference(
 					typeof(IExecutionEngineActions).GetMethod(nameof(IExecutionEngineActions.Print))));
-			}
-			else if (call.Function == BuiltinFunctions.Read)
-			{
-				ilProcessor.Emit(OpCodes.Callvirt, ilProcessor.Body.Method.Module.ImportReference(
-					typeof(IExecutionEngineActions).GetMethod(nameof(IExecutionEngineActions.Read))));
 			}
 			else if (call.Function == BuiltinFunctions.Random)
 			{
 				ilProcessor.Emit(OpCodes.Callvirt, ilProcessor.Body.Method.Module.ImportReference(
 					typeof(IExecutionEngineActions).GetMethod(nameof(IExecutionEngineActions.Random))));
 			}
-
-			ilProcessor.Append(deferGuardLabel);
+			else if (call.Function == BuiltinFunctions.Read)
+			{
+				ilProcessor.Emit(OpCodes.Callvirt, ilProcessor.Body.Method.Module.ImportReference(
+					typeof(IExecutionEngineActions).GetMethod(nameof(IExecutionEngineActions.Read))));
+			}
+			else if (call.Function == BuiltinFunctions.U)
+			{
+				ilProcessor.Emit(OpCodes.Callvirt, ilProcessor.Body.Method.Module.ImportReference(
+					typeof(IExecutionEngineActions).GetMethod(nameof(IExecutionEngineActions.U))));
+			}
 		}
 
 		private void EmitConversionExpression(BoundConversionExpression conversion, ILProcessor ilProcessor)
@@ -399,7 +464,30 @@ namespace WSharp.Compiler.Emit
 
 		private void EmitUnaryExpression(BoundUnaryExpression unary, ILProcessor ilProcessor)
 		{
+			this.EmitExpression(unary.Operand, ilProcessor);
 
+			if (unary.Operator.OperatorKind != BoundUnaryOperatorKind.Identity)
+			{
+				if (unary.Operator.OperatorKind == BoundUnaryOperatorKind.Negation)
+				{
+					ilProcessor.Emit(OpCodes.Call, ilProcessor.Body.Method.Module.ImportReference(
+						typeof(BigInteger).GetMethod("op_UnaryNegation")));
+				}
+				else if (unary.Operator.OperatorKind == BoundUnaryOperatorKind.LogicalNegation)
+				{
+					ilProcessor.Emit(OpCodes.Ldc_I4_0);
+					ilProcessor.Emit(OpCodes.Ceq);
+				}
+				else if (unary.Operator.OperatorKind == BoundUnaryOperatorKind.OnesComplement)
+				{
+					ilProcessor.Emit(OpCodes.Call, ilProcessor.Body.Method.Module.ImportReference(
+						typeof(BigInteger).GetMethod("op_OnesComplement")));
+				}
+				else
+				{
+					throw new EmitException($"Unexpected unary type: {unary.Operator.OperatorKind}.");
+				}
+			}
 		}
 
 		private void EmitUnaryUpdateLineCountExpression(BoundUnaryUpdateLineCountExpression unaryLine, ILProcessor ilProcessor)
