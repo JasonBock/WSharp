@@ -21,7 +21,7 @@ namespace WSharp.Compiler.Emit
 		private readonly AssemblyDefinition assemblyDefinition;
 		private readonly Dictionary<TypeSymbol, TypeReference> knownTypes;
 		private readonly DiagnosticBag diagnostics = new DiagnosticBag();
-
+		private TypeSymbol? currentStackType;
 		public EmitResult? Result { get; private set; }
 
 		private Emitter(string moduleName, FileInfo[] references)
@@ -67,59 +67,6 @@ namespace WSharp.Compiler.Emit
 					this.knownTypes.Add(typeSymbol, typeReference);
 				}
 			}
-		}
-
-		private MethodReference? ResolveMethod(string typeName, string methodName, string[] parameterTypeNames)
-		{
-			var foundTypes = this.assemblies.SelectMany(a => a.Modules)
-				.SelectMany(m => m.Types)
-				.Where(t => t.FullName == typeName)
-				.ToArray();
-
-			if (foundTypes.Length == 1)
-			{
-				var foundType = foundTypes[0];
-				var methods = foundType.Methods.Where(m => m.Name == methodName);
-
-				foreach (var method in methods)
-				{
-					if (method.Parameters.Count != parameterTypeNames.Length)
-					{
-						continue;
-					}
-
-					var allParametersMatch = true;
-
-					for (var i = 0; i < parameterTypeNames.Length; i++)
-					{
-						if (method.Parameters[i].ParameterType.FullName != parameterTypeNames[i])
-						{
-							allParametersMatch = false;
-							break;
-						}
-					}
-
-					if (!allParametersMatch)
-					{
-						continue;
-					}
-
-					return this.assemblyDefinition.MainModule.ImportReference(method);
-				}
-
-				this.diagnostics.ReportRequiredMethodNotFound(typeName, methodName, parameterTypeNames);
-				return null;
-			}
-			else if (foundTypes.Length == 0)
-			{
-				this.diagnostics.ReportRequiredTypeNotFound(string.Empty, typeName);
-			}
-			else
-			{
-				this.diagnostics.ReportRequiredTypeAmbiguous(string.Empty, typeName, foundTypes);
-			}
-
-			return null;
 		}
 
 		private TypeReference? ResolveType(string wheneverName, string metadataName)
@@ -171,18 +118,10 @@ namespace WSharp.Compiler.Emit
 				this.knownTypes[TypeSymbol.Void]);
 			programTypeDefinition.Methods.Add(mainMethod);
 
-			var iExecutionEngineActionsReference = this.ResolveType(string.Empty, typeof(IExecutionEngineActions).FullName!);
-			var executionEngineReference = this.ResolveType(string.Empty, typeof(ExecutionEngine).FullName!);
-			var secureRandomReference = this.ResolveType(string.Empty, typeof(SecureRandom).FullName!);
-			var consoleReference = this.ResolveType(string.Empty, typeof(Console).FullName!);
-			var lineReference = this.ResolveType(string.Empty, typeof(Line).FullName!);
-			var linesReference = this.ResolveType(string.Empty, typeof(ImmutableArray).FullName!);
-			var linesBuilderMethodReference = this.ResolveMethod(typeof(ImmutableArray).FullName!, nameof(ImmutableArray.CreateBuilder), Array.Empty<string>());
-			var linesBuilderMethodReferenceGeneric = new GenericInstanceMethod(linesBuilderMethodReference);
-			linesBuilderMethodReferenceGeneric.GenericArguments.Add(lineReference);
-
 			var mainIlProcessor = mainMethod.Body.GetILProcessor();
-			mainIlProcessor.Emit(OpCodes.Call, linesBuilderMethodReferenceGeneric);
+			mainIlProcessor.Emit(OpCodes.Call, mainMethod.Module.ImportReference(
+				typeof(ImmutableArray).GetMethod(nameof(ImmutableArray.CreateBuilder), Array.Empty<Type>())!
+					.MakeGenericMethod(new[] { typeof(Line) })));
 
 			foreach (var (lineNumber, lineMethod) in lines)
 			{
@@ -235,7 +174,6 @@ namespace WSharp.Compiler.Emit
 		private List<(BigInteger, MethodDefinition)> EmitLineMethods(BoundLineStatements statements, TypeDefinition programTypeDefinition)
 		{
 			var lines = new List<(BigInteger, MethodDefinition)>();
-			var engineActionsReference = this.ResolveType(string.Empty, typeof(IExecutionEngineActions).FullName!);
 
 			foreach (var lineStatement in statements.LineStatements)
 			{
@@ -243,21 +181,15 @@ namespace WSharp.Compiler.Emit
 
 				var lineMethod = new MethodDefinition($"Line{lineNumber}", MethodAttributes.Static | MethodAttributes.Private,
 					this.knownTypes[TypeSymbol.Void]);
-				var lineMethodParameter = new ParameterDefinition("actions", ParameterAttributes.None, engineActionsReference);
+				var lineMethodParameter = new ParameterDefinition("actions", ParameterAttributes.None, 
+					programTypeDefinition.Module.ImportReference(typeof(IExecutionEngineActions)));
 				lineMethod.Parameters.Add(lineMethodParameter);
 
 				lines.Add((lineNumber, lineMethod));
-
 				programTypeDefinition.Methods.Add(lineMethod);
-
-				var ilProcessor = lineMethod.Body.GetILProcessor();
-				//ilProcessor.Emit(OpCodes.Ldarg_0);
-				//ilProcessor.Emit(OpCodes.Ldstr, $"Test from {lineNumber}.");
-				//ilProcessor.Emit(OpCodes.Callvirt, ilProcessor.Body.Method.Module.ImportReference(
-				//	typeof(IExecutionEngineActions).GetMethod(nameof(IExecutionEngineActions.Print))));
-				//ilProcessor.Emit(OpCodes.Ret);
-
+				this.currentStackType = null;
 				this.EmitLineMethod(lineStatement, lineMethod.Body.GetILProcessor());
+				this.currentStackType = null;
 
 				lineMethod.Body.OptimizeMacros();
 			}
@@ -375,6 +307,7 @@ namespace WSharp.Compiler.Emit
 			{
 				if (conversion.Type == TypeSymbol.Boolean)
 				{
+					ilProcessor.EmitBox(this.currentStackType);
 					ilProcessor.Emit(OpCodes.Call,
 						ilProcessor.Body.Method.Module.ImportReference(typeof(Convert).GetMethod(nameof(Convert.ToBoolean), new[] { typeof(object) })));
 				}
@@ -406,6 +339,7 @@ namespace WSharp.Compiler.Emit
 				}
 				else if (conversion.Type == TypeSymbol.String)
 				{
+					ilProcessor.EmitBox(this.currentStackType);
 					ilProcessor.Emit(OpCodes.Call,
 						ilProcessor.Body.Method.Module.ImportReference(typeof(Convert).GetMethod(nameof(Convert.ToString), new[] { typeof(object) })));
 				}
@@ -421,14 +355,17 @@ namespace WSharp.Compiler.Emit
 			if(literal.Type == TypeSymbol.Boolean)
 			{
 				ilProcessor.Emit((bool)literal.Value ? OpCodes.Ldc_I4_1 : OpCodes.Ldc_I4_0);
+				this.currentStackType = TypeSymbol.Boolean;
 			}
 			else if (literal.Type == TypeSymbol.Integer)
 			{
 				ilProcessor.EmitBigInteger((BigInteger)literal.Value);
+				this.currentStackType = TypeSymbol.Integer;
 			}
 			else if (literal.Type == TypeSymbol.String)
 			{
 				ilProcessor.Emit(OpCodes.Ldstr, (string)literal.Value);
+				this.currentStackType = TypeSymbol.String;
 			}
 			else
 			{
@@ -438,7 +375,26 @@ namespace WSharp.Compiler.Emit
 
 		private void EmitBinaryExpression(BoundBinaryExpression binary, ILProcessor ilProcessor)
 		{
+			this.EmitExpression(binary.Left, ilProcessor);
+			this.EmitExpression(binary.Right, ilProcessor);
 
+			if (binary.Operator.OperatorKind == BoundBinaryOperatorKind.Addition)
+			{
+				if (binary.Type == TypeSymbol.String)
+				{
+					ilProcessor.Emit(OpCodes.Call,
+						ilProcessor.Body.Method.Module.ImportReference(typeof(string)
+							.GetMethod(nameof(string.Concat), new[] { typeof(string), typeof(string) })));
+					this.currentStackType = TypeSymbol.String;
+				}
+				else
+				{
+					ilProcessor.Emit(OpCodes.Call,
+						ilProcessor.Body.Method.Module.ImportReference(typeof(BigInteger)
+							.GetMethod(nameof(BigInteger.Add), new[] { typeof(BigInteger), typeof(BigInteger) })));
+					this.currentStackType = TypeSymbol.Integer;
+				}
+			}
 		}
 
 		private void EmitUnaryExpression(BoundUnaryExpression unary, ILProcessor ilProcessor)

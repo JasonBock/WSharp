@@ -1,10 +1,20 @@
 ﻿using Mono.Cecil.Cil;
 using System.Numerics;
+using WSharp.Compiler.Symbols;
 
 namespace WSharp.Compiler.Extensions
 {
 	internal static class ILProcessorExtensions
 	{
+		internal static void EmitBox(this ILProcessor @this, TypeSymbol? currentStackType)
+		{
+			if(currentStackType is { })
+			{
+				@this.Emit(OpCodes.Box, @this.Body.Method.Module.ImportReference(
+					currentStackType == TypeSymbol.Boolean ? typeof(bool) : typeof(BigInteger)));
+			}
+		}
+
 		internal static void EmitBigInteger(this ILProcessor @this, BigInteger value)
 		{
 			if(value <= new BigInteger(int.MaxValue) && value >= new BigInteger(int.MinValue))
