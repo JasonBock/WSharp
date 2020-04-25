@@ -272,6 +272,6 @@ namespace WSharp
 		}
 
 		private static void RunEvaluator(EvaluationResult evaluation) =>
-			new ExecutionEngine(evaluation.Lines, new SecureRandom(), Console.Out, Console.In).Execute();
+			new ExecutionEngine(evaluation.Lines, new SecureRandom(), Console.In, Console.Out).Execute();
 	}
 }

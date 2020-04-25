@@ -13,10 +13,11 @@ namespace WSharp
 	{
 		public static async Task<int> Main(FileInfo? file, string? moduleName, FileInfo[] references, FileInfo? outputPath, Interaction interaction)
 		{
-			interaction = Interaction.Compile;
-			file = new FileInfo("HelloWorld.ws");
+			System.Diagnostics.Debugger.Break();
+			//interaction = Interaction.Compile;
+			//file = new FileInfo("HelloWorld.ws");
 
-			if(interaction == Interaction.Interpret)
+			if (interaction == Interaction.Interpret)
 			{
 				var repl = new Repl();
 

@@ -16,11 +16,11 @@ namespace WSharp.Runtime
 		private readonly TextReader reader;
 		private readonly TextWriter writer;
 
-		public ExecutionEngine(ImmutableArray<Line> lines, SecureRandom random, TextWriter writer, TextReader reader)
+		public ExecutionEngine(ImmutableArray<Line> lines, SecureRandom random, TextReader reader, TextWriter writer)
 		{
 			this.random = random ?? throw new ArgumentNullException(nameof(random));
-			this.writer = writer ?? throw new ArgumentNullException(nameof(writer));
 			this.reader = reader ?? throw new ArgumentNullException(nameof(reader));
+			this.writer = writer ?? throw new ArgumentNullException(nameof(writer));
 
 			if (lines == null)
 			{
