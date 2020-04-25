@@ -26,15 +26,7 @@ namespace WSharp.Compiler.Emit
 
 		private Emitter(string moduleName, FileInfo[] references)
 		{
-			this.assemblies = new HashSet<AssemblyDefinition>
-			{
-				//AssemblyDefinition.ReadAssembly(typeof(object).Assembly.Location),
-				//AssemblyDefinition.ReadAssembly(typeof(Console).Assembly.Location),
-				//AssemblyDefinition.ReadAssembly(typeof(ImmutableArray).Assembly.Location),
-				//AssemblyDefinition.ReadAssembly(typeof(IExecutionEngineActions).Assembly.Location),
-				//AssemblyDefinition.ReadAssembly(typeof(SecureRandom).Assembly.Location),
-				//AssemblyDefinition.ReadAssembly(typeof(BigInteger).Assembly.Location)
-			};
+			this.assemblies = new HashSet<AssemblyDefinition>();
 
 			if (references is { })
 			{
@@ -201,14 +193,12 @@ namespace WSharp.Compiler.Emit
 						typeof(BigInteger).GetProperties().Single(_ => _.Name == nameof(BigInteger.One)).GetGetMethod()));
 
 				var lineActionCtor = this.assemblyDefinition.MainModule.ImportReference(
-					typeof(Action<>).GetConstructors().Single(_ => _.GetParameters().Length == 2));
-				var genericLineActionCtor = new GenericInstanceMethod(lineActionCtor);
-				genericLineActionCtor.GenericArguments.Add(iExecutionEngineActionsReference);
+					typeof(Action<IExecutionEngineActions>).GetConstructors().Single(_ => _.GetParameters().Length == 2));
 
 				mainIlProcessor.Emit(OpCodes.Ldnull);
 				mainIlProcessor.Emit(OpCodes.Ldftn,
 					this.assemblyDefinition.MainModule.ImportReference(lineMethod));
-				mainIlProcessor.Emit(OpCodes.Newobj, genericLineActionCtor);
+				mainIlProcessor.Emit(OpCodes.Newobj, lineActionCtor);
 				mainIlProcessor.Emit(OpCodes.Newobj,
 					this.assemblyDefinition.MainModule.ImportReference(
 						typeof(Line).GetConstructors().Single(_ => _.GetParameters().Length == 3)));
@@ -259,7 +249,16 @@ namespace WSharp.Compiler.Emit
 				lines.Add((lineNumber, lineMethod));
 
 				programTypeDefinition.Methods.Add(lineMethod);
+
+				var ilProcessor = lineMethod.Body.GetILProcessor();
+				//ilProcessor.Emit(OpCodes.Ldarg_0);
+				//ilProcessor.Emit(OpCodes.Ldstr, $"Test from {lineNumber}.");
+				//ilProcessor.Emit(OpCodes.Callvirt, ilProcessor.Body.Method.Module.ImportReference(
+				//	typeof(IExecutionEngineActions).GetMethod(nameof(IExecutionEngineActions.Print))));
+				//ilProcessor.Emit(OpCodes.Ret);
+
 				this.EmitLineMethod(lineStatement, lineMethod.Body.GetILProcessor());
+
 				lineMethod.Body.OptimizeMacros();
 			}
 
@@ -268,7 +267,6 @@ namespace WSharp.Compiler.Emit
 
 		private void EmitLineMethod(BoundLineStatement lineStatement, ILProcessor ilProcessor)
 		{
-			// TODO: Generate the body for each of the statements in the method.
 			foreach (var statement in lineStatement.Statements)
 			{
 				this.EmitStatement(statement, ilProcessor);
@@ -339,7 +337,7 @@ namespace WSharp.Compiler.Emit
 			var deferGuardLabel = Instruction.Create(OpCodes.Nop);
 
 			ilProcessor.Emit(OpCodes.Ldarg_0);
-			ilProcessor.Emit(OpCodes.Call, ilProcessor.Body.Method.Module.ImportReference(
+			ilProcessor.Emit(OpCodes.Callvirt, ilProcessor.Body.Method.Module.ImportReference(
 				typeof(IExecutionEngineActions).GetProperty(nameof(IExecutionEngineActions.ShouldStatementBeDeferred))!.GetGetMethod()));
 			ilProcessor.Emit(OpCodes.Brtrue, deferGuardLabel);
 
@@ -352,17 +350,17 @@ namespace WSharp.Compiler.Emit
 
 			if(call.Function == BuiltinFunctions.Print)
 			{
-				ilProcessor.Emit(OpCodes.Call, ilProcessor.Body.Method.Module.ImportReference(
+				ilProcessor.Emit(OpCodes.Callvirt, ilProcessor.Body.Method.Module.ImportReference(
 					typeof(IExecutionEngineActions).GetMethod(nameof(IExecutionEngineActions.Print))));
 			}
 			else if (call.Function == BuiltinFunctions.Read)
 			{
-				ilProcessor.Emit(OpCodes.Call, ilProcessor.Body.Method.Module.ImportReference(
+				ilProcessor.Emit(OpCodes.Callvirt, ilProcessor.Body.Method.Module.ImportReference(
 					typeof(IExecutionEngineActions).GetMethod(nameof(IExecutionEngineActions.Read))));
 			}
 			else if (call.Function == BuiltinFunctions.Random)
 			{
-				ilProcessor.Emit(OpCodes.Call, ilProcessor.Body.Method.Module.ImportReference(
+				ilProcessor.Emit(OpCodes.Callvirt, ilProcessor.Body.Method.Module.ImportReference(
 					typeof(IExecutionEngineActions).GetMethod(nameof(IExecutionEngineActions.Random))));
 			}
 
