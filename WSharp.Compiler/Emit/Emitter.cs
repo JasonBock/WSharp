@@ -308,6 +308,64 @@ namespace WSharp.Compiler.Emit
 				typeof(IExecutionEngineActions).GetMethod(nameof(IExecutionEngineActions.UpdateCount))));
 		}
 
+		private void EmitUnaryUpdateLineCountExpression(BoundUnaryUpdateLineCountExpression unaryLine, ILProcessor ilProcessor)
+		{
+			var lineNumber = new VariableDefinition(
+				ilProcessor.Body.Method.Module.ImportReference(typeof(BigInteger)));
+			var count = new VariableDefinition(
+				ilProcessor.Body.Method.Module.ImportReference(typeof(BigInteger)));
+
+			ilProcessor.Body.Variables.Add(lineNumber);
+			ilProcessor.Body.Variables.Add(count);
+
+			this.EmitExpression(unaryLine.LineNumber, ilProcessor);
+			ilProcessor.Emit(OpCodes.Stloc, lineNumber);
+
+			ilProcessor.Emit(OpCodes.Ldloc, lineNumber);
+			ilProcessor.Emit(OpCodes.Call, ilProcessor.Body.Method.Module.ImportReference(
+				typeof(BigInteger).GetProperty(nameof(BigInteger.Zero))!.GetGetMethod()));
+			ilProcessor.Emit(OpCodes.Call, ilProcessor.Body.Method.Module.ImportReference(
+				typeof(BigInteger).GetMethod("op_GreaterThan", new[] { typeof(BigInteger), typeof(BigInteger) })!));
+
+			var greaterThanZero = Instruction.Create(OpCodes.Nop);
+			ilProcessor.Emit(OpCodes.Brtrue, greaterThanZero);
+
+			ilProcessor.Emit(OpCodes.Ldloc, lineNumber);
+			ilProcessor.Emit(OpCodes.Call, ilProcessor.Body.Method.Module.ImportReference(
+				typeof(BigInteger).GetProperty(nameof(BigInteger.Zero))!.GetGetMethod()));
+			ilProcessor.Emit(OpCodes.Call, ilProcessor.Body.Method.Module.ImportReference(
+				typeof(BigInteger).GetMethod("op_LessThan", new[] { typeof(BigInteger), typeof(BigInteger) })!));
+
+			var lessThanZero = Instruction.Create(OpCodes.Nop);
+			ilProcessor.Emit(OpCodes.Brtrue, lessThanZero);
+
+			ilProcessor.Emit(OpCodes.Call, ilProcessor.Body.Method.Module.ImportReference(
+				typeof(BigInteger).GetProperty(nameof(BigInteger.Zero))!.GetGetMethod()));
+			var gotoCall = Instruction.Create(OpCodes.Nop);
+			ilProcessor.Emit(OpCodes.Br, gotoCall);
+
+			ilProcessor.Append(lessThanZero);
+			ilProcessor.Emit(OpCodes.Call, ilProcessor.Body.Method.Module.ImportReference(
+				typeof(BigInteger).GetProperty(nameof(BigInteger.One))!.GetGetMethod()));
+			ilProcessor.Emit(OpCodes.Call, ilProcessor.Body.Method.Module.ImportReference(
+				typeof(BigInteger).GetMethod("op_UnaryNegation", new[] { typeof(BigInteger) })!));
+			ilProcessor.Emit(OpCodes.Br, gotoCall);
+
+			ilProcessor.Append(greaterThanZero);
+			ilProcessor.Emit(OpCodes.Call, ilProcessor.Body.Method.Module.ImportReference(
+				typeof(BigInteger).GetProperty(nameof(BigInteger.One))!.GetGetMethod()));
+
+			ilProcessor.Append(gotoCall);
+			ilProcessor.Emit(OpCodes.Stloc, count);
+			ilProcessor.Emit(OpCodes.Ldarg_0);
+			ilProcessor.Emit(OpCodes.Ldloc, lineNumber);
+			ilProcessor.Emit(OpCodes.Call, ilProcessor.Body.Method.Module.ImportReference(
+				typeof(BigInteger).GetMethod(nameof(BigInteger.Abs))));
+			ilProcessor.Emit(OpCodes.Ldloc, count);
+			ilProcessor.Emit(OpCodes.Callvirt, ilProcessor.Body.Method.Module.ImportReference(
+				typeof(IExecutionEngineActions).GetMethod(nameof(IExecutionEngineActions.UpdateCount))));
+		}
+
 		private void EmitCallExpression(BoundCallExpression call, ILProcessor ilProcessor)
 		{
 			ilProcessor.Emit(OpCodes.Ldarg_0);
@@ -667,11 +725,6 @@ namespace WSharp.Compiler.Emit
 					throw new EmitException($"Unexpected unary type: {unary.Operator.OperatorKind}.");
 				}
 			}
-		}
-
-		private void EmitUnaryUpdateLineCountExpression(BoundUnaryUpdateLineCountExpression unaryLine, ILProcessor ilProcessor)
-		{
-
 		}
 
 		public static EmitResult Emit(BoundLineStatements statement, string moduleName, FileInfo[] references, FileInfo outputPath)
