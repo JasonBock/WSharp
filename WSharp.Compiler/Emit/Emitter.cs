@@ -181,7 +181,7 @@ namespace WSharp.Compiler.Emit
 
 				var lineMethod = new MethodDefinition($"Line{lineNumber}", MethodAttributes.Static | MethodAttributes.Private,
 					this.knownTypes[TypeSymbol.Void]);
-				var lineMethodParameter = new ParameterDefinition("actions", ParameterAttributes.None, 
+				var lineMethodParameter = new ParameterDefinition("actions", ParameterAttributes.None,
 					programTypeDefinition.Module.ImportReference(typeof(IExecutionEngineActions)));
 				lineMethod.Parameters.Add(lineMethodParameter);
 
@@ -228,12 +228,7 @@ namespace WSharp.Compiler.Emit
 			}
 		}
 
-		// TODO: I'm not sure I'll ever need to do this...
-		//if (statement.Expression.Type != TypeSymbol.Void)
-		//{
-		//	ilProcessor.Emit(OpCodes.Pop);
-		//}
-		private void EmitExpressionStatement(BoundExpressionStatement statement, ILProcessor ilProcessor) => 
+		private void EmitExpressionStatement(BoundExpressionStatement statement, ILProcessor ilProcessor) =>
 			this.EmitExpression(statement.Expression, ilProcessor);
 
 		private void EmitExpression(BoundExpression expression, ILProcessor ilProcessor)
@@ -378,7 +373,7 @@ namespace WSharp.Compiler.Emit
 				}
 				else if (conversion.Type == TypeSymbol.Integer)
 				{
-					if(conversion.Expression.Type == TypeSymbol.Boolean)
+					if (conversion.Expression.Type == TypeSymbol.Boolean)
 					{
 						var endLabel = Instruction.Create(OpCodes.Nop);
 						var trueLabel = Instruction.Create(OpCodes.Nop);
@@ -392,7 +387,7 @@ namespace WSharp.Compiler.Emit
 							ilProcessor.Body.Method.Module.ImportReference(typeof(BigInteger).GetProperty(nameof(BigInteger.One))!.GetGetMethod()));
 						ilProcessor.Append(endLabel);
 					}
-					else if(conversion.Expression.Type == TypeSymbol.String)
+					else if (conversion.Expression.Type == TypeSymbol.String)
 					{
 						ilProcessor.Emit(OpCodes.Call,
 							ilProcessor.Body.Method.Module.ImportReference(typeof(BigInteger).GetMethod(nameof(BigInteger.Parse), new[] { typeof(string) })));
@@ -417,7 +412,7 @@ namespace WSharp.Compiler.Emit
 
 		private void EmitLiteralExpression(BoundLiteralExpression literal, ILProcessor ilProcessor)
 		{
-			if(literal.Type == TypeSymbol.Boolean)
+			if (literal.Type == TypeSymbol.Boolean)
 			{
 				ilProcessor.Emit((bool)literal.Value ? OpCodes.Ldc_I4_1 : OpCodes.Ldc_I4_0);
 				this.currentStackType = TypeSymbol.Boolean;
@@ -452,13 +447,197 @@ namespace WSharp.Compiler.Emit
 							.GetMethod(nameof(string.Concat), new[] { typeof(string), typeof(string) })));
 					this.currentStackType = TypeSymbol.String;
 				}
-				else
+				else if(binary.Type == TypeSymbol.Integer)
 				{
 					ilProcessor.Emit(OpCodes.Call,
 						ilProcessor.Body.Method.Module.ImportReference(typeof(BigInteger)
 							.GetMethod(nameof(BigInteger.Add), new[] { typeof(BigInteger), typeof(BigInteger) })));
 					this.currentStackType = TypeSymbol.Integer;
 				}
+				else
+				{
+					throw new EmitException($"Unexpected type '{binary.Type.Name}' for binary operator {binary.Operator.OperatorKind}.");
+				}
+			}
+			else if (binary.Operator.OperatorKind == BoundBinaryOperatorKind.Subtraction)
+			{
+				ilProcessor.Emit(OpCodes.Call,
+					ilProcessor.Body.Method.Module.ImportReference(typeof(BigInteger)
+						.GetMethod(nameof(BigInteger.Subtract), new[] { typeof(BigInteger), typeof(BigInteger) })));
+				this.currentStackType = TypeSymbol.Integer;
+			}
+			else if (binary.Operator.OperatorKind == BoundBinaryOperatorKind.Multiplication)
+			{
+				ilProcessor.Emit(OpCodes.Call,
+					ilProcessor.Body.Method.Module.ImportReference(typeof(BigInteger)
+						.GetMethod(nameof(BigInteger.Multiply), new[] { typeof(BigInteger), typeof(BigInteger) })));
+				this.currentStackType = TypeSymbol.Integer;
+			}
+			else if (binary.Operator.OperatorKind == BoundBinaryOperatorKind.Division)
+			{
+				ilProcessor.Emit(OpCodes.Call,
+					ilProcessor.Body.Method.Module.ImportReference(typeof(BigInteger)
+						.GetMethod(nameof(BigInteger.Divide), new[] { typeof(BigInteger), typeof(BigInteger) })));
+				this.currentStackType = TypeSymbol.Integer;
+			}
+			else if (binary.Operator.OperatorKind == BoundBinaryOperatorKind.Modulo)
+			{
+				ilProcessor.Emit(OpCodes.Call,
+					ilProcessor.Body.Method.Module.ImportReference(typeof(BigInteger)
+						.GetMethod(nameof(BigInteger.Remainder), new[] { typeof(BigInteger), typeof(BigInteger) })));
+				this.currentStackType = TypeSymbol.Integer;
+			}
+			else if (binary.Operator.OperatorKind == BoundBinaryOperatorKind.BitwiseAnd)
+			{
+				if (binary.Type == TypeSymbol.Integer)
+				{
+					ilProcessor.Emit(OpCodes.Call,
+						ilProcessor.Body.Method.Module.ImportReference(typeof(BigInteger)
+							.GetMethod("op_BitwiseAnd", new[] { typeof(BigInteger), typeof(BigInteger) })));
+					this.currentStackType = TypeSymbol.Integer;
+				}
+				else if(binary.Type == TypeSymbol.Boolean)
+				{
+					ilProcessor.Emit(OpCodes.And);
+					this.currentStackType = TypeSymbol.Boolean;
+				}
+				else
+				{
+					throw new EmitException($"Unexpected type '{binary.Type.Name}' for binary operator {binary.Operator.OperatorKind}.");
+				}
+			}
+			else if (binary.Operator.OperatorKind == BoundBinaryOperatorKind.BitwiseOr)
+			{
+				if (binary.Type == TypeSymbol.Integer)
+				{
+					ilProcessor.Emit(OpCodes.Call,
+						ilProcessor.Body.Method.Module.ImportReference(typeof(BigInteger)
+							.GetMethod("op_BitwiseOr", new[] { typeof(BigInteger), typeof(BigInteger) })));
+					this.currentStackType = TypeSymbol.Integer;
+				}
+				else if (binary.Type == TypeSymbol.Boolean)
+				{
+					ilProcessor.Emit(OpCodes.Or);
+					this.currentStackType = TypeSymbol.Boolean;
+				}
+				else
+				{
+					throw new EmitException($"Unexpected type '{binary.Type.Name}' for binary operator {binary.Operator.OperatorKind}.");
+				}
+			}
+			else if (binary.Operator.OperatorKind == BoundBinaryOperatorKind.BitwiseXor)
+			{
+				if (binary.Type == TypeSymbol.Integer)
+				{
+					ilProcessor.Emit(OpCodes.Call,
+						ilProcessor.Body.Method.Module.ImportReference(typeof(BigInteger)
+							.GetMethod("op_ExclusiveOr", new[] { typeof(BigInteger), typeof(BigInteger) })));
+					this.currentStackType = TypeSymbol.Integer;
+				}
+				else if (binary.Type == TypeSymbol.Boolean)
+				{
+					ilProcessor.Emit(OpCodes.Xor);
+					this.currentStackType = TypeSymbol.Boolean;
+				}
+				else
+				{
+					throw new EmitException($"Unexpected type '{binary.Type.Name}' for binary operator {binary.Operator.OperatorKind}.");
+				}
+			}
+			else if (binary.Operator.OperatorKind == BoundBinaryOperatorKind.LogicalAnd)
+			{
+				ilProcessor.Emit(OpCodes.And);
+				this.currentStackType = TypeSymbol.Boolean;
+			}
+			else if (binary.Operator.OperatorKind == BoundBinaryOperatorKind.LogicalOr)
+			{
+				ilProcessor.Emit(OpCodes.Or);
+				this.currentStackType = TypeSymbol.Boolean;
+			}
+			else if (binary.Operator.OperatorKind == BoundBinaryOperatorKind.Equals)
+			{
+				if (binary.Left.Type == TypeSymbol.Integer)
+				{
+					ilProcessor.Emit(OpCodes.Call,
+						ilProcessor.Body.Method.Module.ImportReference(typeof(BigInteger)
+							.GetMethod("op_Equality", new[] { typeof(BigInteger), typeof(BigInteger) })));
+				}
+				else if (binary.Left.Type == TypeSymbol.String)
+				{
+					ilProcessor.Emit(OpCodes.Call,
+						ilProcessor.Body.Method.Module.ImportReference(typeof(string)
+							.GetMethod(nameof(string.Equals), new[] { typeof(string) })));
+				}
+				else if(binary.Left.Type == TypeSymbol.Boolean)
+				{
+					ilProcessor.Emit(OpCodes.Ceq);
+				}
+				else
+				{
+					throw new EmitException($"Unexpected type '{binary.Type.Name}' for binary operator {binary.Operator.OperatorKind}.");
+				}
+
+				this.currentStackType = TypeSymbol.Boolean;
+			}
+			else if (binary.Operator.OperatorKind == BoundBinaryOperatorKind.NotEquals)
+			{
+				if (binary.Left.Type == TypeSymbol.Integer)
+				{
+					ilProcessor.Emit(OpCodes.Call,
+						ilProcessor.Body.Method.Module.ImportReference(typeof(BigInteger)
+							.GetMethod("op_Equality", new[] { typeof(BigInteger), typeof(BigInteger) })));
+				}
+				else if (binary.Left.Type == TypeSymbol.String)
+				{
+					ilProcessor.Emit(OpCodes.Call,
+						ilProcessor.Body.Method.Module.ImportReference(typeof(string)
+							.GetMethod(nameof(string.Equals), new[] { typeof(string) })));
+				}
+				else if (binary.Left.Type == TypeSymbol.Boolean)
+				{
+					ilProcessor.Emit(OpCodes.Ceq);
+				}
+				else
+				{
+					throw new EmitException($"Unexpected type '{binary.Type.Name}' for binary operator {binary.Operator.OperatorKind}.");
+				}
+
+				ilProcessor.Emit(OpCodes.Ldc_I4_0);
+				ilProcessor.Emit(OpCodes.Ceq);
+
+				this.currentStackType = TypeSymbol.Boolean;
+			}
+			else if (binary.Operator.OperatorKind == BoundBinaryOperatorKind.Less)
+			{
+				ilProcessor.Emit(OpCodes.Call,
+					ilProcessor.Body.Method.Module.ImportReference(typeof(BigInteger)
+						.GetMethod("op_LessThan", new[] { typeof(BigInteger), typeof(BigInteger) })));
+				this.currentStackType = TypeSymbol.Integer;
+			}
+			else if (binary.Operator.OperatorKind == BoundBinaryOperatorKind.LessOrEqualsTo)
+			{
+				ilProcessor.Emit(OpCodes.Call,
+					ilProcessor.Body.Method.Module.ImportReference(typeof(BigInteger)
+						.GetMethod("op_LessThanOrEqual", new[] { typeof(BigInteger), typeof(BigInteger) })));
+				this.currentStackType = TypeSymbol.Integer;
+			}
+			else if (binary.Operator.OperatorKind == BoundBinaryOperatorKind.Greater)
+			{
+				ilProcessor.Emit(OpCodes.Call,
+					ilProcessor.Body.Method.Module.ImportReference(typeof(BigInteger)
+						.GetMethod("op_GreaterThan", new[] { typeof(BigInteger), typeof(BigInteger) })));
+				this.currentStackType = TypeSymbol.Integer;
+			}
+			else if (binary.Operator.OperatorKind == BoundBinaryOperatorKind.GreaterOrEqualsTo)
+			{
+				ilProcessor.Emit(OpCodes.Call,
+					ilProcessor.Body.Method.Module.ImportReference(typeof(BigInteger)
+						.GetMethod("op_GreaterThanOrEqual", new[] { typeof(BigInteger), typeof(BigInteger) })));
+				this.currentStackType = TypeSymbol.Integer;
+			}
+			else
+			{
+				throw new EmitException($"Unexpected binary expression kind: {binary.Operator.OperatorKind}.");
 			}
 		}
 
