@@ -22,6 +22,8 @@ namespace WSharp.Compiler.Emit
 		private readonly Dictionary<TypeSymbol, TypeReference> knownTypes;
 		private readonly DiagnosticBag diagnostics = new DiagnosticBag();
 		private TypeSymbol? currentStackType;
+		private Instruction? deferGuardLabel;
+
 		public EmitResult? Result { get; private set; }
 
 		private Emitter(string moduleName, FileInfo[] references)
@@ -201,16 +203,12 @@ namespace WSharp.Compiler.Emit
 		{
 			foreach (var statement in lineStatement.Statements)
 			{
-				var deferGuardLabel = Instruction.Create(OpCodes.Nop);
-
-				ilProcessor.Emit(OpCodes.Ldarg_0);
-				ilProcessor.Emit(OpCodes.Callvirt, ilProcessor.Body.Method.Module.ImportReference(
-					typeof(IExecutionEngineActions).GetProperty(nameof(IExecutionEngineActions.ShouldStatementBeDeferred))!.GetGetMethod()));
-				ilProcessor.Emit(OpCodes.Brtrue, deferGuardLabel);
-
 				this.EmitStatement(statement, ilProcessor);
+			}
 
-				ilProcessor.Append(deferGuardLabel);
+			if(this.deferGuardLabel is { })
+			{
+				ilProcessor.Append(this.deferGuardLabel);
 			}
 
 			ilProcessor.Emit(OpCodes.Ret);
@@ -384,6 +382,13 @@ namespace WSharp.Compiler.Emit
 			{
 				ilProcessor.Emit(OpCodes.Callvirt, ilProcessor.Body.Method.Module.ImportReference(
 					typeof(IExecutionEngineActions).GetMethod(nameof(IExecutionEngineActions.Defer))));
+
+				this.deferGuardLabel = Instruction.Create(OpCodes.Nop);
+
+				ilProcessor.Emit(OpCodes.Ldarg_0);
+				ilProcessor.Emit(OpCodes.Callvirt, ilProcessor.Body.Method.Module.ImportReference(
+					typeof(IExecutionEngineActions).GetProperty(nameof(IExecutionEngineActions.ShouldStatementBeDeferred))!.GetGetMethod()));
+				ilProcessor.Emit(OpCodes.Brtrue, this.deferGuardLabel);
 			}
 			else if (call.Function == BuiltinFunctions.Exists)
 			{

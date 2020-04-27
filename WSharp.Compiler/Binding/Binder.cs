@@ -10,6 +10,9 @@ namespace WSharp.Compiler.Binding
 {
 	internal sealed class Binder
 	{
+		private CallExpressionSyntax? deferWasInvoked;
+		private bool doesStatementExistAfterDefer;
+
 		public BoundStatement BindCompilationUnit(CompilationUnitSyntax syntax) =>
 			this.BindStatement(syntax.LineStatements);
 
@@ -55,7 +58,7 @@ namespace WSharp.Compiler.Binding
 
 		private BoundExpression BindCallExpression(CallExpressionSyntax syntax)
 		{
-			if(syntax.Arguments.Count == 1 && TypeSymbol.Lookup(syntax.Identifier.Text) is TypeSymbol type)
+			if (syntax.Arguments.Count == 1 && TypeSymbol.Lookup(syntax.Identifier.Text) is TypeSymbol type)
 			{
 				return this.BindConversion(syntax.Arguments[0], type, allowExplicit: true);
 			}
@@ -63,15 +66,15 @@ namespace WSharp.Compiler.Binding
 			var functions = BuiltinFunctions.GetAll();
 			var function = functions.SingleOrDefault(_ => _.Name == syntax.Identifier.Text);
 
-			if(function == null)
+			if (function == null)
 			{
 				this.Diagnostics.ReportUndefinedFunction(syntax.Identifier);
 				return new BoundErrorExpression();
 			}
 
-			if(syntax.Arguments.Count != function.Parameters.Length)
+			if (syntax.Arguments.Count != function.Parameters.Length)
 			{
-				this.Diagnostics.ReportWrongArgumentCount(syntax.Location, function.Name, 
+				this.Diagnostics.ReportWrongArgumentCount(syntax.Location, function.Name,
 					function.Parameters.Length, syntax.Arguments.Count);
 				return new BoundErrorExpression();
 			}
@@ -92,19 +95,25 @@ namespace WSharp.Compiler.Binding
 				boundArguments[i] = this.BindConversion(argumentLocation, argument, parameter.Type);
 			}
 
+			if (function == BuiltinFunctions.Defer)
+			{
+				this.deferWasInvoked = syntax;
+				this.doesStatementExistAfterDefer = false;
+			}
+
 			return new BoundCallExpression(function, boundArguments.ToImmutable());
 		}
 
-		private BoundExpression BindConversion(ExpressionSyntax syntax, TypeSymbol type, bool allowExplicit = false) => 
+		private BoundExpression BindConversion(ExpressionSyntax syntax, TypeSymbol type, bool allowExplicit = false) =>
 			this.BindConversion(syntax.Location, this.BindExpression(syntax), type, allowExplicit);
 
 		private BoundExpression BindConversion(TextLocation location, BoundExpression expression, TypeSymbol type, bool allowExplicit = false)
 		{
 			var conversion = Conversion.Classify(expression.Type, type);
 
-			if(!conversion.Exists)
+			if (!conversion.Exists)
 			{
-				if(expression.Type != TypeSymbol.Error && type != TypeSymbol.Error)
+				if (expression.Type != TypeSymbol.Error && type != TypeSymbol.Error)
 				{
 					this.Diagnostics.ReportCannotConvert(location, expression.Type, type);
 				}
@@ -132,7 +141,7 @@ namespace WSharp.Compiler.Binding
 		{
 			var lineStatements = new List<BoundLineStatement>();
 
-			foreach(var line in syntax.Lines)
+			foreach (var line in syntax.Lines)
 			{
 				lineStatements.Add((BoundLineStatement)this.BindLineStatement(line));
 			}
@@ -142,8 +151,23 @@ namespace WSharp.Compiler.Binding
 
 		private BoundStatement BindLineStatement(LineStatementSyntax syntax)
 		{
+			this.deferWasInvoked = null;
+			this.doesStatementExistAfterDefer = false;
+
 			var boundLineNumber = this.BindStatement(syntax.Number);
-			var boundLines = syntax.Statements.Select(_ => this.BindStatement(_)).ToList();
+			var boundLines = new List<BoundStatement>();
+
+			foreach(var lineStatement in syntax.Statements)
+			{
+				this.doesStatementExistAfterDefer = this.deferWasInvoked is { };
+				boundLines.Add(this.BindStatement(lineStatement));
+			}
+
+			if (this.deferWasInvoked is { } && !this.doesStatementExistAfterDefer)
+			{
+				this.Diagnostics.ReportNoStatementsAfterDefer(this.deferWasInvoked.Location);
+			}
+
 			return new BoundLineStatement(boundLineNumber, boundLines);
 		}
 
@@ -202,7 +226,7 @@ namespace WSharp.Compiler.Binding
 			var boundLeft = this.BindExpression(syntax.Left);
 			var boundRight = this.BindExpression(syntax.Right);
 
-			if(boundLeft.Type == TypeSymbol.Error || boundRight.Type == TypeSymbol.Error)
+			if (boundLeft.Type == TypeSymbol.Error || boundRight.Type == TypeSymbol.Error)
 			{
 				return new BoundErrorExpression();
 			}

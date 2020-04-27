@@ -1,4 +1,5 @@
 ﻿using Mono.Cecil;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -93,14 +94,17 @@ namespace WSharp.Compiler
 			this.Report(location, $"Cannot convert type '{fromType}' to '{toType}'.");
 
 		internal void ReportUnexpectedArgumentSyntax(TextLocation location) =>
-			this.Report(location, $"Unexpected argument syntax.");
+			this.Report(location, "Unexpected argument syntax.");
 
 		internal void ReportUnexpectedLineStatementToken(TextLocation location) =>
-			this.Report(location, $"Unexpected line statement token.");
+			this.Report(location, "Unexpected line statement token.");
 
 		internal void ReportCannotConvertImplicitly(TextLocation location, TypeSymbol fromType, TypeSymbol toType) => 
 			this.Report(location, $"Cannot convert type '{fromType}' to '{toType}'. An explicit conversion exists (are you missing a cast?)");
 
 		public int Count => this.diagnostics.Count;
+
+		internal void ReportNoStatementsAfterDefer(TextLocation location) =>
+			this.Report(location, "No statements exist after a call to defer().");
 	}
 }
