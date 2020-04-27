@@ -165,8 +165,6 @@ namespace WSharp
 		[MetaCommand("loadFile", "Loads the file.")]
 		private async Task EvaluateLoadFileAsync(string fileName)
 		{
-			// TODO: We lose the file information because we just read the lines into the list,
-			// so the file name won't show up in the diagnostics.
 			if (File.Exists(fileName))
 			{
 				this.lines.Clear();

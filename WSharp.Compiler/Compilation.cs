@@ -36,7 +36,6 @@ namespace WSharp.Compiler
 			return new EvaluationResult(ImmutableArray<Diagnostic>.Empty, lines);
 		}
 
-		// TODO: Put some kind of guard here to not emit if Diagnostics has issues.
 		public EmitResult Emit(string moduleName, FileInfo[] references, FileInfo outputPath) => 
 			Emitter.Emit((BoundLineStatements)this.Statement, moduleName, references, outputPath);
 
