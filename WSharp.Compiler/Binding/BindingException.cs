@@ -4,22 +4,19 @@ using System.Runtime.Serialization;
 namespace WSharp.Compiler.Binding
 {
 	[Serializable]
-	internal class BindingException : Exception
+	public sealed class BindingException 
+		: Exception
 	{
 		public BindingException()
-		{
-		}
+			: base() { }
 
-		public BindingException(string? message) : base(message)
-		{
-		}
+		public BindingException(string? message)
+			: base(message) { }
 
-		public BindingException(string? message, Exception? innerException) : base(message, innerException)
-		{
-		}
+		public BindingException(string? message, Exception? innerException)
+			: base(message, innerException) { }
 
-		protected BindingException(SerializationInfo info, StreamingContext context) : base(info, context)
-		{
-		}
+		private BindingException(SerializationInfo info, StreamingContext context)
+			: base(info, context) { }
 	}
 }

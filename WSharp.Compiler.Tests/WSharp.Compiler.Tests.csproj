@@ -2,12 +2,8 @@
   <PropertyGroup>
     <AssemblyName>WSharp.Compiler.Tests</AssemblyName>
     <Copyright>Copyright © 2020</Copyright>
-    <Features>strict</Features>
-    <LangVersion>latest</LangVersion>
-    <Nullable>enable</Nullable>
     <RootNamespace>WSharp.Compiler.Tests</RootNamespace>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-    <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
     <Version>0.1.0</Version>
   </PropertyGroup>
   <ItemGroup>

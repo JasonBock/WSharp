@@ -44,7 +44,7 @@ namespace WSharp.Compiler
 				BoundCallExpression call => this.EvaluateCallExpression(actions, call),
 				BoundUnaryUpdateLineCountExpression unaryLine => this.EvaluateUnaryUpdateLineCountExpression(actions, unaryLine),
 				BoundUpdateLineCountExpression line => this.EvaluateUpdateLineCountExpression(actions, line),
-				BoundLiteralExpression literal => this.EvaluateLiteralExpression(literal),
+				BoundLiteralExpression literal => Evaluator.EvaluateLiteralExpression(literal),
 				BoundUnaryExpression unary => this.EvaluateUnaryExpression(actions, unary),
 				BoundBinaryExpression binary => this.EvaluateBinaryExpression(actions, binary),
 				BoundConversionExpression conversion => this.EvaluateConversionExpression(actions, conversion),
@@ -217,7 +217,7 @@ namespace WSharp.Compiler
 			};
 		}
 
-		private object EvaluateLiteralExpression(BoundLiteralExpression literal) => literal.Value;
+		private static object EvaluateLiteralExpression(BoundLiteralExpression literal) => literal.Value;
 
 		public BoundStatement Root { get; }
 	}

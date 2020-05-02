@@ -26,8 +26,15 @@ namespace WSharp.Compiler
 		private void Report(TextLocation location, string message) =>
 			this.diagnostics.Add(new Diagnostic(location, message));
 
-		public void ReportInvalidReference(FileInfo reference) =>
+		public void ReportInvalidReference(FileInfo reference)
+		{
+			if (reference is null)
+			{
+				throw new ArgumentNullException(nameof(reference));
+			}
+
 			this.Report(default, $"The reference is not a valid .NET assembly: '{reference.FullName}'.");
+		}
 
 		public void ReportRequiredTypeNotFound(string wheneverName, string metadataName) => 
 			this.Report(default,
@@ -85,8 +92,15 @@ namespace WSharp.Compiler
 		public void ReportWrongArgumentCount(TextLocation location, string name, int expectedCount, int actualCount) =>
 			this.Report(location, $"Function '{name}' requires {expectedCount} argument(s) but was given {actualCount}.");
 
-		public void ReportUndefinedFunction(SyntaxToken identifier) =>
+		public void ReportUndefinedFunction(SyntaxToken identifier)
+		{
+			if (identifier is null)
+			{
+				throw new ArgumentNullException(nameof(identifier));
+			}
+
 			this.Report(identifier.Location, $"Function '{identifier.Text}' doesn't exist.");
+		}
 
 		internal void ReportInvalidLineNumberReference(TextLocation location, BigInteger targetLineNumber) =>
 			this.Report(location, $"The line number {targetLineNumber} does not exist.");

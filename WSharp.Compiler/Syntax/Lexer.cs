@@ -1,4 +1,5 @@
-﻿using System.Numerics;
+﻿using System;
+using System.Numerics;
 using System.Text;
 using WSharp.Compiler.Symbols;
 using WSharp.Compiler.Text;
@@ -16,8 +17,8 @@ namespace WSharp.Compiler.Syntax
 
 		public Lexer(SyntaxTree tree)
 		{
+			this.tree = tree ?? throw new ArgumentNullException(nameof(tree));
 			this.text = tree.Text;
-			this.tree = tree;
 		}
 
 		public SyntaxToken Lex()

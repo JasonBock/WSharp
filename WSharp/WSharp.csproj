@@ -1,16 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <AssemblyName>WSharp</AssemblyName>
-    <Authors>Jason Bock</Authors>
     <Copyright>Copyright © 2020</Copyright>
     <Description>A console app that drives the WSharp runtime.</Description>
-    <Features>strict</Features>
-    <LangVersion>latest</LangVersion>
-    <Nullable>enable</Nullable>
     <OutputType>Exe</OutputType>
     <RootNamespace>WSharp</RootNamespace>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-    <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
     <Version>0.1.0</Version>
   </PropertyGroup>
   <ItemGroup>

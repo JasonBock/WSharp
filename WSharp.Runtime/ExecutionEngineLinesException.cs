@@ -11,6 +11,12 @@ namespace WSharp.Runtime
 		public ExecutionEngineLinesException()
 			: base() => this.Messages = ImmutableArray<string>.Empty;
 
+		public ExecutionEngineLinesException(string message)
+			: base(message) { }
+
+		public ExecutionEngineLinesException(string message, Exception innerException)
+			: base(message, innerException) { }
+
 		public ExecutionEngineLinesException(ImmutableArray<string> messages)
 			: base() => this.Messages = messages;
 

@@ -1,4 +1,5 @@
-﻿using System.Collections.Immutable;
+﻿using System;
+using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 using WSharp.Compiler.Binding;
@@ -12,7 +13,7 @@ namespace WSharp.Compiler
 	{
 		public Compilation(SyntaxTree tree)
 		{
-			this.Tree = tree;
+			this.Tree = tree ?? throw new ArgumentNullException(nameof(tree));
 			var binder = new Binder(this.Tree.Root);
 			this.Statement = binder.CompilationUnit;
 			this.Diagnostics = binder.Diagnostics;

@@ -16,7 +16,7 @@ namespace WSharp.Runtime
 		public EngineException(string? message, Exception? innerException)
 			: base(message, innerException) { }
 
-		public EngineException(SerializationInfo info, StreamingContext context)
+		private EngineException(SerializationInfo info, StreamingContext context)
 			: base(info, context) { }
 	}
 }

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using WSharp.Compiler.Text;
 
@@ -11,6 +12,11 @@ namespace WSharp.Compiler.Syntax
 
 		public Parser(SyntaxTree tree)
 		{
+			if(tree is null)
+			{
+				throw new ArgumentNullException(nameof(tree));
+			}
+
 			var tokens = new List<SyntaxToken>();
 			var lexer = new Lexer(tree);
 

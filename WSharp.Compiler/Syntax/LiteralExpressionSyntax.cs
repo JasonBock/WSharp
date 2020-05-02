@@ -6,11 +6,10 @@ namespace WSharp.Compiler.Syntax
 		: ExpressionSyntax
 	{
 		public LiteralExpressionSyntax(SyntaxTree tree, SyntaxToken literalToken)
-			: this(tree, literalToken, literalToken.Value) { }
+			: this(tree, literalToken, literalToken?.Value) { }
 
 		public LiteralExpressionSyntax(SyntaxTree tree, SyntaxToken literalToken, object? value)
-			: base(tree) =>
-				(this.LiteralToken, this.Value) = (literalToken, value);
+			: base(tree) => (this.LiteralToken, this.Value) = (literalToken, value);
 
 		public override IEnumerable<SyntaxNode> GetChildren()
 		{

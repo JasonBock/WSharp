@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
@@ -10,8 +11,15 @@ namespace WSharp.Compiler.Binding
 
 		public abstract IEnumerable<(string name, object value)> GetProperties();
 
-		public void WriteTo(TextWriter writer) =>
+		public void WriteTo(TextWriter writer)
+		{
+			if (writer is null)
+			{
+				throw new ArgumentNullException(nameof(writer));
+			}
+
 			BoundNode.Print(writer, this);
+		}
 
 		private static void Print(TextWriter writer, BoundNode node, string indent = "", bool isLast = true)
 		{

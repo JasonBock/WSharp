@@ -35,8 +35,8 @@ namespace WSharp
 
 		public async Task RunAsync(FileInfo file)
 		{
-			await this.EvaluateMetaCommandAsync($"#loadFile {file.FullName}");
-			await this.RunAsync();
+			await this.EvaluateMetaCommandAsync($"#loadFile {file.FullName}").ConfigureAwait(false);
+			await this.RunAsync().ConfigureAwait(false);
 		}
 
 		public async Task RunAsync()
@@ -54,7 +54,7 @@ namespace WSharp
 				{
 					if (input.StartsWith("#"))
 					{
-						await this.EvaluateMetaCommandAsync(input);
+						await this.EvaluateMetaCommandAsync(input).ConfigureAwait(false);
 						continue;
 					}
 					else
@@ -152,12 +152,12 @@ namespace WSharp
 				{
 					var parameterNames = string.Join(" ", parameters.Select(_ => $"<{_.Name}>"));
 					using (ConsoleColor.Red.Bind(() => Console.ForegroundColor))
-						Console.Out.WriteLine($"Invalid number of arguments (given {arguments.Count}, expected {parameters.Length}).");
+					Console.Out.WriteLine($"Invalid number of arguments (given {arguments.Count}, expected {parameters.Length}).");
 					Console.Out.WriteLine($"Usage: #{command.Name} {parameterNames}");
 				}
 				else
 				{
-					await (Task)command.Method.Invoke(this, arguments.ToArray())!;
+					await ((Task)command.Method.Invoke(this, arguments.ToArray())!).ConfigureAwait(false);
 				}
 			}
 		}
@@ -168,12 +168,12 @@ namespace WSharp
 			if (File.Exists(fileName))
 			{
 				this.lines.Clear();
-				this.lines.AddRange(await File.ReadAllLinesAsync(fileName));
+				this.lines.AddRange(await File.ReadAllLinesAsync(fileName).ConfigureAwait(false));
 			}
 			else
 			{
 				using (ConsoleColor.Red.Bind(() => Console.ForegroundColor))
-					Console.Out.WriteLine($"File {fileName} does not exist.");
+				Console.Out.WriteLine($"File {fileName} does not exist.");
 			}
 		}
 
@@ -185,16 +185,10 @@ namespace WSharp
 		}
 
 		[MetaCommand("reset", "Clears the screen and the current lines of code.")]
-		private async Task EvaluateReset()
-		{
-			await this.EvaluateClearScreen();
-			this.lines.Clear();
-		}
-
-		[MetaCommand("cls", "Clears the screen.")]
-		private Task EvaluateClearScreen()
+		private Task EvaluateReset()
 		{
 			Console.Clear();
+			this.lines.Clear();
 			return Task.CompletedTask;
 		}
 
@@ -202,14 +196,14 @@ namespace WSharp
 		private async Task EvaluateShowProgram()
 		{
 			this.showProgram = !this.showProgram;
-			await Console.Out.WriteLineAsync(this.showProgram ? "Showing program." : "Not showing program.");
+			await Console.Out.WriteLineAsync(this.showProgram ? "Showing program." : "Not showing program.").ConfigureAwait(false);
 		}
 
 		[MetaCommand("showTree", "Displays/hides syntax tree.")]
 		private async Task EvaluateShowTree()
 		{
 			this.showTree = !this.showTree;
-			await Console.Out.WriteLineAsync(this.showTree ? "Showing parse trees." : "Not showing parse trees.");
+			await Console.Out.WriteLineAsync(this.showTree ? "Showing parse trees." : "Not showing parse trees.").ConfigureAwait(false);
 		}
 
 		[MetaCommand("help", "Shows help")]
@@ -224,12 +218,12 @@ namespace WSharp
 				if (metaParameters.Length == 0)
 				{
 					var paddedName = metaCommand.Name.PadRight(maxNameLength);
-					await Console.Out.WriteLineAsync($"{metaCommand.Name.PadRight(maxNameLength)}    {metaCommand.Description}");
+					await Console.Out.WriteLineAsync($"{paddedName}    {metaCommand.Description}").ConfigureAwait(false);
 				}
 				else
 				{
-					await Console.Out.WriteLineAsync($"{metaCommand.Name} {string.Join(" ", metaParameters.Select(_ => $"<{_.Name}>"))}");
-					await Console.Out.WriteLineAsync($"{string.Empty.PadRight(maxNameLength)}    {metaCommand.Description}");
+					await Console.Out.WriteLineAsync($"{metaCommand.Name} {string.Join(" ", metaParameters.Select(_ => $"<{_.Name}>"))}").ConfigureAwait(false);
+					await Console.Out.WriteLineAsync($"{string.Empty.PadRight(maxNameLength)}    {metaCommand.Description}").ConfigureAwait(false);
 				}
 			}
 		}
@@ -277,7 +271,10 @@ namespace WSharp
 			}
 		}
 
-		private static void RunEvaluator(EvaluationResult evaluation) =>
-			new ExecutionEngine(evaluation.Lines, new SecureRandom(), Console.In, Console.Out).Execute();
+		private static void RunEvaluator(EvaluationResult evaluation)
+		{
+			using var random = new SecureRandom();
+			new ExecutionEngine(evaluation.Lines, random, Console.In, Console.Out).Execute();
+		}
 	}
 }

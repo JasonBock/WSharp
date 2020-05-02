@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using WSharp.Compiler.Text;
@@ -11,8 +12,15 @@ namespace WSharp.Compiler.Syntax
 
 		public abstract IEnumerable<SyntaxNode> GetChildren();
 
-		public void WriteTo(TextWriter writer) => 
+		public void WriteTo(TextWriter writer)
+		{
+			if (writer is null)
+			{
+				throw new ArgumentNullException(nameof(writer));
+			}
+
 			SyntaxNode.Print(writer, this);
+		}
 
 		public TextLocation Location => new TextLocation(this.Tree.Text, this.Span);
 

@@ -8,7 +8,9 @@ using System.Numerics;
 
 namespace WSharp.Runtime
 {
+#pragma warning disable CA1001 // Types that own disposable fields should be disposable
 	public sealed class ExecutionEngine
+#pragma warning restore CA1001 // Types that own disposable fields should be disposable
 		: IExecutionEngineActions
 	{
 		private readonly Dictionary<BigInteger, Line> lines;

@@ -11,7 +11,7 @@ namespace WSharp
 {
 	public static class Program
 	{
-		public static async Task<int> Main(FileInfo? file, FileInfo[] references, FileInfo? outputPath, Interaction interaction)
+		public static async Task<int> Main(FileInfo? file, FileInfo[]? references, FileInfo? outputPath, Interaction interaction)
 		{
 			//System.Diagnostics.Debugger.Launch();
 			//interaction = Interaction.Compile;
@@ -23,23 +23,26 @@ namespace WSharp
 
 				if(file != null)
 				{
-					await repl.RunAsync(file);
+					await repl.RunAsync(file).ConfigureAwait(false);
 				}
 				else
 				{
-					await repl.RunAsync();
+					await repl.RunAsync().ConfigureAwait(false);
 				}
 
 				return 0;
 			}
 			else
 			{
-				if (Program.ValidateParameters(file, references))
+				if (Program.ValidateParameters(file, references ?? Array.Empty<FileInfo>()))
 				{
-					var moduleName = file!.Name.Replace(file!.Extension, string.Empty);
-					outputPath ??= new FileInfo(Path.ChangeExtension(file!.Name, ".exe"));
+					var targetFile = file ?? file!;
+					var targetReferences = references ?? Array.Empty<FileInfo>();
 
-					var tree = await SyntaxTree.LoadAsync(file!);
+					var moduleName = targetFile.Name.Replace(targetFile.Extension, string.Empty);
+					outputPath ??= new FileInfo(Path.ChangeExtension(targetFile.Name, ".exe"));
+
+					var tree = await SyntaxTree.LoadAsync(targetFile).ConfigureAwait(false);
 
 					if (tree.Diagnostics.Length > 0)
 					{
@@ -56,7 +59,7 @@ namespace WSharp
 					}
 					else
 					{
-						var result = compilation.Emit(moduleName, references, outputPath);
+						var result = compilation.Emit(moduleName, targetReferences, outputPath);
 
 						if (result.Diagnostics.Length > 0)
 						{

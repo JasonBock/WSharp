@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace WSharp.Compiler.Syntax
 {
@@ -8,7 +9,17 @@ namespace WSharp.Compiler.Syntax
 		public ParenthesizedExpressionSyntax(SyntaxTree tree, SyntaxToken openParenthesisToken, ExpressionSyntax expression, SyntaxToken closeParenthesisToken)
 			: base(tree)
 		{
-			if(openParenthesisToken.Kind != SyntaxKind.OpenParenthesisToken)
+			if (openParenthesisToken is null)
+			{
+				throw new ArgumentNullException(nameof(openParenthesisToken));
+			}
+
+			if (closeParenthesisToken is null)
+			{
+				throw new ArgumentNullException(nameof(closeParenthesisToken));
+			}
+
+			if (openParenthesisToken.Kind != SyntaxKind.OpenParenthesisToken)
 			{
 				throw new ParsingException($"Open parenthesis token is incorrect, kind is {openParenthesisToken.Kind}.");
 			}

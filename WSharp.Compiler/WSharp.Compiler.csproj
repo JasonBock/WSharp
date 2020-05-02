@@ -1,15 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <AssemblyName>WSharp.Compiler</AssemblyName>
-    <Authors>Jason Bock</Authors>
     <Copyright>Copyright © 2020</Copyright>
     <Description>A Whenever compiler written in C#.</Description>
-    <Features>strict</Features>
-    <LangVersion>latest</LangVersion>
-    <Nullable>enable</Nullable>
     <RootNamespace>WSharp.Compiler</RootNamespace>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-    <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
     <Version>0.1.0</Version>
   </PropertyGroup>
   <ItemGroup>

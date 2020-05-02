@@ -14,8 +14,8 @@ namespace WSharp.Runtime.Tests
 		public static void Create()
 		{
 			var lines = ImmutableArray.Create(new Line(1, 1, _ => { }));
-			var random = new SecureRandom();
-			var writer = new StringWriter();
+			using var random = new SecureRandom();
+			using var writer = new StringWriter();
 			var reader = new StringReader(string.Empty);
 
 			Assert.That(() => new ExecutionEngine(lines, random, reader, writer), Throws.Nothing);
@@ -62,7 +62,8 @@ namespace WSharp.Runtime.Tests
 		public static void CallDoesLineExist(ulong identifier, ulong count, ulong identifierToSearch, bool expectedDoesLineExist)
 		{
 			var lines = ImmutableArray.Create(new Line(identifier, count, _ => { }));
-			var engine = new ExecutionEngine(lines, new SecureRandom(), new StringReader(string.Empty), new StringWriter());
+			using var random = new SecureRandom();
+			var engine = new ExecutionEngine(lines, random, new StringReader(string.Empty), new StringWriter());
 
 			Assert.That(engine.DoesLineExist(identifierToSearch), Is.EqualTo(expectedDoesLineExist));
 		}
@@ -71,7 +72,8 @@ namespace WSharp.Runtime.Tests
 		public static void CallDoesLineExistWhereLineDoesNotExist()
 		{
 			var lines = ImmutableArray.Create(new Line(1, 3, _ => { }));
-			var engine = new ExecutionEngine(lines, new SecureRandom(), new StringReader(string.Empty), new StringWriter());
+			using var random = new SecureRandom();
+			var engine = new ExecutionEngine(lines, random, new StringReader(string.Empty), new StringWriter());
 
 			Assert.That(() => engine.DoesLineExist(2), Throws.TypeOf<KeyNotFoundException>());
 		}
@@ -82,7 +84,8 @@ namespace WSharp.Runtime.Tests
 			var codeExecutionCount = 0;
 			var lines = ImmutableArray.Create(new Line(1, 1, _ => { codeExecutionCount++; }));
 
-			var engine = new ExecutionEngine(lines, new SecureRandom(), new StringReader(string.Empty), new StringWriter());
+			using var random = new SecureRandom();
+			var engine = new ExecutionEngine(lines, random, new StringReader(string.Empty), new StringWriter());
 			engine.Execute();
 			Assert.That(codeExecutionCount, Is.EqualTo(1));
 		}
@@ -99,7 +102,8 @@ namespace WSharp.Runtime.Tests
 
 			var lines = ImmutableArray.Create(line0, line1, line2);
 
-			var engine = new ExecutionEngine(lines, new SecureRandom(), new StringReader(string.Empty), new StringWriter());
+			using var random = new SecureRandom();
+			var engine = new ExecutionEngine(lines, random, new StringReader(string.Empty), new StringWriter());
 			engine.Execute();
 
 			Assert.Multiple(() =>
@@ -114,7 +118,8 @@ namespace WSharp.Runtime.Tests
 		public static void CallGetCurrentLineCount()
 		{
 			var lines = ImmutableArray.Create(new Line(1, 3, _ => { }), new Line(2, 4, _ => { }));
-			var engine = new ExecutionEngine(lines, new SecureRandom(), new StringReader(string.Empty), new StringWriter());
+			using var random = new SecureRandom();
+			var engine = new ExecutionEngine(lines, random, new StringReader(string.Empty), new StringWriter());
 
 			Assert.That(engine.GetCurrentLineCount(), Is.EqualTo(new BigInteger(7)));
 		}
@@ -123,7 +128,8 @@ namespace WSharp.Runtime.Tests
 		public static void CallN()
 		{
 			var lines = ImmutableArray.Create(new Line(1, 3, _ => { }));
-			var engine = new ExecutionEngine(lines, new SecureRandom(), new StringReader(string.Empty), new StringWriter());
+			using var random = new SecureRandom();
+			var engine = new ExecutionEngine(lines, random, new StringReader(string.Empty), new StringWriter());
 
 			Assert.That(engine.N(1), Is.EqualTo(new BigInteger(3)));
 		}
@@ -132,7 +138,8 @@ namespace WSharp.Runtime.Tests
 		public static void CallNWhereLineDoesNotExist()
 		{
 			var lines = ImmutableArray.Create(new Line(1, 3, _ => { }));
-			var engine = new ExecutionEngine(lines, new SecureRandom(), new StringReader(string.Empty), new StringWriter());
+			using var random = new SecureRandom();
+			var engine = new ExecutionEngine(lines, random, new StringReader(string.Empty), new StringWriter());
 
 			Assert.That(() => engine.N(2), Throws.TypeOf<KeyNotFoundException>());
 		}
@@ -143,7 +150,8 @@ namespace WSharp.Runtime.Tests
 			const string message = "hello";
 			var writer = new StringWriter();
 			var lines = ImmutableArray.Create(new Line(1, 3, _ => { }));
-			var engine = new ExecutionEngine(lines, new SecureRandom(), new StringReader(string.Empty), writer);
+			using var random = new SecureRandom();
+			var engine = new ExecutionEngine(lines, random, new StringReader(string.Empty), writer);
 			engine.Print(message);
 
 			Assert.That(writer.GetStringBuilder().ToString(), Is.EqualTo($"{message}{Environment.NewLine}"));
@@ -154,7 +162,8 @@ namespace WSharp.Runtime.Tests
 		{
 			const string message = "hello";
 			var lines = ImmutableArray.Create(new Line(1, 3, _ => { }));
-			var engine = new ExecutionEngine(lines, new SecureRandom(), new StringReader(message), new StringWriter());
+			using var random = new SecureRandom();
+			var engine = new ExecutionEngine(lines, random, new StringReader(message), new StringWriter());
 
 			Assert.That(engine.Read(), Is.EqualTo(message));
 		}
@@ -164,7 +173,8 @@ namespace WSharp.Runtime.Tests
 		public static void CallDefer(bool shouldDefer)
 		{
 			var lines = ImmutableArray.Create(new Line(1, 3, _ => { }));
-			var engine = new ExecutionEngine(lines, new SecureRandom(), new StringReader(string.Empty), new StringWriter());
+			using var random = new SecureRandom();
+			var engine = new ExecutionEngine(lines, random, new StringReader(string.Empty), new StringWriter());
 			engine.Defer(shouldDefer);
 
 			Assert.That(engine.ShouldStatementBeDeferred, Is.EqualTo(shouldDefer), nameof(engine.ShouldStatementBeDeferred));
@@ -175,7 +185,8 @@ namespace WSharp.Runtime.Tests
 		public static void CallAgain(bool shouldKeep)
 		{
 			var lines = ImmutableArray.Create(new Line(1, 3, _ => { }));
-			var engine = new ExecutionEngine(lines, new SecureRandom(), new StringReader(string.Empty), new StringWriter());
+			using var random = new SecureRandom();
+			var engine = new ExecutionEngine(lines, random, new StringReader(string.Empty), new StringWriter());
 			engine.Again(shouldKeep);
 
 			Assert.That(engine.ShouldStatementBeKept, Is.EqualTo(shouldKeep), nameof(engine.ShouldStatementBeKept));
@@ -186,7 +197,8 @@ namespace WSharp.Runtime.Tests
 		{
 			const long number = 65;
 			var lines = ImmutableArray.Create(new Line(1, 3, _ => { }));
-			var engine = new ExecutionEngine(lines, new SecureRandom(), new StringReader(string.Empty), new StringWriter());
+			using var random = new SecureRandom();
+			var engine = new ExecutionEngine(lines, random, new StringReader(string.Empty), new StringWriter());
 
 			Assert.That(engine.U(number), Is.EqualTo("A"));
 		}
@@ -195,7 +207,8 @@ namespace WSharp.Runtime.Tests
 		public static void CallUpdateCount()
 		{
 			var lines = ImmutableArray.Create(new Line(1, 3, _ => { }));
-			var engine = new ExecutionEngine(lines, new SecureRandom(), new StringReader(string.Empty), new StringWriter());
+			using var random = new SecureRandom();
+			var engine = new ExecutionEngine(lines, random, new StringReader(string.Empty), new StringWriter());
 			engine.UpdateCount(1, 2);
 
 			Assert.That(engine.GetCurrentLineCount(), Is.EqualTo(new BigInteger(5)));
@@ -205,7 +218,8 @@ namespace WSharp.Runtime.Tests
 		public static void CallUpdateCountWhereLineDoesNotExist()
 		{
 			var lines = ImmutableArray.Create(new Line(1, 3, _ => { }));
-			var engine = new ExecutionEngine(lines, new SecureRandom(), new StringReader(string.Empty), new StringWriter());
+			using var random = new SecureRandom();
+			var engine = new ExecutionEngine(lines, random, new StringReader(string.Empty), new StringWriter());
 
 			Assert.That(() => engine.UpdateCount(2, BigInteger.Zero), Throws.TypeOf<KeyNotFoundException>());
 		}

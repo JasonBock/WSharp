@@ -59,7 +59,7 @@ namespace WSharp.Compiler.Binding
 			syntax.Kind switch
 			{
 				SyntaxKind.ParenthesizedExpression => this.BindParenthesizedExpression((ParenthesizedExpressionSyntax)syntax),
-				SyntaxKind.LiteralExpression => this.BindLiteralExpression((LiteralExpressionSyntax)syntax),
+				SyntaxKind.LiteralExpression => Binder.BindLiteralExpression((LiteralExpressionSyntax)syntax),
 				SyntaxKind.UnaryExpression => this.BindUnaryExpression((UnaryExpressionSyntax)syntax),
 				SyntaxKind.BinaryExpression => this.BindBinaryExpression((BinaryExpressionSyntax)syntax),
 				SyntaxKind.UpdateLineCountExpression => this.BindUpdateLineCountExpression((UpdateLineCountExpressionSyntax)syntax),
@@ -214,7 +214,7 @@ namespace WSharp.Compiler.Binding
 				return new BoundErrorExpression();
 			}
 
-			var boundOperatorKind = this.BindUpdateLineCountOperatorKind(syntax.OperatorToken.Kind, boundLeft.Type, boundRight.Type);
+			var boundOperatorKind = Binder.BindUpdateLineCountOperatorKind(syntax.OperatorToken.Kind, boundLeft.Type, boundRight.Type);
 
 			if (boundOperatorKind == null)
 			{
@@ -251,7 +251,7 @@ namespace WSharp.Compiler.Binding
 			return new BoundUnaryUpdateLineCountExpression(boundLineNumber);
 		}
 
-		private BoundUpdateLineCountOperatorKind? BindUpdateLineCountOperatorKind(SyntaxKind kind, TypeSymbol leftType, TypeSymbol rightType)
+		private static BoundUpdateLineCountOperatorKind? BindUpdateLineCountOperatorKind(SyntaxKind kind, TypeSymbol leftType, TypeSymbol rightType)
 		{
 			if (leftType != TypeSymbol.Integer || rightType != TypeSymbol.Integer)
 			{
@@ -309,11 +309,8 @@ namespace WSharp.Compiler.Binding
 			return new BoundUnaryExpression(boundOperator, boundOperand);
 		}
 
-		private BoundExpression BindLiteralExpression(LiteralExpressionSyntax syntax)
-		{
-			var value = syntax.Value ?? BigInteger.Zero;
-			return new BoundLiteralExpression(value);
-		}
+		private static BoundExpression BindLiteralExpression(LiteralExpressionSyntax syntax) =>
+			new BoundLiteralExpression(syntax.Value ?? BigInteger.Zero);
 
 		public BoundStatement CompilationUnit { get; }
 		public DiagnosticBag Diagnostics { get; } = new DiagnosticBag();

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
 using System.Threading.Tasks;
@@ -16,8 +17,16 @@ namespace WSharp.Compiler.Syntax
 			(this.Root, this.Diagnostics) = handler(this);
 		}
 
-		public static async Task<SyntaxTree> LoadAsync(FileInfo file) => 
-			SyntaxTree.Parse(SourceText.From(await File.ReadAllTextAsync(file.FullName), file));
+		public static async Task<SyntaxTree> LoadAsync(FileInfo file)
+		{
+			if (file is null)
+			{
+				throw new ArgumentNullException(nameof(file));
+			}
+
+			return SyntaxTree.Parse(SourceText.From(
+				await File.ReadAllTextAsync(file.FullName).ConfigureAwait(false), file));
+		}
 
 		public static SyntaxTree Parse(string text) =>
 			SyntaxTree.Parse(SourceText.From(text));
