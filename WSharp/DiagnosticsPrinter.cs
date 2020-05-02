@@ -44,8 +44,9 @@ namespace WSharp
 					Console.Out.WriteLine(diagnostic);
 				}
 
-				var prefixSpan = TextSpan.FromBounds(line.Start, span.Start);
-				var suffixSpan = TextSpan.FromBounds(span.End, line.End);
+				var lineSpan = line.SpanIncludingLineBreak;
+				var prefixSpan = TextSpan.FromBounds(lineSpan.Start, span.Start);
+				var suffixSpan = TextSpan.FromBounds(span.End, lineSpan.End);
 
 				var prefix = text.ToString(prefixSpan);
 				var error = text.ToString(span);
