@@ -73,15 +73,22 @@ namespace WSharp.Compiler.Syntax
 
 		private LineStatementSyntax ParseLineStatement()
 		{
-			var lineNumber = this.ParsePrimaryExpression();
-			var lines = this.ParseLineExpressionStatements();
+			var currentDiagnosticCount = this.Diagnostics.Count;
+			var lineNumber = this.ParseNumberLiteralExpression();
 
-			if(lines.Count == 0)
+			if(this.Diagnostics.Count > currentDiagnosticCount)
+			{
+				this.position++;
+			}
+
+			var lineStatements = this.ParseLineExpressionStatements();
+
+			if (lineStatements.Count == 0)
 			{
 				this.Diagnostics.ReportMissingLineStatements(lineNumber.Location);
 			}
 
-			return new LineStatementSyntax(this.Tree, new ExpressionStatementSyntax(this.Tree, lineNumber), lines);
+			return new LineStatementSyntax(this.Tree, new ExpressionStatementSyntax(this.Tree, lineNumber), lineStatements);
 		}
 
 		private List<ExpressionStatementSyntax> ParseLineExpressionStatements()

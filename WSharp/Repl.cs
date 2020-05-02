@@ -237,35 +237,43 @@ namespace WSharp
 		private static void Evaluate(bool showProgram, bool showTree, List<string> lines)
 		{
 			var tree = SyntaxTree.Parse(string.Join(Environment.NewLine, lines));
-			var compilation = new Compilation(tree);
-			var result = compilation.Evaluate();
-			var diagnostics = result.Diagnostics;
 
-			if (showTree)
+			if(tree.Diagnostics.Length > 0)
 			{
-				Console.Out.WriteLine("Tree:");
-				using (ConsoleColor.DarkGray.Bind(() => Console.ForegroundColor))
-				{
-					tree.Root.WriteTo(Console.Out);
-				}
-			}
-
-			if (showProgram)
-			{
-				Console.Out.WriteLine("Program:");
-				using (ConsoleColor.DarkGray.Bind(() => Console.ForegroundColor))
-				{
-					compilation.EmitTree(Console.Out);
-				}
-			}
-
-			if (diagnostics.Length > 0)
-			{
-				DiagnosticsPrinter.Print(diagnostics);
+				DiagnosticsPrinter.Print(tree.Diagnostics);
 			}
 			else
 			{
-				Repl.RunEvaluator(result);
+				var compilation = new Compilation(tree);
+				var result = compilation.Evaluate();
+				var diagnostics = result.Diagnostics;
+
+				if (showTree)
+				{
+					Console.Out.WriteLine("Tree:");
+					using (ConsoleColor.DarkGray.Bind(() => Console.ForegroundColor))
+					{
+						tree.Root.WriteTo(Console.Out);
+					}
+				}
+
+				if (showProgram)
+				{
+					Console.Out.WriteLine("Program:");
+					using (ConsoleColor.DarkGray.Bind(() => Console.ForegroundColor))
+					{
+						compilation.EmitTree(Console.Out);
+					}
+				}
+
+				if (diagnostics.Length > 0)
+				{
+					DiagnosticsPrinter.Print(diagnostics);
+				}
+				else
+				{
+					Repl.RunEvaluator(result);
+				}
 			}
 		}
 

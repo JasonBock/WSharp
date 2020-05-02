@@ -12,9 +12,13 @@ namespace WSharp.Compiler.Binding
 	{
 		private CallExpressionSyntax? deferWasInvoked;
 		private bool doesStatementExistAfterDefer;
+		private HashSet<BigInteger> lineNumbers = new HashSet<BigInteger>(1);
 
-		public BoundStatement BindCompilationUnit(CompilationUnitSyntax syntax) =>
-			this.BindStatement(syntax.LineStatements);
+		public BoundStatement BindCompilationUnit(CompilationUnitSyntax syntax)
+		{
+			this.lineNumbers = new HashSet<BigInteger>();
+			return this.BindStatement(syntax.LineStatements);
+		}
 
 		private BoundStatement BindStatement(StatementSyntax syntax) =>
 			syntax.Kind switch
@@ -151,6 +155,11 @@ namespace WSharp.Compiler.Binding
 
 		private BoundStatement BindLineStatement(LineStatementSyntax syntax)
 		{
+			if(syntax.Number.Expression is LiteralExpressionSyntax number)
+			{
+				this.lineNumbers.Add((BigInteger)number.Value!);
+			}
+
 			this.deferWasInvoked = null;
 			this.doesStatementExistAfterDefer = false;
 
