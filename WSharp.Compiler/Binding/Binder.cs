@@ -155,10 +155,8 @@ namespace WSharp.Compiler.Binding
 
 		private BoundStatement BindLineStatement(LineStatementSyntax syntax)
 		{
-			if(syntax.Number.Expression is LiteralExpressionSyntax number)
-			{
-				this.lineNumbers.Add((BigInteger)number.Value!);
-			}
+			var lineNumber = (LiteralExpressionSyntax)syntax.Number.Expression;
+			this.lineNumbers.Add((BigInteger)lineNumber.Value!);
 
 			this.deferWasInvoked = null;
 			this.doesStatementExistAfterDefer = false;
