@@ -40,6 +40,13 @@ namespace WSharp
 					outputPath ??= new FileInfo(Path.ChangeExtension(file!.Name, ".exe"));
 
 					var tree = await SyntaxTree.LoadAsync(file!);
+
+					if (tree.Diagnostics.Length > 0)
+					{
+						DiagnosticsPrinter.Print(tree.Diagnostics);
+						return 1;
+					}
+
 					var compilation = new Compilation(tree);
 
 					if (compilation.Diagnostics.Count > 0)

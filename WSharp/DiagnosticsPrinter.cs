@@ -15,6 +15,7 @@ namespace WSharp
 				.Where(_ => _.Location.Text is null))
 			{
 				using (ConsoleColor.DarkRed.Bind(() => Console.ForegroundColor))
+				Console.Error.WriteLine(diagnostic.Message);
 				Console.Out.WriteLine(diagnostic.Message);
 			}
 
@@ -35,10 +36,14 @@ namespace WSharp
 				var lineIndex = text.GetLineIndex(span.Start);
 				var line = text.Lines[lineIndex];
 
+				Console.Error.WriteLine();
 				Console.Out.WriteLine();
 				using (ConsoleColor.DarkRed.Bind(() => Console.ForegroundColor))
 				{
-					Console.Out.Write($"{fileName}({startLine},{startCharacter},{endLine},{endCharacter}): ");
+					var origin = $"{fileName}({startLine},{startCharacter},{endLine},{endCharacter}): ";
+					Console.Error.Write(origin);
+					Console.Out.Write(origin);
+					Console.Error.WriteLine(diagnostic);
 					Console.Out.WriteLine(diagnostic);
 				}
 
@@ -49,18 +54,24 @@ namespace WSharp
 				var error = text.ToString(span);
 				var suffix = text.ToString(suffixSpan);
 
+				Console.Error.Write(TreePrint.Space);
 				Console.Out.Write(TreePrint.Space);
+				Console.Error.Write(prefix);
 				Console.Out.Write(prefix);
 
 				using (ConsoleColor.DarkRed.Bind(() => Console.ForegroundColor))
 				{
+					Console.Error.Write(error);
 					Console.Out.Write(error);
 				}
 
+				Console.Error.Write(suffix);
 				Console.Out.Write(suffix);
+				Console.Error.WriteLine();
 				Console.Out.WriteLine();
 			}
 
+			Console.Error.WriteLine();
 			Console.Out.WriteLine();
 		}
 	}
