@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Numerics;
 using WSharp.Compiler.Symbols;
 using WSharp.Compiler.Syntax;
 using WSharp.Compiler.Text;
@@ -86,6 +87,9 @@ namespace WSharp.Compiler
 
 		public void ReportUndefinedFunction(SyntaxToken identifier) =>
 			this.Report(identifier.Location, $"Function '{identifier.Text}' doesn't exist.");
+
+		internal void ReportInvalidLineNumberReference(TextLocation location, BigInteger targetLineNumber) =>
+			this.Report(location, $"The line number {targetLineNumber} does not exist.");
 
 		internal void ReportWrongArgumentType(TextLocation location, string name, TypeSymbol expectedType, TypeSymbol actualType) =>
 			this.Report(location, $"Parameter '{name}' requires a value of type {expectedType} but was given a value of type {actualType}.");

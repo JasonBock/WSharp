@@ -12,12 +12,25 @@ namespace WSharp.Compiler.Binding
 	{
 		private CallExpressionSyntax? deferWasInvoked;
 		private bool doesStatementExistAfterDefer;
-		private HashSet<BigInteger> lineNumbers = new HashSet<BigInteger>(1);
+		private HashSet<BigInteger> lineNumbers = new HashSet<BigInteger>();
+		private List<(BigInteger, TextLocation)> lineNumberValidations = new List<(BigInteger, TextLocation)>();
 
 		public BoundStatement BindCompilationUnit(CompilationUnitSyntax syntax)
 		{
 			this.lineNumbers = new HashSet<BigInteger>();
-			return this.BindStatement(syntax.LineStatements);
+			this.lineNumberValidations = new List<(BigInteger, TextLocation)>();
+
+			var unit = this.BindStatement(syntax.LineStatements);
+
+			foreach (var (targetLineNumber, location) in this.lineNumberValidations)
+			{
+				if (!this.lineNumbers.Contains(targetLineNumber))
+				{
+					this.Diagnostics.ReportInvalidLineNumberReference(location, targetLineNumber);
+				}
+			}
+
+			return unit;
 		}
 
 		private BoundStatement BindStatement(StatementSyntax syntax) =>
@@ -99,6 +112,16 @@ namespace WSharp.Compiler.Binding
 				boundArguments[i] = this.BindConversion(argumentLocation, argument, parameter.Type);
 			}
 
+			if (function == BuiltinFunctions.Exists || function == BuiltinFunctions.N)
+			{
+				if (boundArguments[0] is BoundLiteralExpression literalArgument &&
+					literalArgument.Type == TypeSymbol.Integer)
+				{
+					var targetLineNumber = (BigInteger)literalArgument.Value;
+					this.lineNumberValidations.Add((targetLineNumber, syntax.Arguments[0].Location));
+				}
+			}
+
 			if (function == BuiltinFunctions.Defer)
 			{
 				this.deferWasInvoked = syntax;
@@ -164,7 +187,7 @@ namespace WSharp.Compiler.Binding
 			var boundLineNumber = this.BindStatement(syntax.Number);
 			var boundLines = new List<BoundStatement>();
 
-			foreach(var lineStatement in syntax.Statements)
+			foreach (var lineStatement in syntax.Statements)
 			{
 				this.doesStatementExistAfterDefer = this.deferWasInvoked is { };
 				boundLines.Add(this.BindStatement(lineStatement));
@@ -196,6 +219,13 @@ namespace WSharp.Compiler.Binding
 				return new BoundErrorExpression();
 			}
 
+			if (boundLeft is BoundLiteralExpression literalArgument &&
+				literalArgument.Type == TypeSymbol.Integer)
+			{
+				var targetLineNumber = (BigInteger)literalArgument.Value;
+				this.lineNumberValidations.Add((targetLineNumber, syntax.Left.Location));
+			}
+
 			return new BoundUpdateLineCountExpression(boundLeft, boundOperatorKind.Value, boundRight);
 		}
 
@@ -206,6 +236,13 @@ namespace WSharp.Compiler.Binding
 			if (boundLineNumber.Type == TypeSymbol.Error)
 			{
 				return new BoundErrorExpression();
+			}
+
+			if (boundLineNumber is BoundLiteralExpression literalArgument &&
+				literalArgument.Type == TypeSymbol.Integer)
+			{
+				var targetLineNumber = (BigInteger)literalArgument.Value;
+				this.lineNumberValidations.Add((targetLineNumber, syntax.Location));
 			}
 
 			return new BoundUnaryUpdateLineCountExpression(boundLineNumber);

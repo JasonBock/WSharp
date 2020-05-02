@@ -1,5 +1,4 @@
 ﻿using NUnit.Framework;
-using WSharp.Compiler;
 using WSharp.Compiler.Syntax;
 
 namespace WSharp.Compiler.Tests.Compiler
@@ -9,7 +8,7 @@ namespace WSharp.Compiler.Tests.Compiler
 		[Test]
 		public static void EvaluateText()
 		{
-			var tree = SyntaxTree.Parse("1 2#3;");
+			var tree = SyntaxTree.Parse("1 1#3;");
 			var binder = new Compilation(tree);
 			var result = binder.Evaluate();
 
