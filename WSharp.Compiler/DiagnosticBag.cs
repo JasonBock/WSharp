@@ -106,9 +106,12 @@ namespace WSharp.Compiler
 		internal void ReportCannotConvertImplicitly(TextLocation location, TypeSymbol fromType, TypeSymbol toType) => 
 			this.Report(location, $"Cannot convert type '{fromType}' to '{toType}'. An explicit conversion exists (are you missing a cast?)");
 
-		public int Count => this.diagnostics.Count;
-
 		internal void ReportNoStatementsAfterDefer(TextLocation location) =>
 			this.Report(location, "No statements exist after a call to defer().");
+
+		internal void ReportDuplicateLineNumber(TextLocation location, BigInteger lineNumber) =>
+			this.Report(location, $"The line number {lineNumber} was already used.");
+
+		public int Count => this.diagnostics.Count;
 	}
 }

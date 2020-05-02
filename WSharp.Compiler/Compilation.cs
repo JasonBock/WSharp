@@ -13,8 +13,8 @@ namespace WSharp.Compiler
 		public Compilation(SyntaxTree tree)
 		{
 			this.Tree = tree;
-			var binder = new Binder();
-			this.Statement = binder.BindCompilationUnit(this.Tree.Root);
+			var binder = new Binder(this.Tree.Root);
+			this.Statement = binder.CompilationUnit;
 			this.Diagnostics = binder.Diagnostics;
 		}
 
