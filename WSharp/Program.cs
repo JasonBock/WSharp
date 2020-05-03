@@ -19,7 +19,6 @@ namespace WSharp
 
 			if (interaction == Interaction.Interpret)
 			{
-				FibonacciSequenceGenerator.Run();
 				var repl = new Repl();
 
 				if (file != null)

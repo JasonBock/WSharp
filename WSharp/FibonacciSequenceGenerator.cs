@@ -26,7 +26,7 @@ namespace WSharp
 			new ExecutionEngine(FibonacciSequenceGenerator.Generate(), random, Console.In, Console.Out).Execute();
 		}
 
-		internal static ImmutableArray<Line> Generate()
+		private static ImmutableArray<Line> Generate()
 		{
 			var builder = ImmutableArray.CreateBuilder<Line>();
 

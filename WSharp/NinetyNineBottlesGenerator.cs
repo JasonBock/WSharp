@@ -1,4 +1,6 @@
-﻿using System.Collections.Immutable;
+﻿using Spackle;
+using System;
+using System.Collections.Immutable;
 using System.Numerics;
 using WSharp.Runtime;
 
@@ -12,7 +14,13 @@ namespace WSharp
 3 defer (4 || N(2)==N(3)) print(N(1)+" bottles of beer on the wall.");
 4 1#98,2#98,3#98; 
  		*/
-		internal static ImmutableArray<Line> Generate()
+		internal static void Run()
+		{
+			using var random = new SecureRandom();
+			new ExecutionEngine(NinetyNineBottlesGenerator.Generate(), random, Console.In, Console.Out).Execute();
+		}
+
+		private static ImmutableArray<Line> Generate()
 		{
 			var builder = ImmutableArray.CreateBuilder<Line>();
 

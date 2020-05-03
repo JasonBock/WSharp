@@ -22,23 +22,20 @@ namespace WSharp.Runtime
 			this.Code = code ?? throw new ArgumentNullException(nameof(code));
 		}
 
+		// According to this implementation:
+		// https://github.com/megahallon/whenever/blob/master/whenever.js#L26
+		// You can "resurrect" a line. So even if the line count went to zero,
+		// if you add to it, it can come back again.
 		public Line UpdateCount(BigInteger delta)
 		{
-			if(this.Count > BigInteger.Zero)
-			{
-				var newCount = this.Count + delta;
+			var newCount = this.Count + delta;
 
-				if (newCount < BigInteger.Zero)
-				{
-					newCount = BigInteger.Zero;
-				}
-
-				return new Line(this.Identifier, newCount, this.Code);
-			}
-			else
+			if (newCount < BigInteger.Zero)
 			{
-				return new Line(this.Identifier, BigInteger.Zero, this.Code);
+				newCount = BigInteger.Zero;
 			}
+
+			return new Line(this.Identifier, newCount, this.Code);
 		}
 
 		public Action<IExecutionEngineActions> Code { get; }
