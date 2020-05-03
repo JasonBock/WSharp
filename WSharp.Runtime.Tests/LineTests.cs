@@ -52,5 +52,21 @@ namespace WSharp.Runtime.Tests
 				Assert.That(newLine.Code, Is.SameAs(code));
 			});
 		}
+
+		[Test]
+		public static void UpdateCountWhenLineCountIsZero()
+		{
+			var code = new Action<IExecutionEngineActions>(_ => { });
+			var line = new Line(BigInteger.One, BigInteger.One, code);
+			var newLine = line.UpdateCount(-BigInteger.One);
+			newLine = newLine.UpdateCount(-BigInteger.One);
+
+			Assert.Multiple(() =>
+			{
+				Assert.That(newLine.Identifier, Is.EqualTo(BigInteger.One));
+				Assert.That(newLine.Count, Is.EqualTo(BigInteger.Zero));
+				Assert.That(newLine.Code, Is.SameAs(code));
+			});
+		}
 	}
 }

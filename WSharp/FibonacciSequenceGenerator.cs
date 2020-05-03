@@ -1,4 +1,6 @@
-﻿using System.Collections.Immutable;
+﻿using Spackle;
+using System;
+using System.Collections.Immutable;
 using System.Numerics;
 using WSharp.Runtime;
 
@@ -17,6 +19,12 @@ namespace WSharp
 8 defer (N(7)<100) -1#N(1),-2#N(2),-7#100,-3;
 9 defer (3 || 6) 1,3; 
 		*/
+
+		internal static void Run()
+		{
+			using var random = new SecureRandom();
+			new ExecutionEngine(FibonacciSequenceGenerator.Generate(), random, Console.In, Console.Out).Execute();
+		}
 
 		internal static ImmutableArray<Line> Generate()
 		{

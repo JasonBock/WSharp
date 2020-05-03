@@ -19,9 +19,10 @@ namespace WSharp
 
 			if (interaction == Interaction.Interpret)
 			{
+				FibonacciSequenceGenerator.Run();
 				var repl = new Repl();
 
-				if(file != null)
+				if (file != null)
 				{
 					await repl.RunAsync(file).ConfigureAwait(false);
 				}

@@ -24,14 +24,21 @@ namespace WSharp.Runtime
 
 		public Line UpdateCount(BigInteger delta)
 		{
-			var newCount = this.Count + delta;
-
-			if (newCount < BigInteger.Zero)
+			if(this.Count > BigInteger.Zero)
 			{
-				newCount = BigInteger.Zero;
-			}
+				var newCount = this.Count + delta;
 
-			return new Line(this.Identifier, newCount, this.Code);
+				if (newCount < BigInteger.Zero)
+				{
+					newCount = BigInteger.Zero;
+				}
+
+				return new Line(this.Identifier, newCount, this.Code);
+			}
+			else
+			{
+				return new Line(this.Identifier, BigInteger.Zero, this.Code);
+			}
 		}
 
 		public Action<IExecutionEngineActions> Code { get; }
