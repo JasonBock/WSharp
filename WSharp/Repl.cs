@@ -162,13 +162,13 @@ namespace WSharp
 			}
 		}
 
-		[MetaCommand("loadFile", "Loads the file.")]
+		[MetaCommand("runFile", "Runs the file.")]
 		private async Task EvaluateLoadFileAsync(string fileName)
 		{
 			if (File.Exists(fileName))
 			{
 				this.lines.Clear();
-				this.lines.AddRange(await File.ReadAllLinesAsync(fileName).ConfigureAwait(false));
+				this.Evaluate(await SyntaxTree.LoadAsync(new FileInfo(fileName)).ConfigureAwait(false));
 			}
 			else
 			{
@@ -180,7 +180,7 @@ namespace WSharp
 		[MetaCommand("run", "Evaluates the program.")]
 		private Task EvaluateRun()
 		{
-			Repl.Evaluate(this.showProgram, this.showTree, this.lines);
+			this.Evaluate(this.lines);
 			return Task.CompletedTask;
 		}
 
@@ -228,11 +228,9 @@ namespace WSharp
 			}
 		}
 
-		private static void Evaluate(bool showProgram, bool showTree, List<string> lines)
+		private void Evaluate(SyntaxTree tree)
 		{
-			var tree = SyntaxTree.Parse(string.Join(Environment.NewLine, lines));
-
-			if(tree.Diagnostics.Length > 0)
+			if (tree.Diagnostics.Length > 0)
 			{
 				DiagnosticsPrinter.Print(tree.Diagnostics);
 			}
@@ -242,7 +240,7 @@ namespace WSharp
 				var result = compilation.Evaluate();
 				var diagnostics = result.Diagnostics;
 
-				if (showTree)
+				if (this.showTree)
 				{
 					Console.Out.WriteLine("Tree:");
 					using (ConsoleColor.DarkGray.Bind(() => Console.ForegroundColor))
@@ -251,7 +249,7 @@ namespace WSharp
 					}
 				}
 
-				if (showProgram)
+				if (this.showProgram)
 				{
 					Console.Out.WriteLine("Program:");
 					using (ConsoleColor.DarkGray.Bind(() => Console.ForegroundColor))
@@ -270,6 +268,9 @@ namespace WSharp
 				}
 			}
 		}
+
+		private void Evaluate(List<string> lines) => 
+			this.Evaluate(SyntaxTree.Parse(string.Join(Environment.NewLine, lines)));
 
 		private static void RunEvaluator(EvaluationResult evaluation)
 		{
