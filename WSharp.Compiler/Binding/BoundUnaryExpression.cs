@@ -7,7 +7,8 @@ namespace WSharp.Compiler.Binding
 		: BoundExpression
 	{
 		public BoundUnaryExpression(BoundUnaryOperator @operator, BoundExpression operand) => 
-			(this.Operator, this.Operand) = (@operator, operand);
+			(this.Operator, this.Operand, this.ConstantValue) = 
+				(@operator, operand, ConstantFolding.ComputeConstant(@operator, operand));
 
 		public override IEnumerable<BoundNode> GetChildren()
 		{
@@ -19,6 +20,7 @@ namespace WSharp.Compiler.Binding
 			yield return (nameof(this.Type), this.Type);
 		}
 
+		public override BoundConstant? ConstantValue { get; }
 		public override BoundNodeKind Kind => BoundNodeKind.UnaryExpression;
 		public BoundExpression Operand { get; }
 		public BoundUnaryOperator Operator { get; }
