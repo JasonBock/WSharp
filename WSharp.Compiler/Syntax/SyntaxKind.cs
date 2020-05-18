@@ -6,6 +6,8 @@
 		BadToken,
 		EndOfFileToken,
 		WhitespaceToken,
+		SingleLineCommentToken,
+		MultiLineCommentToken,
 		NumberToken,
 		StringToken,
 		PlusToken,

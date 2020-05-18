@@ -1,4 +1,6 @@
-﻿1 2#integer(read()) - N(2);
+﻿// Rot13.ws was copied from: https://raw.githubusercontent.com/megahallon/whenever/master/rot13.we
+// Note that the original code used "put()", which is actually "print()"
+1 2#integer(read()) - N(2);
 2 2;
 3 defer(exists(1) || N(2) > 90 || N(2) < 65) 5#65-N(5);
 4 defer(exists(1) || N(2) > 122 || N(2) < 97) 5#97-N(5);

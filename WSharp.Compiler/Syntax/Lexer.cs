@@ -53,8 +53,20 @@ namespace WSharp.Compiler.Syntax
 					this.position++;
 					break;
 				case '/':
-					this.kind = SyntaxKind.SlashToken;
-					this.position++;
+					if (this.Lookahead == '/')
+					{
+						this.ReadSingleLineComment();
+					}
+					else if (this.Lookahead == '*')
+					{
+						this.ReadMultiLineComment();
+					}
+					else
+					{
+						this.kind = SyntaxKind.SlashToken;
+						this.position++;
+					}
+
 					break;
 				case '%':
 					this.kind = SyntaxKind.PercentToken;
@@ -199,15 +211,70 @@ namespace WSharp.Compiler.Syntax
 			return new SyntaxToken(this.tree, this.kind, this.start, text, this.value);
 		}
 
+		private void ReadSingleLineComment()
+		{
+			this.position += 2;
+			var done = false;
+
+			while (!done)
+			{
+				switch (this.Current)
+				{
+					case '\r':
+					case '\n':
+					case '\0':
+						done = true;
+						break;
+					default:
+						this.position++;
+						break;
+				}
+			}
+
+			this.kind = SyntaxKind.SingleLineCommentToken;
+		}
+
+		private void ReadMultiLineComment()
+		{
+			this.position += 2;
+			var done = false;
+
+			while (!done)
+			{
+				switch (this.Current)
+				{
+					case '\0':
+						this.Diagnostics.ReportUnterminatedMultiLineComment(
+							new TextLocation(this.text, new TextSpan(this.start, 2)));
+						done = true;
+						break;
+					case '*':
+						if (this.Lookahead == '/')
+						{
+							done = true;
+							this.position++;
+						}
+
+						this.position++;
+						break;
+					default:
+						this.position++;
+						break;
+				}
+			}
+
+			this.kind = SyntaxKind.MultiLineCommentToken;
+		}
+
 		private void ReadString()
 		{
 			this.position++;
 			var builder = new StringBuilder();
 			var done = false;
 
-			while(!done)
+			while (!done)
 			{
-				switch(this.Current)
+				switch (this.Current)
 				{
 					case '\0':
 					case '\r':
@@ -217,7 +284,7 @@ namespace WSharp.Compiler.Syntax
 						done = true;
 						break;
 					case '"':
-						if(this.Lookahead == '"')
+						if (this.Lookahead == '"')
 						{
 							builder.Append(this.Current);
 							this.position += 2;
@@ -274,7 +341,7 @@ namespace WSharp.Compiler.Syntax
 			if (!BigInteger.TryParse(text, out var value))
 			{
 				this.Diagnostics.ReportInvalidNumber(
-					new TextLocation(this.text, new TextSpan(this.start, length)), 
+					new TextLocation(this.text, new TextSpan(this.start, length)),
 					text, TypeSymbol.Integer);
 			}
 

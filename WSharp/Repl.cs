@@ -62,10 +62,6 @@ namespace WSharp
 						this.lines.Add(input);
 					}
 				}
-				else
-				{
-					return;
-				}
 			}
 		}
 
@@ -189,6 +185,15 @@ namespace WSharp
 		{
 			Console.Clear();
 			this.lines.Clear();
+			return Task.CompletedTask;
+		}
+
+		[MetaCommand("exit", "Exits the program.")]
+#pragma warning disable CA1822
+		private Task EvaluateExitAsync()
+#pragma warning restore CA1822
+		{
+			Environment.Exit(0);
 			return Task.CompletedTask;
 		}
 

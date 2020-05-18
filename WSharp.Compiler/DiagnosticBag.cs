@@ -64,6 +64,9 @@ namespace WSharp.Compiler
 
 		public void ReportUnterminatedString(TextLocation location) =>
 			this.Report(location, $"Unterminated string literal.");
+		
+		public void ReportUnterminatedMultiLineComment(TextLocation location) =>
+			this.Report(location, $"Unterminated multi-line comment.");
 
 		public void ReportBadCharacter(TextLocation location, char character) => 
 			this.Report(location, $"Bad character input: '{character}'.");

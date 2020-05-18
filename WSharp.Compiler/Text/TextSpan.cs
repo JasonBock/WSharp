@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Spackle.Extensions;
+using System;
 
 namespace WSharp.Compiler.Text
 {
@@ -19,6 +20,8 @@ namespace WSharp.Compiler.Text
 		public static TextSpan FromBounds(int start, int end) => new TextSpan(start, end - start);
 
 		public override int GetHashCode() => HashCode.Combine(this.Start, this.Length);
+
+		public bool OverlapsWith(TextSpan span) => (this.Start..this.End).Intersect(span.Start..span.End) is { };
 
 		public override string ToString() => $"{this.Start}..{this.End}";
 

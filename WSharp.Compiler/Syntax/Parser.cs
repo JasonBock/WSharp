@@ -27,6 +27,8 @@ namespace WSharp.Compiler.Syntax
 				token = lexer.Lex();
 
 				if (token.Kind != SyntaxKind.WhitespaceToken &&
+					token.Kind != SyntaxKind.SingleLineCommentToken &&
+					token.Kind != SyntaxKind.MultiLineCommentToken &&
 					token.Kind != SyntaxKind.BadToken)
 				{
 					tokens.Add(token);

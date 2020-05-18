@@ -34,6 +34,8 @@ namespace WSharp.Compiler.Tests.Compiler.Syntax
 		{
 			var tokenKinds = Enum.GetValues(typeof(SyntaxKind))
 				.Cast<SyntaxKind>()
+				.Where(_ => _ != SyntaxKind.SingleLineCommentToken &&
+					_ != SyntaxKind.MultiLineCommentToken)
 				.Where(_ => _.ToString().EndsWith("Keyword") ||
 					_.ToString().EndsWith("Token"))
 				.ToList();
@@ -114,9 +116,10 @@ namespace WSharp.Compiler.Tests.Compiler.Syntax
 				(SyntaxKind.WhitespaceToken, "\r"),
 				(SyntaxKind.WhitespaceToken, "\n"),
 				(SyntaxKind.WhitespaceToken, "\r\n"),
+				(SyntaxKind.MultiLineCommentToken, "/**/")
 			};
 
-		private static bool RequiresSeparator(SyntaxKind t1Kind, string t1Text, SyntaxKind t2Kind, string t2Text)
+		private static bool RequiresSeparator(SyntaxKind t1Kind, SyntaxKind t2Kind)
 		{
 			var t1IsKeyword = t1Kind.ToString().EndsWith("Keyword");
 			var t2IsKeyword = t2Kind.ToString().EndsWith("Keyword");
@@ -124,17 +127,17 @@ namespace WSharp.Compiler.Tests.Compiler.Syntax
 			return (t1Kind == SyntaxKind.IdentifierToken && t2Kind == SyntaxKind.IdentifierToken) ||
 				(t1Kind == SyntaxKind.NumberToken && t2Kind == SyntaxKind.NumberToken) ||
 				(t1Kind == SyntaxKind.StringToken && t2Kind == SyntaxKind.StringToken) ||
-				(t1Kind == SyntaxKind.BangToken && t2Text == "=") ||
 				(t1Kind == SyntaxKind.BangToken && t2Kind == SyntaxKind.EqualsEqualsToken) ||
-				(t1Kind == SyntaxKind.LessToken && t2Text == "=") ||
 				(t1Kind == SyntaxKind.LessToken && t2Kind == SyntaxKind.EqualsEqualsToken) ||
-				(t1Kind == SyntaxKind.GreaterToken && t2Text == "=") ||
 				(t1Kind == SyntaxKind.GreaterToken && t2Kind == SyntaxKind.EqualsEqualsToken) ||
 				(t1Kind == SyntaxKind.AmpersandToken && t2Kind == SyntaxKind.AmpersandToken) ||
 				(t1Kind == SyntaxKind.AmpersandToken && t2Kind == SyntaxKind.AmpersandAmpersandToken) ||
 				(t1Kind == SyntaxKind.PipeToken && t2Kind == SyntaxKind.PipeToken) ||
 				(t1Kind == SyntaxKind.PipeToken && t2Kind == SyntaxKind.PipePipeToken) ||
-				(t1Text == "=" && t2Text == "=") ||
+				(t1Kind == SyntaxKind.SlashToken && t2Kind == SyntaxKind.SlashToken) ||
+				(t1Kind == SyntaxKind.SlashToken && t2Kind == SyntaxKind.StarToken) ||
+				(t1Kind == SyntaxKind.SlashToken && t2Kind == SyntaxKind.SingleLineCommentToken) ||
+				(t1Kind == SyntaxKind.SlashToken && t2Kind == SyntaxKind.MultiLineCommentToken) ||
 				(t1IsKeyword && t2IsKeyword) ||
 				(t1IsKeyword && t2Kind == SyntaxKind.IdentifierToken) ||
 				(t2IsKeyword && t1Kind == SyntaxKind.IdentifierToken);
@@ -190,7 +193,7 @@ namespace WSharp.Compiler.Tests.Compiler.Syntax
 			{
 				foreach (var (t2Kind, t2Text) in LexerTests.GetTokens())
 				{
-					if (!LexerTests.RequiresSeparator(t1Kind, t1Text, t2Kind, t2Text))
+					if (!LexerTests.RequiresSeparator(t1Kind, t2Kind))
 					{
 						yield return (t1Kind, t1Text, t2Kind, t2Text);
 					}
@@ -204,11 +207,15 @@ namespace WSharp.Compiler.Tests.Compiler.Syntax
 			{
 				foreach (var (t2Kind, t2Text) in LexerTests.GetTokens())
 				{
-					if (LexerTests.RequiresSeparator(t1Kind, t1Text, t2Kind, t2Text))
+					if (LexerTests.RequiresSeparator(t1Kind, t2Kind))
 					{
 						foreach (var (separatorKind, separatorText) in LexerTests.GetSeparators())
 						{
-							yield return (t1Kind, t1Text, separatorKind, separatorText, t2Kind, t2Text);
+							if(!LexerTests.RequiresSeparator(t1Kind, separatorKind) &&
+								!LexerTests.RequiresSeparator(separatorKind, t2Kind))
+							{
+								yield return (t1Kind, t1Text, separatorKind, separatorText, t2Kind, t2Text);
+							}
 						}
 					}
 				}
