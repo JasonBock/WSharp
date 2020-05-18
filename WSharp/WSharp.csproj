@@ -1,12 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <AssemblyName>WSharp</AssemblyName>
-    <Copyright>Copyright © 2020</Copyright>
     <Description>A console app that drives the WSharp runtime.</Description>
     <OutputType>Exe</OutputType>
     <RootNamespace>WSharp</RootNamespace>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-    <Version>0.1.0</Version>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="System.CommandLine.DragonFruit" Version="0.3.0-alpha.20214.1" />
