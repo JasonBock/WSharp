@@ -24,7 +24,7 @@ namespace WSharp.Compiler.Syntax
 		public SyntaxToken Lex()
 		{
 			this.start = this.position;
-			this.kind = SyntaxKind.BadToken;
+			this.kind = SyntaxKind.BadTokenTrivia;
 			this.value = null;
 
 			switch (this.Current)
@@ -231,7 +231,7 @@ namespace WSharp.Compiler.Syntax
 				}
 			}
 
-			this.kind = SyntaxKind.SingleLineCommentToken;
+			this.kind = SyntaxKind.SingleLineCommentTrivia;
 		}
 
 		private void ReadMultiLineComment()
@@ -263,7 +263,7 @@ namespace WSharp.Compiler.Syntax
 				}
 			}
 
-			this.kind = SyntaxKind.MultiLineCommentToken;
+			this.kind = SyntaxKind.MultiLineCommentTrivia;
 		}
 
 		private void ReadString()
@@ -325,7 +325,7 @@ namespace WSharp.Compiler.Syntax
 				this.position++;
 			}
 
-			this.kind = SyntaxKind.WhitespaceToken;
+			this.kind = SyntaxKind.WhitespaceTrivia;
 		}
 
 		private void ReadNumberToken()

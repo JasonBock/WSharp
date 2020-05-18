@@ -14,6 +14,7 @@ namespace WSharp.Compiler.Syntax
 
 		public override IEnumerable<SyntaxNode> GetChildren() => Enumerable.Empty<SyntaxNode>();
 
+		public bool IsMissing => this.Text is null;
 		public override SyntaxKind Kind { get; }
 		public int Position { get; }
 		public override TextSpan Span => new TextSpan(this.Position, this.Text.Length);

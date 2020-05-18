@@ -34,8 +34,6 @@ namespace WSharp.Compiler.Tests.Compiler.Syntax
 		{
 			var tokenKinds = Enum.GetValues(typeof(SyntaxKind))
 				.Cast<SyntaxKind>()
-				.Where(_ => _ != SyntaxKind.SingleLineCommentToken &&
-					_ != SyntaxKind.MultiLineCommentToken)
 				.Where(_ => _.IsToken())
 				.ToList();
 
@@ -43,7 +41,7 @@ namespace WSharp.Compiler.Tests.Compiler.Syntax
 				.Select(_ => _.kind);
 
 			var untestedTokenKinds = new SortedSet<SyntaxKind>(tokenKinds);
-			untestedTokenKinds.Remove(SyntaxKind.BadToken);
+			untestedTokenKinds.Remove(SyntaxKind.BadTokenTrivia);
 			untestedTokenKinds.Remove(SyntaxKind.EndOfFileToken);
 			untestedTokenKinds.ExceptWith(testedTokenKinds);
 
@@ -109,13 +107,13 @@ namespace WSharp.Compiler.Tests.Compiler.Syntax
 		private static IEnumerable<(SyntaxKind kind, string text)> GetSeparators() =>
 			new[]
 			{
-				(SyntaxKind.WhitespaceToken, " "),
-				(SyntaxKind.WhitespaceToken, "  "),
-				(SyntaxKind.WhitespaceToken, "\t"),
-				(SyntaxKind.WhitespaceToken, "\r"),
-				(SyntaxKind.WhitespaceToken, "\n"),
-				(SyntaxKind.WhitespaceToken, "\r\n"),
-				(SyntaxKind.MultiLineCommentToken, "/**/")
+				(SyntaxKind.WhitespaceTrivia, " "),
+				(SyntaxKind.WhitespaceTrivia, "  "),
+				(SyntaxKind.WhitespaceTrivia, "\t"),
+				(SyntaxKind.WhitespaceTrivia, "\r"),
+				(SyntaxKind.WhitespaceTrivia, "\n"),
+				(SyntaxKind.WhitespaceTrivia, "\r\n"),
+				(SyntaxKind.MultiLineCommentTrivia, "/**/")
 			};
 
 		private static bool RequiresSeparator(SyntaxKind t1Kind, SyntaxKind t2Kind)
@@ -135,8 +133,8 @@ namespace WSharp.Compiler.Tests.Compiler.Syntax
 				(t1Kind == SyntaxKind.PipeToken && t2Kind == SyntaxKind.PipePipeToken) ||
 				(t1Kind == SyntaxKind.SlashToken && t2Kind == SyntaxKind.SlashToken) ||
 				(t1Kind == SyntaxKind.SlashToken && t2Kind == SyntaxKind.StarToken) ||
-				(t1Kind == SyntaxKind.SlashToken && t2Kind == SyntaxKind.SingleLineCommentToken) ||
-				(t1Kind == SyntaxKind.SlashToken && t2Kind == SyntaxKind.MultiLineCommentToken) ||
+				(t1Kind == SyntaxKind.SlashToken && t2Kind == SyntaxKind.SingleLineCommentTrivia) ||
+				(t1Kind == SyntaxKind.SlashToken && t2Kind == SyntaxKind.MultiLineCommentTrivia) ||
 				(t1IsKeyword && t2IsKeyword) ||
 				(t1IsKeyword && t2Kind == SyntaxKind.IdentifierToken) ||
 				(t2IsKeyword && t1Kind == SyntaxKind.IdentifierToken);

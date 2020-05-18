@@ -110,10 +110,25 @@ namespace WSharp.Compiler.Syntax
 				_ => string.Empty
 			};
 
+		public static bool IsComment(this SyntaxKind @this) =>
+			@this == SyntaxKind.SingleLineCommentTrivia ||
+			@this == SyntaxKind.MultiLineCommentTrivia;
+
 		public static bool IsKeyword(this SyntaxKind @this) =>
 			@this.ToString().EndsWith("Keyword");
 
 		public static bool IsToken(this SyntaxKind @this) =>
-			@this.IsKeyword() || @this.ToString().EndsWith("Token");
+			!@this.IsTrivia() && 
+				(@this.IsKeyword() || @this.ToString().EndsWith("Token"));
+
+		public static bool IsTrivia(this SyntaxKind @this) =>
+			@this switch
+			{
+				SyntaxKind.WhitespaceTrivia => true,
+				SyntaxKind.SingleLineCommentTrivia => true,
+				SyntaxKind.MultiLineCommentTrivia => true,
+				SyntaxKind.BadTokenTrivia => true,
+				_ => false
+			};
 	}
 }
