@@ -36,8 +36,7 @@ namespace WSharp.Compiler.Tests.Compiler.Syntax
 				.Cast<SyntaxKind>()
 				.Where(_ => _ != SyntaxKind.SingleLineCommentToken &&
 					_ != SyntaxKind.MultiLineCommentToken)
-				.Where(_ => _.ToString().EndsWith("Keyword") ||
-					_.ToString().EndsWith("Token"))
+				.Where(_ => _.IsToken())
 				.ToList();
 
 			var testedTokenKinds = LexerTests.GetTokens().Concat(LexerTests.GetSeparators())
@@ -121,8 +120,8 @@ namespace WSharp.Compiler.Tests.Compiler.Syntax
 
 		private static bool RequiresSeparator(SyntaxKind t1Kind, SyntaxKind t2Kind)
 		{
-			var t1IsKeyword = t1Kind.ToString().EndsWith("Keyword");
-			var t2IsKeyword = t2Kind.ToString().EndsWith("Keyword");
+			var t1IsKeyword = t1Kind.IsKeyword();
+			var t2IsKeyword = t2Kind.IsKeyword();
 
 			return (t1Kind == SyntaxKind.IdentifierToken && t2Kind == SyntaxKind.IdentifierToken) ||
 				(t1Kind == SyntaxKind.NumberToken && t2Kind == SyntaxKind.NumberToken) ||

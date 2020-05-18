@@ -109,5 +109,11 @@ namespace WSharp.Compiler.Syntax
 				SyntaxKind.SemicolonToken => ";",
 				_ => string.Empty
 			};
+
+		public static bool IsKeyword(this SyntaxKind @this) =>
+			@this.ToString().EndsWith("Keyword");
+
+		public static bool IsToken(this SyntaxKind @this) =>
+			@this.IsKeyword() || @this.ToString().EndsWith("Token");
 	}
 }
