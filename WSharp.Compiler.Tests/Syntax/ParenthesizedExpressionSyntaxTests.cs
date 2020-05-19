@@ -11,9 +11,13 @@ namespace WSharp.Compiler.Tests.Compiler.Syntax
 		public static void Create()
 		{
 			var tree = SyntaxTree.Parse("(1)");
-			var open = new SyntaxToken(tree, SyntaxKind.OpenParenthesisToken, 0, "(", null);
-			var expression = new LiteralExpressionSyntax(tree, new SyntaxToken(tree, SyntaxKind.NumberToken, 1, "1", BigInteger.One));
-			var close = new SyntaxToken(tree, SyntaxKind.CloseParenthesisToken, 2, ")", null);
+			var open = new SyntaxToken(tree, SyntaxKind.OpenParenthesisToken, 0, "(", null,
+				ImmutableArray<SyntaxTrivia>.Empty, ImmutableArray<SyntaxTrivia>.Empty);
+			var expression = new LiteralExpressionSyntax(tree, 
+				new SyntaxToken(tree, 
+					SyntaxKind.NumberToken, 1, "1", BigInteger.One, ImmutableArray<SyntaxTrivia>.Empty, ImmutableArray<SyntaxTrivia>.Empty));
+			var close = new SyntaxToken(tree, SyntaxKind.CloseParenthesisToken, 2, ")", null,
+				ImmutableArray<SyntaxTrivia>.Empty, ImmutableArray<SyntaxTrivia>.Empty);
 
 			var syntax = new ParenthesizedExpressionSyntax(tree, open, expression, close);
 
@@ -38,9 +42,13 @@ namespace WSharp.Compiler.Tests.Compiler.Syntax
 		public static void CreateWithIncorrectOpenParenthesisToken()
 		{
 			var tree = SyntaxTree.Parse("-1)");
-			var open = new SyntaxToken(tree, SyntaxKind.MinusToken, 0, "-", null);
-			var expression = new LiteralExpressionSyntax(tree, new SyntaxToken(tree, SyntaxKind.NumberToken, 1, "1", BigInteger.One));
-			var close = new SyntaxToken(tree, SyntaxKind.CloseParenthesisToken, 2, ")", null);
+			var open = new SyntaxToken(tree, SyntaxKind.MinusToken, 0, "-", null,
+				ImmutableArray<SyntaxTrivia>.Empty, ImmutableArray<SyntaxTrivia>.Empty);
+			var expression = new LiteralExpressionSyntax(tree, 
+				new SyntaxToken(tree, SyntaxKind.NumberToken, 1, "1", BigInteger.One,
+					ImmutableArray<SyntaxTrivia>.Empty, ImmutableArray<SyntaxTrivia>.Empty));
+			var close = new SyntaxToken(tree, SyntaxKind.CloseParenthesisToken, 2, ")", null,
+				ImmutableArray<SyntaxTrivia>.Empty, ImmutableArray<SyntaxTrivia>.Empty);
 
 			Assert.That(() => new ParenthesizedExpressionSyntax(tree, open, expression, close), Throws.TypeOf<ParsingException>());
 		}
@@ -49,9 +57,13 @@ namespace WSharp.Compiler.Tests.Compiler.Syntax
 		public static void CreateWithIncorrectCloseParenthesisToken()
 		{
 			var tree = SyntaxTree.Parse("(1-");
-			var open = new SyntaxToken(tree, SyntaxKind.OpenParenthesisToken, 0, "(", null);
-			var expression = new LiteralExpressionSyntax(tree, new SyntaxToken(tree, SyntaxKind.NumberToken, 1, "1", BigInteger.One));
-			var close = new SyntaxToken(tree, SyntaxKind.MinusToken, 2, "-", null);
+			var open = new SyntaxToken(tree, SyntaxKind.OpenParenthesisToken, 0, "(", null,
+				ImmutableArray<SyntaxTrivia>.Empty, ImmutableArray<SyntaxTrivia>.Empty);
+			var expression = new LiteralExpressionSyntax(tree, 
+				new SyntaxToken(tree, SyntaxKind.NumberToken, 1, "1", BigInteger.One,
+					ImmutableArray<SyntaxTrivia>.Empty, ImmutableArray<SyntaxTrivia>.Empty));
+			var close = new SyntaxToken(tree, SyntaxKind.MinusToken, 2, "-", null,
+				ImmutableArray<SyntaxTrivia>.Empty, ImmutableArray<SyntaxTrivia>.Empty);
 
 			Assert.That(() => new ParenthesizedExpressionSyntax(tree, open, expression, close), Throws.TypeOf<ParsingException>());
 		}

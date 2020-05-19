@@ -1,4 +1,5 @@
 ﻿using NUnit.Framework;
+using System.Collections.Immutable;
 using WSharp.Compiler.Syntax;
 
 namespace WSharp.Compiler.Tests.Compiler.Syntax
@@ -13,7 +14,8 @@ namespace WSharp.Compiler.Tests.Compiler.Syntax
 			var text = "a";
 
 			var tree = SyntaxTree.Parse("!");
-			var token = new SyntaxToken(tree, kind, position, text, null);
+			var token = new SyntaxToken(tree, kind, position, text, null,
+				ImmutableArray<SyntaxTrivia>.Empty, ImmutableArray<SyntaxTrivia>.Empty);
 
 			Assert.Multiple(() =>
 			{
@@ -35,7 +37,8 @@ namespace WSharp.Compiler.Tests.Compiler.Syntax
 			var value = new object();
 
 			var tree = SyntaxTree.Parse("!");
-			var token = new SyntaxToken(tree, kind, position, text, value);
+			var token = new SyntaxToken(tree, kind, position, text, value,
+				ImmutableArray<SyntaxTrivia>.Empty, ImmutableArray<SyntaxTrivia>.Empty);
 
 			Assert.Multiple(() =>
 			{
@@ -47,5 +50,7 @@ namespace WSharp.Compiler.Tests.Compiler.Syntax
 				Assert.That(token.Value, Is.EqualTo(value), nameof(token.Value));
 			});
 		}
+
+		// TODO: Create test creating with trivia.
 	}
 }

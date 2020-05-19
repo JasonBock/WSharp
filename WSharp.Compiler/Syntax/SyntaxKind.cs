@@ -36,6 +36,7 @@
 		WhitespaceTrivia,
 		SingleLineCommentTrivia,
 		MultiLineCommentTrivia,
+		LineBreakTrivia,
 
 		// Keywords
 		FalseKeyword,

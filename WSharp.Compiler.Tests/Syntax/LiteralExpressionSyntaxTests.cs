@@ -11,7 +11,8 @@ namespace WSharp.Compiler.Tests.Compiler.Syntax
 		{
 			var tree = SyntaxTree.Parse("!");
 			var value = new object();
-			var token = new SyntaxToken(tree, SyntaxKind.BangToken, 1, "a", value);
+			var token = new SyntaxToken(tree, SyntaxKind.BangToken, 1, "a", value,
+				ImmutableArray<SyntaxTrivia>.Empty, ImmutableArray<SyntaxTrivia>.Empty);
 
 			var syntax = new LiteralExpressionSyntax(tree, token);
 

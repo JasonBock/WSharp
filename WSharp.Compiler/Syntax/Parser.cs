@@ -46,7 +46,8 @@ namespace WSharp.Compiler.Syntax
 			}
 
 			this.Diagnostics.ReportUnexpectedToken(this.Current.Location, this.Current.Kind, kind);
-			return new SyntaxToken(this.Tree, kind, this.Current.Position, string.Empty, null);
+			return new SyntaxToken(this.Tree, kind, this.Current.Position, string.Empty, null, 
+				ImmutableArray<SyntaxTrivia>.Empty, ImmutableArray<SyntaxTrivia>.Empty);
 		}
 
 		private SyntaxToken Next()

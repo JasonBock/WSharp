@@ -11,9 +11,14 @@ namespace WSharp.Compiler.Tests.Compiler.Syntax
 		public static void Create()
 		{
 			var tree = SyntaxTree.Parse("1+2");
-			var left = new LiteralExpressionSyntax(tree, new SyntaxToken(tree, SyntaxKind.NumberToken, 0, "1", BigInteger.One));
-			var @operator = new SyntaxToken(tree, SyntaxKind.PlusToken, 1, "+", null);
-			var right = new LiteralExpressionSyntax(tree, new SyntaxToken(tree, SyntaxKind.NumberToken, 2, "2", BigInteger.Parse("2")));
+			var left = new LiteralExpressionSyntax(tree, 
+				new SyntaxToken(tree, SyntaxKind.NumberToken, 0, "1", BigInteger.One, 
+					ImmutableArray<SyntaxTrivia>.Empty, ImmutableArray<SyntaxTrivia>.Empty));
+			var @operator = new SyntaxToken(tree, SyntaxKind.PlusToken, 1, "+", null,
+				ImmutableArray<SyntaxTrivia>.Empty, ImmutableArray<SyntaxTrivia>.Empty);
+			var right = new LiteralExpressionSyntax(tree, 
+				new SyntaxToken(tree, SyntaxKind.NumberToken, 2, "2", BigInteger.Parse("2"),
+					ImmutableArray<SyntaxTrivia>.Empty, ImmutableArray<SyntaxTrivia>.Empty));
 
 			var syntax = new BinaryExpressionSyntax(tree, left, @operator, right);
 
@@ -33,5 +38,7 @@ namespace WSharp.Compiler.Tests.Compiler.Syntax
 				Assert.That(children[2], Is.EqualTo(right), nameof(children));
 			});
 		}
+
+		// TODO: Add test for creating with trivia.
 	}
 }

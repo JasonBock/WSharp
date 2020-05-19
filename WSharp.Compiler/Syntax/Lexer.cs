@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Immutable;
 using System.Numerics;
 using System.Text;
 using WSharp.Compiler.Symbols;
@@ -13,6 +14,8 @@ namespace WSharp.Compiler.Syntax
 		private int start;
 		private readonly SourceText text;
 		private readonly SyntaxTree tree;
+		private readonly ImmutableArray<SyntaxTrivia>.Builder triviaBuilder =
+			ImmutableArray.CreateBuilder<SyntaxTrivia>();
 		private object? value;
 
 		public Lexer(SyntaxTree tree)
@@ -22,6 +25,29 @@ namespace WSharp.Compiler.Syntax
 		}
 
 		public SyntaxToken Lex()
+		{
+			this.ReadTrivia(true);
+			var leadingTrivia = this.triviaBuilder.ToImmutable();
+			var tokenStart = this.position;
+			this.ReadToken();
+			var tokenKind = this.kind;
+			var tokenValue = this.value;
+			var tokenLength = this.position - this.start;
+			this.ReadTrivia(false);
+			var trailingTrivia = this.triviaBuilder.ToImmutable();
+
+			var tokenText = SyntaxFacts.GetText(tokenKind);
+
+			if (string.IsNullOrWhiteSpace(tokenText))
+			{
+				tokenText = this.text.ToString(tokenStart, tokenLength);
+			}
+
+			return new SyntaxToken(this.tree, tokenKind, tokenStart, tokenText, tokenValue,
+				leadingTrivia, trailingTrivia);
+		}
+
+		public void ReadToken()
 		{
 			this.start = this.position;
 			this.kind = SyntaxKind.BadTokenTrivia;
@@ -53,20 +79,8 @@ namespace WSharp.Compiler.Syntax
 					this.position++;
 					break;
 				case '/':
-					if (this.Lookahead == '/')
-					{
-						this.ReadSingleLineComment();
-					}
-					else if (this.Lookahead == '*')
-					{
-						this.ReadMultiLineComment();
-					}
-					else
-					{
-						this.kind = SyntaxKind.SlashToken;
-						this.position++;
-					}
-
+					this.kind = SyntaxKind.SlashToken;
+					this.position++;
 					break;
 				case '%':
 					this.kind = SyntaxKind.PercentToken;
@@ -175,20 +189,10 @@ namespace WSharp.Compiler.Syntax
 				case '9':
 					this.ReadNumberToken();
 					break;
-				case ' ':
-				case '\t':
-				case '\n':
-				case '\r':
-					this.ReadWhitespace();
-					break;
 				default:
 					if (char.IsLetter(this.Current))
 					{
 						this.ReadIdentifierOrKeyword();
-					}
-					else if (char.IsWhiteSpace(this.Current))
-					{
-						this.ReadWhitespace();
 					}
 					else
 					{
@@ -199,16 +203,71 @@ namespace WSharp.Compiler.Syntax
 
 					break;
 			}
+		}
 
-			var length = this.position - this.start;
-			var text = SyntaxFacts.GetText(this.kind);
+		private void ReadTrivia(bool isLeading)
+		{
+			this.triviaBuilder.Clear();
+			var done = false;
 
-			if (string.IsNullOrWhiteSpace(text))
+			while (!done)
 			{
-				text = this.text.ToString(this.start, length);
-			}
+				this.start = this.position;
+				this.kind = SyntaxKind.BadTokenTrivia;
+				this.value = null;
 
-			return new SyntaxToken(this.tree, this.kind, this.start, text, this.value);
+				switch (this.Current)
+				{
+					case '\0':
+						done = true;
+						break;
+					case '/':
+						if (this.Lookahead == '/')
+						{
+							this.ReadSingleLineComment();
+						}
+						else if (this.Lookahead == '*')
+						{
+							this.ReadMultiLineComment();
+						}
+						else
+						{
+							done = true;
+						}
+
+						break;
+					case '\n':
+					case '\r':
+						if (!isLeading)
+						{
+							done = true;
+						}
+						this.ReadLineBreak();
+						break;
+					case ' ':
+					case '\t':
+						this.ReadWhitespace();
+						break;
+					default:
+						if (char.IsWhiteSpace(this.Current))
+						{
+							this.ReadWhitespace();
+						}
+						else
+						{
+							done = true;
+						}
+						break;
+				}
+
+				var length = this.position - this.start;
+
+				if (length > 0)
+				{
+					var text = this.text.ToString(this.start, length);
+					this.triviaBuilder.Add(new SyntaxTrivia(this.tree, this.kind, this.start, text));
+				}
+			}
 		}
 
 		private void ReadSingleLineComment()
@@ -320,12 +379,47 @@ namespace WSharp.Compiler.Syntax
 
 		private void ReadWhitespace()
 		{
-			while (char.IsWhiteSpace(this.Current))
+			var done = false;
+
+			while (!done)
+			{
+				switch (this.Current)
+				{
+					case '\0':
+					case '\r':
+					case '\n':
+						done = true;
+						break;
+					default:
+						{
+							if (!char.IsWhiteSpace(this.Current))
+							{
+								done = true;
+							}
+							else
+							{
+								this.position++;
+							}
+							break;
+						}
+				}
+			}
+
+			this.kind = SyntaxKind.WhitespaceTrivia;
+		}
+
+		private void ReadLineBreak()
+		{
+			if (this.Current == '\r' && this.Lookahead == '\n')
+			{
+				this.position += 2;
+			}
+			else
 			{
 				this.position++;
 			}
 
-			this.kind = SyntaxKind.WhitespaceTrivia;
+			this.kind = SyntaxKind.LineBreakTrivia;
 		}
 
 		private void ReadNumberToken()

@@ -32,20 +32,52 @@ namespace WSharp.Compiler.Syntax
 			return this.GetChildren().Last().GetLastToken();
 		}
 
-		private static void Print(TextWriter writer, SyntaxNode node, string indent = "", bool isLast = true)
+		private static void Print(TextWriter writer, SyntaxNode? node, string indent = "", bool isLast = true)
 		{
-			var marker = isLast ? TreePrint.Branch : TreePrint.Center;
+			if (node is null)
+			{
+				return;
+			}
+
+			var token = node as SyntaxToken;
+
+			if(token is { })
+			{
+				foreach (var trivia in token.LeadingTrivia)
+				{
+					writer.Write(indent);
+					writer.Write(TreePrint.Center);
+					writer.WriteLine($"L: {trivia.Kind}");
+				}
+			}
+
+			var hasTrailingTrivia = token is { } && token.TrailingTrivia.Length > 0;
+			var tokenMarker = !hasTrailingTrivia && isLast ? TreePrint.Branch : TreePrint.Center;
 
 			writer.Write(indent);
-			writer.Write(marker);
+			writer.Write(tokenMarker);
 			writer.Write(node.Kind);
 
-			if (node is SyntaxToken token && token.Value != null)
+			if (token is { } && token.Value is { })
 			{
+				writer.Write(" ");
 				writer.Write($" {token.Value}");
 			}
 
 			writer.WriteLine();
+
+			if (token is { })
+			{
+				foreach (var trivia in token.TrailingTrivia)
+				{
+					var isLastTrailingTrivia = trivia == token.TrailingTrivia[^1];
+					var triviaMarker = isLast && isLastTrailingTrivia ? TreePrint.Branch : TreePrint.Center;
+
+					writer.Write(indent);
+					writer.Write(triviaMarker);
+					writer.WriteLine($"T: {trivia.Kind}");
+				}
+			}
 
 			indent += isLast ? TreePrint.Space : TreePrint.Down;
 
@@ -60,6 +92,16 @@ namespace WSharp.Compiler.Syntax
 		public override string ToString() => $"{this.Kind}, {this.Span}";
 
 		public abstract SyntaxKind Kind { get; }
+
+		public virtual TextSpan FullSpan
+		{
+			get
+			{
+				var first = this.GetChildren().First().FullSpan;
+				var last = this.GetChildren().Last().FullSpan;
+				return TextSpan.FromBounds(first.Start, last.End);
+			}
+		}
 
 		public virtual TextSpan Span
 		{
