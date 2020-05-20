@@ -50,7 +50,7 @@ namespace WSharp.Compiler.Syntax
 		public void ReadToken()
 		{
 			this.start = this.position;
-			this.kind = SyntaxKind.BadTokenTrivia;
+			this.kind = SyntaxKind.BadToken;
 			this.value = null;
 
 			switch (this.Current)
@@ -213,7 +213,7 @@ namespace WSharp.Compiler.Syntax
 			while (!done)
 			{
 				this.start = this.position;
-				this.kind = SyntaxKind.BadTokenTrivia;
+				this.kind = SyntaxKind.BadToken;
 				this.value = null;
 
 				switch (this.Current)

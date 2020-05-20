@@ -34,15 +34,25 @@ namespace WSharp.Compiler.Syntax
 		public static SyntaxTree Parse(SourceText text) =>
 			new SyntaxTree(text, SyntaxTree.Parse);
 
-		public static (ImmutableArray<SyntaxToken> tokens, ImmutableArray<Diagnostic> diagnostics) ParseTokens(string text) => 
-			SyntaxTree.ParseTokens(SourceText.From(text));
+		private static (CompilationUnitSyntax root, ImmutableArray<Diagnostic> diagnostics) Parse(SyntaxTree tree)
+		{
+			var parser = new Parser(tree);
+			return (parser.ParseCompilationUnit(), parser.Diagnostics.ToImmutableArray());
+		}
 
-		public static (ImmutableArray<SyntaxToken> tokens, ImmutableArray<Diagnostic> diagnostics) ParseTokens(SourceText text)
+		public static (ImmutableArray<SyntaxToken> tokens, ImmutableArray<Diagnostic> diagnostics) ParseTokens(
+			string text, bool includeEndOfFile = false) => 
+				SyntaxTree.ParseTokens(SourceText.From(text), includeEndOfFile);
+
+		public static (ImmutableArray<SyntaxToken> tokens, ImmutableArray<Diagnostic> diagnostics) ParseTokens(
+			SourceText text, bool includeEndOfFile = false)
 		{
 			var tokens = new List<SyntaxToken>();
 
 			(CompilationUnitSyntax root, ImmutableArray<Diagnostic> diagnostics) ParseTokens(SyntaxTree tree)
 			{
+				CompilationUnitSyntax? root = null;
+
 				var lexer = new Lexer(tree);
 
 				while (true)
@@ -51,22 +61,25 @@ namespace WSharp.Compiler.Syntax
 
 					if (token.Kind == SyntaxKind.EndOfFileToken)
 					{
-						return (new CompilationUnitSyntax(tree, new LineStatementsSyntax(tree, new List<LineStatementSyntax>()), token), 
-							lexer.Diagnostics.ToImmutableArray());
+						root = new CompilationUnitSyntax(tree, new LineStatementsSyntax(tree, new List<LineStatementSyntax>()), token);
 					}
 
-					tokens.Add(token);
+					if(token.Kind != SyntaxKind.EndOfFileToken || includeEndOfFile)
+					{
+						tokens.Add(token);
+					}
+
+					if (token.Kind == SyntaxKind.EndOfFileToken)
+					{
+						break;
+					}
 				}
+
+				return (root!, lexer.Diagnostics.ToImmutableArray());
 			}
 
 			var tree = new SyntaxTree(text, ParseTokens);
 			return (tokens.ToImmutableArray(), tree.Diagnostics); 
-		}
-
-		private static (CompilationUnitSyntax root, ImmutableArray<Diagnostic> diagnostics) Parse(SyntaxTree tree)
-		{
-			var parser = new Parser(tree);
-			return (parser.ParseCompilationUnit(), parser.Diagnostics.ToImmutableArray());
 		}
 
 		public ImmutableArray<Diagnostic> Diagnostics { get; }

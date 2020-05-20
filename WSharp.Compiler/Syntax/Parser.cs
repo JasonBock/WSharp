@@ -19,6 +19,7 @@ namespace WSharp.Compiler.Syntax
 
 			var tokens = new List<SyntaxToken>();
 			var lexer = new Lexer(tree);
+			var badTokens = new List<SyntaxToken>();
 
 			SyntaxToken token;
 
@@ -26,8 +27,38 @@ namespace WSharp.Compiler.Syntax
 			{
 				token = lexer.Lex();
 
-				if (!token.Kind.IsTrivia())
+				if(token.Kind == SyntaxKind.BadToken)
 				{
+					badTokens.Add(token);
+				}
+				else
+				{
+					if(badTokens.Count > 0)
+					{
+						var leadingTrivia = token.LeadingTrivia.ToBuilder();
+						var index = 0;
+
+						foreach(var badToken in badTokens)
+						{
+							foreach(var leading in badToken.LeadingTrivia)
+							{
+								leadingTrivia.Insert(index++, leading);
+							}
+
+							var trivia = new SyntaxTrivia(tree, SyntaxKind.SkippedTextTrivia, badToken.Position, badToken.Text);
+							leadingTrivia.Insert(index++, trivia);
+
+							foreach (var trailing in badToken.TrailingTrivia)
+							{
+								leadingTrivia.Insert(index++, trailing);
+							}
+						}
+
+						badTokens.Clear();
+						token = new SyntaxToken(token.Tree, token.Kind, token.Position, token.Text, token.Value,
+							leadingTrivia.ToImmutable(), token.TrailingTrivia);
+					}
+
 					tokens.Add(token);
 				}
 			} while (token.Kind != SyntaxKind.EndOfFileToken);

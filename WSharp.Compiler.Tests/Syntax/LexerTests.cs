@@ -41,7 +41,7 @@ namespace WSharp.Compiler.Tests.Compiler.Syntax
 				.Select(_ => _.kind);
 
 			var untestedTokenKinds = new SortedSet<SyntaxKind>(tokenKinds);
-			untestedTokenKinds.Remove(SyntaxKind.BadTokenTrivia);
+			untestedTokenKinds.Remove(SyntaxKind.BadToken);
 			untestedTokenKinds.Remove(SyntaxKind.EndOfFileToken);
 			untestedTokenKinds.ExceptWith(testedTokenKinds);
 
@@ -60,6 +60,23 @@ namespace WSharp.Compiler.Tests.Compiler.Syntax
 				var token = tokens[0];
 				Assert.That(token.Kind, Is.EqualTo(value.kind), nameof(token.Kind));
 				Assert.That(token.Text, Is.EqualTo(value.text), nameof(token.Text));
+			});
+		}
+
+		[TestCaseSource(nameof(LexerTests.GetSeparatorsData))]
+		public static void LexerLexesSeparator((SyntaxKind kind, string text) value)
+		{
+			var (tokensResult, _) = SyntaxTree.ParseTokens(value.text, true);
+			var tokens = tokensResult.ToArray();
+
+			Assert.Multiple(() =>
+			{
+				Assert.That(tokens.Length, Is.EqualTo(1), nameof(tokens.Length));
+				var token = tokens[0];
+				Assert.That(token.LeadingTrivia.Length, Is.EqualTo(1), nameof(token.LeadingTrivia));
+				var trivia = token.LeadingTrivia[0];
+				Assert.That(trivia.Kind, Is.EqualTo(value.kind), nameof(trivia.Kind));
+				Assert.That(trivia.Text, Is.EqualTo(value.text), nameof(trivia.Text));
 			});
 		}
 
@@ -83,7 +100,8 @@ namespace WSharp.Compiler.Tests.Compiler.Syntax
 		}
 
 		[TestCaseSource(nameof(LexerTests.GetTokenPairsWithSeparatorsData))]
-		public static void LexerLexesTokenPairsWithSeparators((SyntaxKind t1Kind, string t1Text, SyntaxKind separatorKind, string separatorText, SyntaxKind t2Kind, string t2Text) value)
+		public static void LexerLexesTokenPairsWithSeparators((SyntaxKind t1Kind, string t1Text, 
+			SyntaxKind separatorKind, string separatorText, SyntaxKind t2Kind, string t2Text) value)
 		{
 			var text = $"{value.t1Text}{value.separatorText}{value.t2Text}";
 			var (tokensResult, _) = SyntaxTree.ParseTokens(text);
@@ -91,16 +109,20 @@ namespace WSharp.Compiler.Tests.Compiler.Syntax
 
 			Assert.Multiple(() =>
 			{
-				Assert.That(tokens.Length, Is.EqualTo(3), nameof(tokens.Length));
+				Assert.That(tokens.Length, Is.EqualTo(2), nameof(tokens.Length));
+
 				var token1 = tokens[0];
 				Assert.That(token1.Kind, Is.EqualTo(value.t1Kind), $"1 - {nameof(token1.Kind)}");
 				Assert.That(token1.Text, Is.EqualTo(value.t1Text), $"1 - {nameof(token1.Text)}");
+				Assert.That(token1.TrailingTrivia.Length, Is.EqualTo(1), $"1 - {nameof(token1.TrailingTrivia)}");
+
+				var separator = token1.TrailingTrivia[0];
+				Assert.That(separator.Kind, Is.EqualTo(value.separatorKind), $"Separator - {nameof(separator.Kind)}");
+				Assert.That(separator.Text, Is.EqualTo(value.separatorText), $"Separator - {nameof(separator.Text)}");
+
 				var token2 = tokens[1];
-				Assert.That(token2.Kind, Is.EqualTo(value.separatorKind), $"2 - {nameof(token2.Kind)}");
-				Assert.That(token2.Text, Is.EqualTo(value.separatorText), $"2 - {nameof(token2.Text)}");
-				var token3 = tokens[2];
-				Assert.That(token3.Kind, Is.EqualTo(value.t2Kind), $"3 - {nameof(token3.Kind)}");
-				Assert.That(token3.Text, Is.EqualTo(value.t2Text), $"3 - {nameof(token3.Text)}");
+				Assert.That(token2.Kind, Is.EqualTo(value.t2Kind), $"2 - {nameof(token2.Kind)}");
+				Assert.That(token2.Text, Is.EqualTo(value.t2Text), $"2 - {nameof(token2.Text)}");
 			});
 		}
 
@@ -109,10 +131,9 @@ namespace WSharp.Compiler.Tests.Compiler.Syntax
 			{
 				(SyntaxKind.WhitespaceTrivia, " "),
 				(SyntaxKind.WhitespaceTrivia, "  "),
-				(SyntaxKind.WhitespaceTrivia, "\t"),
-				(SyntaxKind.WhitespaceTrivia, "\r"),
-				(SyntaxKind.WhitespaceTrivia, "\n"),
-				(SyntaxKind.WhitespaceTrivia, "\r\n"),
+				(SyntaxKind.LineBreakTrivia, "\r"),
+				(SyntaxKind.LineBreakTrivia, "\n"),
+				(SyntaxKind.LineBreakTrivia, "\r\n"),
 				(SyntaxKind.MultiLineCommentTrivia, "/**/")
 			};
 
@@ -142,7 +163,15 @@ namespace WSharp.Compiler.Tests.Compiler.Syntax
 
 		private static IEnumerable<(SyntaxKind kind, string text)> GetTokensData()
 		{
-			foreach (var (tokenKind, tokenText) in LexerTests.GetTokens().Concat(LexerTests.GetSeparators()))
+			foreach (var (tokenKind, tokenText) in LexerTests.GetTokens())
+			{
+				yield return (tokenKind, tokenText);
+			}
+		}
+
+		private static IEnumerable<(SyntaxKind kind, string text)> GetSeparatorsData()
+		{
+			foreach (var (tokenKind, tokenText) in LexerTests.GetSeparators())
 			{
 				yield return (tokenKind, tokenText);
 			}

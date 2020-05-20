@@ -3,6 +3,7 @@
 	public enum SyntaxKind
 	{
 		// Tokens
+		BadToken,
 		EndOfFileToken,
 		NumberToken,
 		StringToken,
@@ -32,7 +33,7 @@
 		IdentifierToken,
 
 		// Trivia
-		BadTokenTrivia,
+		SkippedTextTrivia,
 		WhitespaceTrivia,
 		SingleLineCommentTrivia,
 		MultiLineCommentTrivia,

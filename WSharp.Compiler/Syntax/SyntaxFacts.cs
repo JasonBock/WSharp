@@ -124,10 +124,12 @@ namespace WSharp.Compiler.Syntax
 		public static bool IsTrivia(this SyntaxKind @this) =>
 			@this switch
 			{
+				SyntaxKind.SkippedTextTrivia => true,
+				SyntaxKind.LineBreakTrivia => true,
 				SyntaxKind.WhitespaceTrivia => true,
 				SyntaxKind.SingleLineCommentTrivia => true,
 				SyntaxKind.MultiLineCommentTrivia => true,
-				SyntaxKind.BadTokenTrivia => true,
+				SyntaxKind.BadToken => true,
 				_ => false
 			};
 	}
