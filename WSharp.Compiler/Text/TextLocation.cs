@@ -12,7 +12,7 @@ namespace WSharp.Compiler.Text
 
 		public static bool operator !=(TextLocation left, TextLocation right) => !(left == right);
 
-		public override bool Equals(object? obj) => obj is TextLocation other ? this.Equals(other) : false;
+		public override bool Equals(object? obj) => obj is TextLocation other && this.Equals(other);
 
 		public bool Equals(TextLocation other) => this.GetHashCode() == other.GetHashCode();
 

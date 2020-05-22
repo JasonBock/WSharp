@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace WSharp.Compiler.Syntax
 {
@@ -6,9 +7,9 @@ namespace WSharp.Compiler.Syntax
 		: ExpressionSyntax
 	{
 		public LiteralExpressionSyntax(SyntaxTree tree, SyntaxToken literalToken)
-			: this(tree, literalToken, literalToken?.Value) { }
+			: this(tree, literalToken, literalToken is null ? throw new ArgumentNullException(nameof(literalToken)) : literalToken.Value!) { }
 
-		public LiteralExpressionSyntax(SyntaxTree tree, SyntaxToken literalToken, object? value)
+		public LiteralExpressionSyntax(SyntaxTree tree, SyntaxToken literalToken, object value)
 			: base(tree) => (this.LiteralToken, this.Value) = (literalToken, value);
 
 		public override IEnumerable<SyntaxNode> GetChildren()
@@ -18,6 +19,6 @@ namespace WSharp.Compiler.Syntax
 
 		public override SyntaxKind Kind => SyntaxKind.LiteralExpression ;
 		public SyntaxToken LiteralToken { get; }
-		public object? Value { get; }
+		public object Value { get; }
 	}
 }

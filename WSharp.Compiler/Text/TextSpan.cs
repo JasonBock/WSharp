@@ -13,7 +13,7 @@ namespace WSharp.Compiler.Text
 
 		public static bool operator !=(TextSpan left, TextSpan right) => !(left == right);
 
-		public override bool Equals(object? obj) => obj is TextSpan other ? this.Equals(other) : false;
+		public override bool Equals(object? obj) => obj is TextSpan other && this.Equals(other);
 
 		public bool Equals(TextSpan other) => this.GetHashCode() == other.GetHashCode();
 

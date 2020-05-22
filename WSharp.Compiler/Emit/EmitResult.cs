@@ -1,6 +1,6 @@
 ﻿using System.Collections.Immutable;
 
-namespace WSharp.Compiler
+namespace WSharp.Compiler.Emit
 {
 	public sealed class EmitResult
 	{

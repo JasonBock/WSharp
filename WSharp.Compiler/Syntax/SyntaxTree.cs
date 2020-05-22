@@ -51,31 +51,23 @@ namespace WSharp.Compiler.Syntax
 
 			(CompilationUnitSyntax root, ImmutableArray<Diagnostic> diagnostics) ParseTokens(SyntaxTree tree)
 			{
-				CompilationUnitSyntax? root = null;
-
 				var lexer = new Lexer(tree);
 
 				while (true)
 				{
 					var token = lexer.Lex();
 
-					if (token.Kind == SyntaxKind.EndOfFileToken)
-					{
-						root = new CompilationUnitSyntax(tree, new LineStatementsSyntax(tree, new List<LineStatementSyntax>()), token);
-					}
-
-					if(token.Kind != SyntaxKind.EndOfFileToken || includeEndOfFile)
+					if (token.Kind != SyntaxKind.EndOfFileToken || includeEndOfFile)
 					{
 						tokens.Add(token);
 					}
 
 					if (token.Kind == SyntaxKind.EndOfFileToken)
 					{
-						break;
+						return (new CompilationUnitSyntax(tree, new LineStatementsSyntax(tree, new List<LineStatementSyntax>()), token),
+							lexer.Diagnostics.ToImmutableArray());
 					}
 				}
-
-				return (root!, lexer.Diagnostics.ToImmutableArray());
 			}
 
 			var tree = new SyntaxTree(text, ParseTokens);

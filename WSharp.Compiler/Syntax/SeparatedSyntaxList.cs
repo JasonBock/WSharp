@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 
@@ -11,11 +12,11 @@ namespace WSharp.Compiler.Syntax
 		public SeparatedSyntaxList(ImmutableArray<SyntaxNode> nodesAndSeparators) => 
 			this.NodesAndSeparators = nodesAndSeparators;
 
-		public SyntaxToken? GetSeparator(int index)
+		public SyntaxToken GetSeparator(int index)
 		{
-			if(index == this.Count - 1)
+			if(index < 0 || index >= this.Count - 1)
 			{
-				return null;
+				throw new ArgumentOutOfRangeException(nameof(index));
 			}
 
 			return (SyntaxToken)this.NodesAndSeparators[(index * 2) + 1];

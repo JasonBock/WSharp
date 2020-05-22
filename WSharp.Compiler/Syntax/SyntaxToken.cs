@@ -8,11 +8,10 @@ namespace WSharp.Compiler.Syntax
 	public sealed class SyntaxToken 
 		: SyntaxNode
 	{
-		public SyntaxToken(SyntaxTree tree, SyntaxKind kind, int position, string text, object? value, 
+		public SyntaxToken(SyntaxTree tree, SyntaxKind kind, int position, string? text, object? value,
 			ImmutableArray<SyntaxTrivia> leadingTrivia, ImmutableArray<SyntaxTrivia> trailingTrivia)
-			: base(tree) =>
-				(this.Kind, this.Position, this.Text, this.Value, this.LeadingTrivia, this.TrailingTrivia) = 
-					(kind, position, text, value, leadingTrivia, trailingTrivia);
+			: base(tree) => (this.Kind, this.Position, this.Text, this.IsMissing, this.Value, this.LeadingTrivia, this.TrailingTrivia) =
+				(kind, position, text ?? string.Empty, text is null, value, leadingTrivia, trailingTrivia);
 
 		public override IEnumerable<SyntaxNode> GetChildren() => Enumerable.Empty<SyntaxNode>();
 
@@ -26,7 +25,7 @@ namespace WSharp.Compiler.Syntax
 			}
 		}
 
-		public bool IsMissing => this.Text is null;
+		public bool IsMissing { get; }
 		public ImmutableArray<SyntaxTrivia> LeadingTrivia { get; }
 		public override SyntaxKind Kind { get; }
 		public int Position { get; }

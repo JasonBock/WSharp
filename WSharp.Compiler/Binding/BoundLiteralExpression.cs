@@ -25,7 +25,7 @@ namespace WSharp.Compiler.Binding
 			yield return (nameof(this.Value), this.Value);
 		}
 
-		public override BoundConstant? ConstantValue { get; }
+		public override BoundConstant ConstantValue { get; }
 		public override BoundNodeKind Kind => BoundNodeKind.LiteralExpression;
 		public override TypeSymbol Type { get; }
 		public object Value => this.ConstantValue!.Value;
