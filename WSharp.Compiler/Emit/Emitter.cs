@@ -231,31 +231,35 @@ namespace WSharp.Compiler.Emit
 
 		private void EmitExpression(BoundExpression expression, ILProcessor ilProcessor)
 		{
-			switch (expression)
+			if (expression.ConstantValue is { })
 			{
-				case BoundCallExpression call:
-					this.EmitCallExpression(call, ilProcessor);
-					break;
-				case BoundUpdateLineCountExpression line:
-					this.EmitUpdateLineCountExpression(line, ilProcessor);
-					break;
-				case BoundConversionExpression conversion:
-					this.EmitConversionExpression(conversion, ilProcessor);
-					break;
-				case BoundLiteralExpression literal:
-					this.EmitLiteralExpression(literal, ilProcessor);
-					break;
-				case BoundBinaryExpression binary:
-					this.EmitBinaryExpression(binary, ilProcessor);
-					break;
-				case BoundUnaryExpression unary:
-					this.EmitUnaryExpression(unary, ilProcessor);
-					break;
-				case BoundUnaryUpdateLineCountExpression unaryLine:
-					this.EmitUnaryUpdateLineCountExpression(unaryLine, ilProcessor);
-					break;
-				default:
-					throw new EmitException($"Unexpected kind: {expression.Kind}.");
+				this.EmitConstantExpression(expression, ilProcessor);
+			}
+			else
+			{
+				switch (expression)
+				{
+					case BoundCallExpression call:
+						this.EmitCallExpression(call, ilProcessor);
+						break;
+					case BoundUpdateLineCountExpression line:
+						this.EmitUpdateLineCountExpression(line, ilProcessor);
+						break;
+					case BoundConversionExpression conversion:
+						this.EmitConversionExpression(conversion, ilProcessor);
+						break;
+					case BoundBinaryExpression binary:
+						this.EmitBinaryExpression(binary, ilProcessor);
+						break;
+					case BoundUnaryExpression unary:
+						this.EmitUnaryExpression(unary, ilProcessor);
+						break;
+					case BoundUnaryUpdateLineCountExpression unaryLine:
+						this.EmitUnaryUpdateLineCountExpression(unaryLine, ilProcessor);
+						break;
+					default:
+						throw new EmitException($"Unexpected kind: {expression.Kind}.");
+				}
 			}
 		}
 
@@ -473,26 +477,26 @@ namespace WSharp.Compiler.Emit
 			}
 		}
 
-		private void EmitLiteralExpression(BoundLiteralExpression literal, ILProcessor ilProcessor)
+		private void EmitConstantExpression(BoundExpression node, ILProcessor ilProcessor)
 		{
-			if (literal.Type == TypeSymbol.Boolean)
+			if (node.Type == TypeSymbol.Boolean)
 			{
-				ilProcessor.Emit((bool)literal.Value ? OpCodes.Ldc_I4_1 : OpCodes.Ldc_I4_0);
+				ilProcessor.Emit((bool)node.ConstantValue!.Value ? OpCodes.Ldc_I4_1 : OpCodes.Ldc_I4_0);
 				this.currentStackType = TypeSymbol.Boolean;
 			}
-			else if (literal.Type == TypeSymbol.Integer)
+			else if (node.Type == TypeSymbol.Integer)
 			{
-				ilProcessor.EmitBigInteger((BigInteger)literal.Value);
+				ilProcessor.EmitBigInteger((BigInteger)node.ConstantValue!.Value);
 				this.currentStackType = TypeSymbol.Integer;
 			}
-			else if (literal.Type == TypeSymbol.String)
+			else if (node.Type == TypeSymbol.String)
 			{
-				ilProcessor.Emit(OpCodes.Ldstr, (string)literal.Value);
+				ilProcessor.Emit(OpCodes.Ldstr, (string)node.ConstantValue!.Value);
 				this.currentStackType = TypeSymbol.String;
 			}
 			else
 			{
-				throw new EmitException($"Unexpected literal type: {literal.Kind}.");
+				throw new EmitException($"Unexpected literal type: {node.Kind}.");
 			}
 		}
 

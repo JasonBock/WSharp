@@ -38,18 +38,26 @@ namespace WSharp.Compiler
 			};
 		}
 
-		private object EvaluateExpression(BoundExpression node, IExecutionEngineActions? actions = null) =>
-			node switch
+		private object EvaluateExpression(BoundExpression node, IExecutionEngineActions? actions = null)
+		{
+			if(node.ConstantValue is { })
 			{
-				BoundCallExpression call => this.EvaluateCallExpression(actions, call),
-				BoundUnaryUpdateLineCountExpression unaryLine => this.EvaluateUnaryUpdateLineCountExpression(actions, unaryLine),
-				BoundUpdateLineCountExpression line => this.EvaluateUpdateLineCountExpression(actions, line),
-				BoundLiteralExpression literal => Evaluator.EvaluateLiteralExpression(literal),
-				BoundUnaryExpression unary => this.EvaluateUnaryExpression(actions, unary),
-				BoundBinaryExpression binary => this.EvaluateBinaryExpression(actions, binary),
-				BoundConversionExpression conversion => this.EvaluateConversionExpression(actions, conversion),
-				_ => throw new EvaluationException($"Unexpected operator {node.Kind}")
-			};
+				return Evaluator.EvaluateConstantExpression(node);
+			}
+			else
+			{
+				return node switch
+				{
+					BoundCallExpression call => this.EvaluateCallExpression(actions, call),
+					BoundUnaryUpdateLineCountExpression unaryLine => this.EvaluateUnaryUpdateLineCountExpression(actions, unaryLine),
+					BoundUpdateLineCountExpression line => this.EvaluateUpdateLineCountExpression(actions, line),
+					BoundUnaryExpression unary => this.EvaluateUnaryExpression(actions, unary),
+					BoundBinaryExpression binary => this.EvaluateBinaryExpression(actions, binary),
+					BoundConversionExpression conversion => this.EvaluateConversionExpression(actions, conversion),
+					_ => throw new EvaluationException($"Unexpected operator {node.Kind}")
+				};
+			}
+		}
 
 		private object EvaluateConversionExpression(IExecutionEngineActions? actions, BoundConversionExpression conversion)
 		{
@@ -217,7 +225,7 @@ namespace WSharp.Compiler
 			};
 		}
 
-		private static object EvaluateLiteralExpression(BoundLiteralExpression literal) => literal.Value;
+		private static object EvaluateConstantExpression(BoundExpression literal) => literal.ConstantValue!.Value;
 
 		public BoundStatement Root { get; }
 	}
