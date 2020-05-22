@@ -107,7 +107,7 @@ namespace WSharp.Compiler.Binding
 				boundArguments[i] = this.BindConversion(argumentLocation, argument, parameter.Type);
 			}
 
-			if (function == BuiltinFunctions.Exists || function == BuiltinFunctions.N)
+			if (function == BuiltinFunctions.E || function == BuiltinFunctions.N)
 			{
 				if (boundArguments[0] is BoundLiteralExpression literalArgument &&
 					literalArgument.Type == TypeSymbol.Integer)

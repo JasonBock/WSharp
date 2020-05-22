@@ -65,7 +65,7 @@ namespace WSharp.Runtime.Tests
 			using var random = new SecureRandom();
 			var engine = new ExecutionEngine(lines, random, new StringReader(string.Empty), new StringWriter());
 
-			Assert.That(engine.DoesLineExist(identifierToSearch), Is.EqualTo(expectedDoesLineExist));
+			Assert.That(engine.E(identifierToSearch), Is.EqualTo(expectedDoesLineExist));
 		}
 
 		[Test]
@@ -75,7 +75,7 @@ namespace WSharp.Runtime.Tests
 			using var random = new SecureRandom();
 			var engine = new ExecutionEngine(lines, random, new StringReader(string.Empty), new StringWriter());
 
-			Assert.That(() => engine.DoesLineExist(2), Throws.TypeOf<KeyNotFoundException>());
+			Assert.That(() => engine.E(2), Throws.TypeOf<KeyNotFoundException>());
 		}
 
 		[Test]

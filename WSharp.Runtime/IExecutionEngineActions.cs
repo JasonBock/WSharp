@@ -6,7 +6,7 @@ namespace WSharp.Runtime
 	{
 		void Again(bool shouldKeep);
 		void Defer(bool shouldDefer);
-		bool DoesLineExist(BigInteger identifier);
+		bool E(BigInteger identifier);
 		BigInteger N(BigInteger identifier);
 		void Print(object value);
 		BigInteger Random(BigInteger maximum);

@@ -11,8 +11,8 @@ namespace WSharp.Compiler.Symbols
 			"again", ImmutableArray.Create(new ParameterSymbol("shouldKeep", TypeSymbol.Boolean)), TypeSymbol.Void);
 		public static readonly FunctionSymbol Defer = new FunctionSymbol(
 			"defer", ImmutableArray.Create(new ParameterSymbol("shouldDefer", TypeSymbol.Boolean)), TypeSymbol.Void);
-		public static readonly FunctionSymbol Exists = new FunctionSymbol(
-			"exists", ImmutableArray.Create(new ParameterSymbol("lineNumber", TypeSymbol.Integer)), TypeSymbol.Boolean);
+		public static readonly FunctionSymbol E = new FunctionSymbol(
+			"E", ImmutableArray.Create(new ParameterSymbol("lineNumber", TypeSymbol.Integer)), TypeSymbol.Boolean);
 		public static readonly FunctionSymbol N = new FunctionSymbol(
 			"N", ImmutableArray.Create(new ParameterSymbol("lineNumber", TypeSymbol.Integer)), TypeSymbol.Integer);
 		public static readonly FunctionSymbol Print = new FunctionSymbol(

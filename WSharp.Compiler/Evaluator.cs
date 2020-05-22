@@ -94,9 +94,9 @@ namespace WSharp.Compiler
 				actions!.Defer((bool)this.EvaluateExpression(call.Arguments[0], actions));
 				return new object();
 			}
-			else if (call.Function == BuiltinFunctions.Exists)
+			else if (call.Function == BuiltinFunctions.E)
 			{
-				return actions!.DoesLineExist((BigInteger)this.EvaluateExpression(call.Arguments[0], actions));
+				return actions!.E((BigInteger)this.EvaluateExpression(call.Arguments[0], actions));
 			}
 			else if (call.Function == BuiltinFunctions.Read)
 			{

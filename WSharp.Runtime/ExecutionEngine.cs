@@ -74,7 +74,7 @@ namespace WSharp.Runtime
 
 		public void Defer(bool shouldDefer) => this.ShouldStatementBeDeferred |= shouldDefer;
 
-		public bool DoesLineExist(BigInteger identifier) =>
+		public bool E(BigInteger identifier) =>
 			this.lines[identifier].Count > 0;
 
 		public void Execute()

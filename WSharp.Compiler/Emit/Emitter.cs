@@ -390,10 +390,10 @@ namespace WSharp.Compiler.Emit
 					typeof(IExecutionEngineActions).GetProperty(nameof(IExecutionEngineActions.ShouldStatementBeDeferred))!.GetGetMethod()));
 				ilProcessor.Emit(OpCodes.Brtrue, this.deferGuardLabel);
 			}
-			else if (call.Function == BuiltinFunctions.Exists)
+			else if (call.Function == BuiltinFunctions.E)
 			{
 				ilProcessor.Emit(OpCodes.Callvirt, ilProcessor.Body.Method.Module.ImportReference(
-					typeof(IExecutionEngineActions).GetMethod(nameof(IExecutionEngineActions.DoesLineExist))));
+					typeof(IExecutionEngineActions).GetMethod(nameof(IExecutionEngineActions.E))));
 			}
 			else if (call.Function == BuiltinFunctions.N)
 			{
