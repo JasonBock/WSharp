@@ -1,15 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace WSharp.Compiler.Syntax
 {
 	public sealed class LiteralExpressionSyntax 
 		: ExpressionSyntax
 	{
-		public LiteralExpressionSyntax(SyntaxTree tree, SyntaxToken literalToken)
-			: this(tree, literalToken, literalToken is null ? throw new ArgumentNullException(nameof(literalToken)) : literalToken.Value!) { }
+		internal LiteralExpressionSyntax(SyntaxTree tree, SyntaxToken literalToken)
+			: this(tree, literalToken, literalToken.Value!) { }
 
-		public LiteralExpressionSyntax(SyntaxTree tree, SyntaxToken literalToken, object value)
+		internal LiteralExpressionSyntax(SyntaxTree tree, SyntaxToken literalToken, object value)
 			: base(tree) => (this.LiteralToken, this.Value) = (literalToken, value);
 
 		public override IEnumerable<SyntaxNode> GetChildren()

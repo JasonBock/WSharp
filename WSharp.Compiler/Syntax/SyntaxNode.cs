@@ -22,6 +22,27 @@ namespace WSharp.Compiler.Syntax
 			SyntaxNode.Print(writer, this);
 		}
 
+		public IEnumerable<SyntaxNode> DescendentNodes()
+		{
+			static IEnumerable<SyntaxNode> Descend(SyntaxNode node)
+			{
+				yield return node;
+
+				foreach (var childNode in node.GetChildren())
+				{
+					foreach (var descendNode in Descend(childNode))
+					{
+						yield return descendNode;
+					}
+				}
+			}
+
+			foreach(var childNode in Descend(this))
+			{
+				yield return childNode;
+			}
+		}
+
 		public TextLocation Location => new TextLocation(this.Tree.Text, this.Span);
 
 		public SyntaxToken GetLastToken()

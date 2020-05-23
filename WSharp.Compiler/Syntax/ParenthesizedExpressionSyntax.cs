@@ -6,31 +6,10 @@ namespace WSharp.Compiler.Syntax
 	public sealed class ParenthesizedExpressionSyntax
 		: ExpressionSyntax
 	{
-		public ParenthesizedExpressionSyntax(SyntaxTree tree, SyntaxToken openParenthesisToken, ExpressionSyntax expression, SyntaxToken closeParenthesisToken)
-			: base(tree)
-		{
-			if (openParenthesisToken is null)
-			{
-				throw new ArgumentNullException(nameof(openParenthesisToken));
-			}
-
-			if (closeParenthesisToken is null)
-			{
-				throw new ArgumentNullException(nameof(closeParenthesisToken));
-			}
-
-			if (openParenthesisToken.Kind != SyntaxKind.OpenParenthesisToken)
-			{
-				throw new ParsingException($"Open parenthesis token is incorrect, kind is {openParenthesisToken.Kind}.");
-			}
-
-			if (closeParenthesisToken.Kind != SyntaxKind.CloseParenthesisToken)
-			{
-				throw new ParsingException($"Close parenthesis token is incorrect, kind is {closeParenthesisToken.Kind}.");
-			}
-
-			(this.OpenParenthesisToken, this.Expression, this.CloseParenthesisToken) = (openParenthesisToken, expression, closeParenthesisToken);
-		}
+		internal ParenthesizedExpressionSyntax(SyntaxTree tree, SyntaxToken openParenthesisToken, ExpressionSyntax expression, SyntaxToken closeParenthesisToken)
+			: base(tree) => 
+				(this.OpenParenthesisToken, this.Expression, this.CloseParenthesisToken) = 
+					(openParenthesisToken, expression, closeParenthesisToken);
 
 		public override IEnumerable<SyntaxNode> GetChildren()
 		{

@@ -2,7 +2,7 @@
 
 namespace WSharp.Compiler.Binding
 {
-	internal sealed class Conversion
+	public sealed class Conversion
 	{
 		public static readonly Conversion Explicit = new Conversion(ConversionFlags.Exists);
 		public static readonly Conversion Identity = new Conversion(ConversionFlags.Exists | ConversionFlags.IsIdentity | ConversionFlags.IsImplicit);

@@ -7,7 +7,7 @@ using WSharp.Compiler.Text;
 
 namespace WSharp.Compiler.Syntax
 {
-	public sealed class Lexer
+	internal sealed class Lexer
 	{
 		private SyntaxKind kind;
 		private int position;
@@ -18,13 +18,13 @@ namespace WSharp.Compiler.Syntax
 			ImmutableArray.CreateBuilder<SyntaxTrivia>();
 		private object? value;
 
-		public Lexer(SyntaxTree tree)
+		internal Lexer(SyntaxTree tree)
 		{
 			this.tree = tree ?? throw new ArgumentNullException(nameof(tree));
 			this.text = tree.Text;
 		}
 
-		public SyntaxToken Lex()
+		internal SyntaxToken Lex()
 		{
 			this.ReadTrivia(true);
 			var leadingTrivia = this.triviaBuilder.ToImmutable();
@@ -47,7 +47,7 @@ namespace WSharp.Compiler.Syntax
 				leadingTrivia, trailingTrivia);
 		}
 
-		public void ReadToken()
+		private void ReadToken()
 		{
 			this.start = this.position;
 			this.kind = SyntaxKind.BadToken;

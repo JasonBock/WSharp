@@ -8,7 +8,7 @@ namespace WSharp.Compiler.Syntax
 	public sealed class SyntaxToken 
 		: SyntaxNode
 	{
-		public SyntaxToken(SyntaxTree tree, SyntaxKind kind, int position, string? text, object? value,
+		internal SyntaxToken(SyntaxTree tree, SyntaxKind kind, int position, string? text, object? value,
 			ImmutableArray<SyntaxTrivia> leadingTrivia, ImmutableArray<SyntaxTrivia> trailingTrivia)
 			: base(tree) => (this.Kind, this.Position, this.Text, this.IsMissing, this.Value, this.LeadingTrivia, this.TrailingTrivia) =
 				(kind, position, text ?? string.Empty, text is null, value, leadingTrivia, trailingTrivia);

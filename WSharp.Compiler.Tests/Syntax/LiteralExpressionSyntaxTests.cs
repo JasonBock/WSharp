@@ -1,5 +1,6 @@
 ﻿using NUnit.Framework;
-using System.Collections.Immutable;
+using System.Linq;
+using System.Numerics;
 using WSharp.Compiler.Syntax;
 
 namespace WSharp.Compiler.Tests.Compiler.Syntax
@@ -9,24 +10,17 @@ namespace WSharp.Compiler.Tests.Compiler.Syntax
 		[Test]
 		public static void Create()
 		{
-			var tree = SyntaxTree.Parse("!");
-			var value = new object();
-			var token = new SyntaxToken(tree, SyntaxKind.BangToken, 1, "a", value,
-				ImmutableArray<SyntaxTrivia>.Empty, ImmutableArray<SyntaxTrivia>.Empty);
-
-			var syntax = new LiteralExpressionSyntax(tree, token);
+			var code = "1 2;";
+			var syntax = (LiteralExpressionSyntax)SyntaxTree.Parse(code).Root.DescendentNodes()
+			  .First(_ => _.Kind == SyntaxKind.LiteralExpression);
 
 			Assert.Multiple(() =>
 			{
 				Assert.That(syntax.Kind, Is.EqualTo(SyntaxKind.LiteralExpression), nameof(syntax.Kind));
-				Assert.That(syntax.LiteralToken, Is.EqualTo(token), nameof(syntax.LiteralToken));
-				Assert.That(syntax.Span.Start, Is.EqualTo(1), nameof(syntax.Span.Start));
-				Assert.That(syntax.Span.End, Is.EqualTo(2), nameof(syntax.Span.End));
-				Assert.That(syntax.Value, Is.EqualTo(value), nameof(syntax.Value));
-
-				var children = syntax.GetChildren().ToImmutableArray();
-				Assert.That(children.Length, Is.EqualTo(1), nameof(children.Length));
-				Assert.That(children[0], Is.EqualTo(token), nameof(children));
+				Assert.That(syntax.LiteralToken.Kind, Is.EqualTo(SyntaxKind.NumberToken), nameof(syntax.LiteralToken));
+				Assert.That(syntax.Value, Is.EqualTo(BigInteger.One), nameof(syntax.Value));
+				Assert.That(syntax.Span.Start, Is.EqualTo(0), nameof(syntax.Span.Start));
+				Assert.That(syntax.Span.End, Is.EqualTo(1), nameof(syntax.Span.End));
 			});
 		}
 	}
