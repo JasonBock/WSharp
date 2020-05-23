@@ -5,7 +5,7 @@ namespace WSharp.Compiler.Syntax
 	public sealed class CompilationUnitSyntax
 		: SyntaxNode
 	{
-		public CompilationUnitSyntax(SyntaxTree tree, LineStatementsSyntax lineStatements, SyntaxToken endOfFileToken) 
+		internal CompilationUnitSyntax(SyntaxTree tree, LineStatementsSyntax lineStatements, SyntaxToken endOfFileToken) 
 			: base(tree) => 
 				(this.LineStatements, this.EndOfFileToken) = (lineStatements, endOfFileToken);
 
@@ -16,6 +16,8 @@ namespace WSharp.Compiler.Syntax
 
 		public override IEnumerable<SyntaxNode> GetChildren()
 		{
+			yield return this.LineStatements;
+
 			foreach(var line in this.LineStatements.Lines)
 			{
 				yield return line;

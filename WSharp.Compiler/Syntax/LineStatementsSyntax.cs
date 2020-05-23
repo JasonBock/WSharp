@@ -5,7 +5,7 @@ namespace WSharp.Compiler.Syntax
 	public sealed class LineStatementsSyntax
 		: StatementSyntax
 	{
-		public LineStatementsSyntax(SyntaxTree tree, List<LineStatementSyntax> lines)
+		internal LineStatementsSyntax(SyntaxTree tree, List<LineStatementSyntax> lines)
 			: base(tree) =>
 				this.Lines = lines;
 

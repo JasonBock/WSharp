@@ -16,7 +16,6 @@ namespace WSharp.Compiler.Tests.Compiler.Syntax
 
 			Assert.Multiple(() =>
 			{
-				Assert.That(syntax.Kind, Is.EqualTo(SyntaxKind.LiteralExpression), nameof(syntax.Kind));
 				Assert.That(syntax.LiteralToken.Kind, Is.EqualTo(SyntaxKind.NumberToken), nameof(syntax.LiteralToken));
 				Assert.That(syntax.Value, Is.EqualTo(BigInteger.One), nameof(syntax.Value));
 				Assert.That(syntax.Span.Start, Is.EqualTo(0), nameof(syntax.Span.Start));

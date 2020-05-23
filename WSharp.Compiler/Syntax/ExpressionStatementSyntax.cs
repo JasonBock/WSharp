@@ -5,7 +5,7 @@ namespace WSharp.Compiler.Syntax
 	public sealed class ExpressionStatementSyntax
 		: StatementSyntax
 	{
-		public ExpressionStatementSyntax(SyntaxTree tree, ExpressionSyntax expression)
+		internal ExpressionStatementSyntax(SyntaxTree tree, ExpressionSyntax expression)
 			: base(tree) => 
 				this.Expression = expression;
 
