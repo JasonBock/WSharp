@@ -9,7 +9,7 @@ namespace WSharp.Compiler.Syntax
 		: IEnumerable<T>
 		where T : SyntaxNode
 	{
-		public SeparatedSyntaxList(ImmutableArray<SyntaxNode> nodesAndSeparators) => 
+		internal SeparatedSyntaxList(ImmutableArray<SyntaxNode> nodesAndSeparators) => 
 			this.NodesAndSeparators = nodesAndSeparators;
 
 		public SyntaxToken GetSeparator(int index)
