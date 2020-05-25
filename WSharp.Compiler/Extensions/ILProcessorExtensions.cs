@@ -1,23 +1,34 @@
 ﻿using Mono.Cecil.Cil;
+using System;
 using System.Numerics;
 using WSharp.Compiler.Symbols;
 
 namespace WSharp.Compiler.Extensions
 {
-	internal static class ILProcessorExtensions
+	public static class ILProcessorExtensions
 	{
-		internal static void EmitBox(this ILProcessor @this, TypeSymbol? currentStackType)
+		public static void EmitBox(this ILProcessor @this, TypeSymbol? currentStackType)
 		{
-			if(currentStackType is { })
+			if (@this is null)
+			{
+				throw new ArgumentNullException(nameof(@this));
+			}
+
+			if (currentStackType is { })
 			{
 				@this.Emit(OpCodes.Box, @this.Body.Method.Module.ImportReference(
 					currentStackType == TypeSymbol.Boolean ? typeof(bool) : typeof(BigInteger)));
 			}
 		}
 
-		internal static void EmitBigInteger(this ILProcessor @this, BigInteger value)
+		public static void EmitBigInteger(this ILProcessor @this, BigInteger value)
 		{
-			if(value <= new BigInteger(int.MaxValue) && value >= new BigInteger(int.MinValue))
+			if (@this is null)
+			{
+				throw new ArgumentNullException(nameof(@this));
+			}
+
+			if (value <= new BigInteger(int.MaxValue) && value >= new BigInteger(int.MinValue))
 			{
 				@this.Emit(OpCodes.Ldc_I4, (int)value);
 				var ctor = @this.Body.Method.Module.ImportReference(
@@ -33,7 +44,15 @@ namespace WSharp.Compiler.Extensions
 				for(var i = 0; i < valueData.Length; i++)
 				{
 					@this.Emit(OpCodes.Ldc_I4, i);
-					@this.Emit(OpCodes.Ldc_I4_S, valueData[i]);
+
+					if(valueData[i] > sbyte.MaxValue)
+					{
+						@this.Emit(OpCodes.Ldc_I4, (int)valueData[i]);
+					}
+					else
+					{
+						@this.Emit(OpCodes.Ldc_I4_S, (sbyte)valueData[i]);
+					}
 					@this.Emit(OpCodes.Stelem_I1);
 				}
 
