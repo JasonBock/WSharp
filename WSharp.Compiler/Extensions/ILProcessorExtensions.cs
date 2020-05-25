@@ -1,5 +1,6 @@
 ﻿using Mono.Cecil.Cil;
 using System;
+using System.Linq;
 using System.Numerics;
 using WSharp.Compiler.Symbols;
 
@@ -28,7 +29,19 @@ namespace WSharp.Compiler.Extensions
 				throw new ArgumentNullException(nameof(@this));
 			}
 
-			if (value <= new BigInteger(int.MaxValue) && value >= new BigInteger(int.MinValue))
+			if(value.IsZero)
+			{
+				@this.Emit(OpCodes.Call,
+					@this.Body.Method.Module.ImportReference(
+						typeof(BigInteger).GetProperties().Single(_ => _.Name == nameof(BigInteger.Zero)).GetGetMethod()));
+			}
+			else if(value.IsOne)
+			{
+				@this.Emit(OpCodes.Call,
+					@this.Body.Method.Module.ImportReference(
+						typeof(BigInteger).GetProperties().Single(_ => _.Name == nameof(BigInteger.One)).GetGetMethod()));
+			}
+			else if (value <= new BigInteger(int.MaxValue) && value >= new BigInteger(int.MinValue))
 			{
 				@this.Emit(OpCodes.Ldc_I4, (int)value);
 				var ctor = @this.Body.Method.Module.ImportReference(
@@ -53,6 +66,7 @@ namespace WSharp.Compiler.Extensions
 					{
 						@this.Emit(OpCodes.Ldc_I4_S, (sbyte)valueData[i]);
 					}
+
 					@this.Emit(OpCodes.Stelem_I1);
 				}
 
