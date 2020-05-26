@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using WSharp.Compiler.Binding;
 using WSharp.Compiler.Symbols;
 using WSharp.Compiler.Syntax;
@@ -61,5 +62,30 @@ namespace WSharp.Compiler.Tests
 					Assert.That(callArgumentLiteral.Kind, Is.EqualTo(BoundNodeKind.LiteralExpression), nameof(callArgument.Kind));
 					Assert.That(callArgumentLiteral.Type, Is.EqualTo(TypeSymbol.String), nameof(callArgument.Type));
 				});
+
+		[Test]
+		public static void CompileWithUpdateLineCount() =>
+			CompilationTests.GetStatements("1 1#2;", statements =>
+			{
+				Assert.That(statements.Count, Is.EqualTo(1), nameof(statements.Count));
+
+				var update = (BoundUpdateLineCountExpression)((BoundExpressionStatement)statements[0]).Expression;
+				Assert.That(update.Kind, Is.EqualTo(BoundNodeKind.UpdateLineCountExpression), nameof(update.Kind));
+				Assert.That(update.ConstantValue, Is.Null, nameof(update.ConstantValue));
+				Assert.That(update.OperatorKind, Is.EqualTo(BoundUpdateLineCountOperatorKind.Update), nameof(update.ConstantValue));
+				Assert.That(update.Type, Is.EqualTo(TypeSymbol.Integer), nameof(update.Type));
+
+				var left = (BoundLiteralExpression)update.Left;
+				Assert.That(left.Kind, Is.EqualTo(BoundNodeKind.LiteralExpression), nameof(left.Kind));
+				Assert.That(left.ConstantValue.Value, Is.EqualTo(BigInteger.One), nameof(left.ConstantValue));
+				Assert.That(left.Type, Is.EqualTo(TypeSymbol.Integer), nameof(left.Type));
+				Assert.That(left.Value, Is.EqualTo(BigInteger.One), nameof(left.Value));
+
+				var right = (BoundLiteralExpression)update.Right;
+				Assert.That(right.Kind, Is.EqualTo(BoundNodeKind.LiteralExpression), nameof(right.Kind));
+				Assert.That(right.ConstantValue.Value, Is.EqualTo(new BigInteger(2)), nameof(right.ConstantValue));
+				Assert.That(right.Type, Is.EqualTo(TypeSymbol.Integer), nameof(right.Type));
+				Assert.That(right.Value, Is.EqualTo(new BigInteger(2)), nameof(right.Value));
+			});
 	}
 }

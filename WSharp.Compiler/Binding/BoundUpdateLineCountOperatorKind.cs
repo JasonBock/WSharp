@@ -1,6 +1,7 @@
 ﻿namespace WSharp.Compiler.Binding
 {
-	internal enum BoundUpdateLineCountOperatorKind
+	// TODO: Not sure why I have this.
+	public enum BoundUpdateLineCountOperatorKind
 	{
 		Update
 	}
