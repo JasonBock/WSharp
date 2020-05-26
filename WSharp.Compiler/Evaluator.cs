@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
 using WSharp.Compiler.Binding;
 using WSharp.Compiler.Symbols;
@@ -8,6 +9,11 @@ using WSharp.Runtime;
 
 namespace WSharp.Compiler
 {
+	// TODO: Eventually, Evaluator will use the emitter to evaluate,
+	// so a lot of this code will go away, and there's no reason
+	// to write tests around this.
+	// Reference: https://github.com/JasonBock/WSharp/issues/27
+	[ExcludeFromCodeCoverage]
 	public sealed class Evaluator
 	{
 		private object lastValue = new object();

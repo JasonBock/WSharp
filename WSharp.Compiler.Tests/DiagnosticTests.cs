@@ -17,6 +17,7 @@ namespace WSharp.Compiler.Tests.Compiler
 			{
 				Assert.That(diagnostic.Location, Is.EqualTo(location), nameof(diagnostic.Location));
 				Assert.That(diagnostic.Message, Is.EqualTo(message), nameof(diagnostic.Message));
+				Assert.That(diagnostic.ToString(), Is.EqualTo(message), nameof(diagnostic.ToString));
 			});
 		}
 	}

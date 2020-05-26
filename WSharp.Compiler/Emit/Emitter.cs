@@ -62,7 +62,7 @@ namespace WSharp.Compiler.Emit
 
 			foreach (var (typeSymbol, metadataName) in builtInTypes)
 			{
-				var typeReference = this.ResolveType(typeSymbol.Name, metadataName);
+				var typeReference = this.ResolveType(metadataName);
 
 				if (typeReference is { })
 				{
@@ -71,29 +71,11 @@ namespace WSharp.Compiler.Emit
 			}
 		}
 
-		private TypeReference? ResolveType(string wheneverName, string metadataName)
-		{
-			var foundTypes = this.assemblies.SelectMany(a => a.Modules)
-				.SelectMany(m => m.Types)
-				.Where(t => t.FullName == metadataName)
-				.ToArray();
-
-			if (foundTypes.Length == 1)
-			{
-				var typeReference = this.assemblyDefinition.MainModule.ImportReference(foundTypes[0]);
-				return typeReference;
-			}
-			else if (foundTypes.Length == 0)
-			{
-				this.diagnostics.ReportRequiredTypeNotFound(wheneverName, metadataName);
-			}
-			else
-			{
-				this.diagnostics.ReportRequiredTypeAmbiguous(wheneverName, metadataName, foundTypes);
-			}
-
-			return null;
-		}
+		private TypeReference? ResolveType(string metadataName) =>
+			this.assemblyDefinition.MainModule.ImportReference(
+				this.assemblies.SelectMany(a => a.Modules)
+					.SelectMany(m => m.Types)
+					.First(t => t.FullName == metadataName));
 
 		public void Emit(BoundLineStatements statements, FileInfo outputPath)
 		{

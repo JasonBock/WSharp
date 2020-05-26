@@ -435,8 +435,7 @@ namespace WSharp.Compiler.Syntax
 			if (!BigInteger.TryParse(text, out var value))
 			{
 				this.Diagnostics.ReportInvalidNumber(
-					new TextLocation(this.text, new TextSpan(this.start, length)),
-					text, TypeSymbol.Integer);
+					new TextLocation(this.text, new TextSpan(this.start, length)), text);
 			}
 
 			this.kind = SyntaxKind.NumberToken;
