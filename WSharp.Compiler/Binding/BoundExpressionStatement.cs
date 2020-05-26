@@ -3,10 +3,10 @@ using System.Linq;
 
 namespace WSharp.Compiler.Binding
 {
-	internal sealed class BoundExpressionStatement
+	public sealed class BoundExpressionStatement
 		: BoundStatement
 	{
-		public BoundExpressionStatement(BoundExpression expression) => 
+		internal BoundExpressionStatement(BoundExpression expression) => 
 			this.Expression = expression;
 
 		public override IEnumerable<BoundNode> GetChildren()

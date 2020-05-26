@@ -5,10 +5,10 @@ using WSharp.Compiler.Symbols;
 
 namespace WSharp.Compiler.Binding
 {
-	internal sealed class BoundCallExpression
+	public sealed class BoundCallExpression
 		: BoundExpression
 	{
-		public BoundCallExpression(FunctionSymbol function, ImmutableArray<BoundExpression> arguments) =>
+		internal BoundCallExpression(FunctionSymbol function, ImmutableArray<BoundExpression> arguments) =>
 			(this.Function, this.Arguments) = (function, arguments);
 
 		public override IEnumerable<BoundNode> GetChildren()

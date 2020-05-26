@@ -3,10 +3,10 @@ using System.Linq;
 
 namespace WSharp.Compiler.Binding
 {
-	internal sealed class BoundLineStatements
+	public sealed class BoundLineStatements
 		: BoundStatement
 	{
-		public BoundLineStatements(List<BoundLineStatement> lineStatements) =>
+		internal BoundLineStatements(List<BoundLineStatement> lineStatements) =>
 			this.LineStatements = lineStatements;
 
 		public override IEnumerable<BoundNode> GetChildren()

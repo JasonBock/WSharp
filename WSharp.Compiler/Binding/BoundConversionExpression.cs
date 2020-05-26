@@ -4,10 +4,10 @@ using WSharp.Compiler.Symbols;
 
 namespace WSharp.Compiler.Binding
 {
-	internal sealed class BoundConversionExpression
+	public sealed class BoundConversionExpression
 		: BoundExpression
 	{
-		public BoundConversionExpression(BoundExpression expression, TypeSymbol type) =>
+		internal BoundConversionExpression(BoundExpression expression, TypeSymbol type) =>
 			(this.Expression, this.Type) = (expression, type);
 
 		public override IEnumerable<BoundNode> GetChildren()

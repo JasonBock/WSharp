@@ -5,10 +5,10 @@ using WSharp.Compiler.Symbols;
 
 namespace WSharp.Compiler.Binding
 {
-	internal sealed class BoundLiteralExpression
+	public sealed class BoundLiteralExpression
 		: BoundExpression
 	{
-		public BoundLiteralExpression(object value)
+		internal BoundLiteralExpression(object value)
 		{
 			this.Type = value is bool ? TypeSymbol.Boolean :
 				value is BigInteger ? TypeSymbol.Integer :
