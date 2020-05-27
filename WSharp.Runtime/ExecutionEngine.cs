@@ -90,22 +90,15 @@ namespace WSharp.Runtime
 
 				var generated = BigInteger.Abs(new BigInteger(buffer) % currentLineCount);
 				var currentLowerBound = BigInteger.Zero;
+				var foundLine = BigInteger.Zero;
 
 				foreach (var line in this.lines.Values.Where(_ => _.Count > BigInteger.Zero))
 				{
 					var range = new Range<BigInteger>(currentLowerBound, line.Count + currentLowerBound - 1);
 					if (range.Contains(generated))
 					{
+						foundLine = line.Identifier;
 						line.Code(this);
-
-						if (!this.ShouldStatementBeKept && !this.ShouldStatementBeDeferred)
-						{
-							var newLine = line.UpdateCount(-1);
-							this.lines[newLine.Identifier] = newLine;
-						}
-
-						this.ShouldStatementBeDeferred = false;
-						this.ShouldStatementBeKept = false;
 						break;
 					}
 					else
@@ -113,6 +106,16 @@ namespace WSharp.Runtime
 						currentLowerBound += line.Count;
 					}
 				}
+
+				var executedLine = this.lines[foundLine];
+
+				if (!this.ShouldStatementBeKept && !this.ShouldStatementBeDeferred)
+				{
+					this.lines[executedLine.Identifier] = executedLine.UpdateCount(-1);
+				}
+
+				this.ShouldStatementBeDeferred = false;
+				this.ShouldStatementBeKept = false;
 
 				currentLineCount = this.GetCurrentLineCount();
 			}
