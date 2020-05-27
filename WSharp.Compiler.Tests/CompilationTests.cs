@@ -87,5 +87,23 @@ namespace WSharp.Compiler.Tests
 				Assert.That(right.Type, Is.EqualTo(TypeSymbol.Integer), nameof(right.Type));
 				Assert.That(right.Value, Is.EqualTo(new BigInteger(2)), nameof(right.Value));
 			});
+
+		[Test]
+		public static void CompileWithUnaryUpdateLineCount() =>
+			CompilationTests.GetStatements("1 1;", statements =>
+			{
+				Assert.That(statements.Count, Is.EqualTo(1), nameof(statements.Count));
+
+				var update = (BoundUnaryUpdateLineCountExpression)((BoundExpressionStatement)statements[0]).Expression;
+				Assert.That(update.Kind, Is.EqualTo(BoundNodeKind.UnaryUpdateLineCountExpression), nameof(update.Kind));
+				Assert.That(update.ConstantValue, Is.Null, nameof(update.ConstantValue));
+				Assert.That(update.Type, Is.EqualTo(TypeSymbol.Integer), nameof(update.Type));
+
+				var left = (BoundLiteralExpression)update.LineNumber;
+				Assert.That(left.Kind, Is.EqualTo(BoundNodeKind.LiteralExpression), nameof(left.Kind));
+				Assert.That(left.ConstantValue.Value, Is.EqualTo(BigInteger.One), nameof(left.ConstantValue));
+				Assert.That(left.Type, Is.EqualTo(TypeSymbol.Integer), nameof(left.Type));
+				Assert.That(left.Value, Is.EqualTo(BigInteger.One), nameof(left.Value));
+			});
 	}
 }

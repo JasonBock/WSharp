@@ -22,6 +22,9 @@ namespace WSharp.Compiler.Extensions
 			}
 		}
 
+		// TODO: Is it assumed that I always emit the absolute value of value?
+		// IOW, does the compiler emit a "negate" before it calls this, and provides
+		// the absolute value for me? What are the assumptions?
 		public static void EmitBigInteger(this ILProcessor @this, BigInteger value)
 		{
 			if (@this is null)
@@ -41,6 +44,8 @@ namespace WSharp.Compiler.Extensions
 					@this.Body.Method.Module.ImportReference(
 						typeof(BigInteger).GetProperties().Single(_ => _.Name == nameof(BigInteger.One)).GetGetMethod()));
 			}
+			// TODO: Only need to check if it's greater than BigInteger.One now,
+			// though remember to address the other TOOD above.
 			else if (value <= new BigInteger(int.MaxValue) && value >= new BigInteger(int.MinValue))
 			{
 				@this.Emit(OpCodes.Ldc_I4, (int)value);
