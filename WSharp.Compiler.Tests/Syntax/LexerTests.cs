@@ -5,7 +5,7 @@ using System.Linq;
 using WSharp.Compiler.Syntax;
 using WSharp.Compiler.Text;
 
-namespace WSharp.Compiler.Tests.Compiler.Syntax
+namespace WSharp.Compiler.Tests.Syntax
 {
 	public static class LexerTests
 	{

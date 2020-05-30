@@ -5,6 +5,8 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="Binding\BindingExceptionTests.cs~RFf2a98b3.TMP" />
+    <None Remove="EvaluationExceptionTests.cs~RFf293914.TMP" />
     <None Remove="Symbols\BuiltinFunctionsTests.cs~RF8bcef673.TMP" />
   </ItemGroup>
   <ItemGroup>

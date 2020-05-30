@@ -2,7 +2,7 @@
 using System.Collections.Immutable;
 using WSharp.Compiler.Symbols;
 
-namespace WSharp.Compiler.Tests.Compiler.Symbols
+namespace WSharp.Compiler.Tests.Symbols
 {
 	public static class FunctionSymbolTests
 	{

@@ -2,7 +2,7 @@
 using System.Linq;
 using WSharp.Compiler.Syntax;
 
-namespace WSharp.Compiler.Tests.Compiler.Syntax
+namespace WSharp.Compiler.Tests.Syntax
 {
 	public static class ParenthesizedExpressionSyntaxTests
 	{

@@ -2,7 +2,7 @@
 using WSharp.Compiler.Binding;
 using WSharp.Compiler.Symbols;
 
-namespace WSharp.Compiler.Tests.Compiler.Binding
+namespace WSharp.Compiler.Tests.Binding
 {
 	public static class ConversionTests
 	{
