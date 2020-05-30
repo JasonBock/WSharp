@@ -18,7 +18,6 @@ namespace WSharp.Compiler.Binding
 			Enumerable.Empty<(string, object)>();
 
 		public BoundExpression Expression { get; }
-
 		public override BoundNodeKind Kind => BoundNodeKind.ExpressionStatement;
 	}
 }

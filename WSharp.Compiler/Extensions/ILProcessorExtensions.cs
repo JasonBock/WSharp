@@ -22,9 +22,6 @@ namespace WSharp.Compiler.Extensions
 			}
 		}
 
-		// TODO: Is it assumed that I always emit the absolute value of value?
-		// IOW, does the compiler emit a "negate" before it calls this, and provides
-		// the absolute value for me? What are the assumptions?
 		public static void EmitBigInteger(this ILProcessor @this, BigInteger value)
 		{
 			if (@this is null)
@@ -32,21 +29,24 @@ namespace WSharp.Compiler.Extensions
 				throw new ArgumentNullException(nameof(@this));
 			}
 
-			if(value.IsZero)
+			if (value < BigInteger.Zero)
+			{
+				throw new ArgumentException($"The value, {value}, must be greater than or equal to zero.", nameof(value));
+			}
+
+			if (value.IsZero)
 			{
 				@this.Emit(OpCodes.Call,
 					@this.Body.Method.Module.ImportReference(
 						typeof(BigInteger).GetProperties().Single(_ => _.Name == nameof(BigInteger.Zero)).GetGetMethod()));
 			}
-			else if(value.IsOne)
+			else if (value.IsOne)
 			{
 				@this.Emit(OpCodes.Call,
 					@this.Body.Method.Module.ImportReference(
 						typeof(BigInteger).GetProperties().Single(_ => _.Name == nameof(BigInteger.One)).GetGetMethod()));
 			}
-			// TODO: Only need to check if it's greater than BigInteger.One now,
-			// though remember to address the other TOOD above.
-			else if (value <= new BigInteger(int.MaxValue) && value >= new BigInteger(int.MinValue))
+			else if (value <= new BigInteger(int.MaxValue))
 			{
 				@this.Emit(OpCodes.Ldc_I4, (int)value);
 				var ctor = @this.Body.Method.Module.ImportReference(
@@ -59,11 +59,11 @@ namespace WSharp.Compiler.Extensions
 
 				var valueData = value.ToByteArray();
 
-				for(var i = 0; i < valueData.Length; i++)
+				for (var i = 0; i < valueData.Length; i++)
 				{
 					@this.Emit(OpCodes.Ldc_I4, i);
 
-					if(valueData[i] > sbyte.MaxValue)
+					if (valueData[i] > sbyte.MaxValue)
 					{
 						@this.Emit(OpCodes.Ldc_I4, (int)valueData[i]);
 					}

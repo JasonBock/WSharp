@@ -4,7 +4,7 @@ using WSharp.Compiler.Symbols;
 
 namespace WSharp.Compiler.Binding
 {
-	internal sealed class BoundErrorExpression
+	public sealed class BoundErrorExpression
 		: BoundExpression
 	{
 		public override IEnumerable<BoundNode> GetChildren() =>
@@ -13,7 +13,7 @@ namespace WSharp.Compiler.Binding
 		public override IEnumerable<(string name, object value)> GetProperties() => 
 			Enumerable.Empty<(string, object)>();
 
-		public override TypeSymbol Type => TypeSymbol.Error;
 		public override BoundNodeKind Kind => BoundNodeKind.ErrorExpression;
+		public override TypeSymbol Type => TypeSymbol.Error;
 	}
 }

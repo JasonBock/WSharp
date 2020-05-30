@@ -3,10 +3,10 @@ using WSharp.Compiler.Symbols;
 
 namespace WSharp.Compiler.Binding
 {
-	internal sealed class BoundBinaryExpression
+	public sealed class BoundBinaryExpression
 		: BoundExpression
 	{
-		public BoundBinaryExpression(BoundExpression left, BoundBinaryOperator @operator, BoundExpression right) =>
+		internal BoundBinaryExpression(BoundExpression left, BoundBinaryOperator @operator, BoundExpression right) =>
 			(this.Left, this.Operator, this.Right, this.ConstantValue) = 
 				(left, @operator, right, ConstantFolding.ComputeConstant(left, @operator, right));
 

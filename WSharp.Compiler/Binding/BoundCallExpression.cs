@@ -22,10 +22,9 @@ namespace WSharp.Compiler.Binding
 		public override IEnumerable<(string name, object value)> GetProperties() => 
 			Enumerable.Empty<(string, object)>();
 
+		public ImmutableArray<BoundExpression> Arguments { get; }
+		public FunctionSymbol Function { get; }
 		public override BoundNodeKind Kind => BoundNodeKind.CallExpression;
 		public override TypeSymbol Type => this.Function.ReturnType;
-
-		public FunctionSymbol Function { get; }
-		public ImmutableArray<BoundExpression> Arguments { get; }
 	}
 }

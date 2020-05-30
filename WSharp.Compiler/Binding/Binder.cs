@@ -8,12 +8,12 @@ using WSharp.Compiler.Text;
 
 namespace WSharp.Compiler.Binding
 {
-	internal sealed class Binder
+	public sealed class Binder
 	{
 		private CallExpressionSyntax? deferWasInvoked;
 		private bool doesStatementExistAfterDefer;
 
-		public Binder(CompilationUnitSyntax syntax)
+		internal Binder(CompilationUnitSyntax syntax)
 		{
 			var unit = this.BindStatement(syntax.LineStatements);
 
@@ -28,45 +28,26 @@ namespace WSharp.Compiler.Binding
 			this.CompilationUnit = unit;
 		}
 
-		private BoundStatement BindStatement(StatementSyntax syntax) =>
-			syntax.Kind switch
-			{
-				SyntaxKind.LineStatements => this.BindLineStatements((LineStatementsSyntax)syntax),
-				SyntaxKind.LineStatement => this.BindLineStatement((LineStatementSyntax)syntax),
-				SyntaxKind.ExpressionStatement => this.BindExpressionStatement((ExpressionStatementSyntax)syntax),
-				_ => throw new BindingException($"Unexpected statement syntax {syntax.Kind}"),
-			};
-
-		private BoundStatement BindExpressionStatement(ExpressionStatementSyntax syntax)
+		private BoundExpression BindBinaryExpression(BinaryExpressionSyntax syntax)
 		{
-			var expression = this.BindExpression(syntax.Expression, true);
-			return new BoundExpressionStatement(expression);
-		}
+			var boundLeft = this.BindExpression(syntax.Left);
+			var boundRight = this.BindExpression(syntax.Right);
 
-		private BoundExpression BindExpression(ExpressionSyntax syntax, bool canBeVoid = false)
-		{
-			var result = this.BindExpressionInternal(syntax);
-
-			if (!canBeVoid && result.Type == TypeSymbol.Void)
+			if (boundLeft.Type == TypeSymbol.Error || boundRight.Type == TypeSymbol.Error)
 			{
-				this.Diagnostics.ReportExpressionMustHaveValue(syntax.Location);
 				return new BoundErrorExpression();
 			}
 
-			return result;
-		}
-		private BoundExpression BindExpressionInternal(ExpressionSyntax syntax) =>
-			syntax.Kind switch
+			var boundOperator = BoundBinaryOperator.Bind(syntax.OperatorToken.Kind, boundLeft.Type, boundRight.Type);
+
+			if (boundOperator == null)
 			{
-				SyntaxKind.ParenthesizedExpression => this.BindParenthesizedExpression((ParenthesizedExpressionSyntax)syntax),
-				SyntaxKind.LiteralExpression => Binder.BindLiteralExpression((LiteralExpressionSyntax)syntax),
-				SyntaxKind.UnaryExpression => this.BindUnaryExpression((UnaryExpressionSyntax)syntax),
-				SyntaxKind.BinaryExpression => this.BindBinaryExpression((BinaryExpressionSyntax)syntax),
-				SyntaxKind.UpdateLineCountExpression => this.BindUpdateLineCountExpression((UpdateLineCountExpressionSyntax)syntax),
-				SyntaxKind.UnaryUpdateLineCountExpression => this.BindUnaryUpdateLineCountExpression((UnaryUpdateLineCountExpressionSyntax)syntax),
-				SyntaxKind.CallExpression => this.BindCallExpression((CallExpressionSyntax)syntax),
-				_ => throw new BindingException($"Unexpected expression syntax {syntax.Kind}"),
-			};
+				this.Diagnostics.ReportUndefinedBinaryOperator(syntax.OperatorToken.Location, syntax.OperatorToken.Text, boundLeft.Type, boundRight.Type);
+				return new BoundErrorExpression();
+			}
+
+			return new BoundBinaryExpression(boundLeft, boundOperator, boundRight);
+		}
 
 		private BoundExpression BindCallExpression(CallExpressionSyntax syntax)
 		{
@@ -156,8 +137,34 @@ namespace WSharp.Compiler.Binding
 			return new BoundConversionExpression(expression, type);
 		}
 
-		private BoundExpression BindParenthesizedExpression(ParenthesizedExpressionSyntax syntax) =>
-			this.BindExpression(syntax.Expression);
+		private BoundExpression BindExpression(ExpressionSyntax syntax, bool canBeVoid = false)
+		{
+			var result = this.BindExpressionInternal(syntax);
+
+			if (!canBeVoid && result.Type == TypeSymbol.Void)
+			{
+				this.Diagnostics.ReportExpressionMustHaveValue(syntax.Location);
+				return new BoundErrorExpression();
+			}
+
+			return result;
+		}
+
+		private BoundExpression BindExpressionInternal(ExpressionSyntax syntax) =>
+			syntax.Kind switch
+			{
+				SyntaxKind.ParenthesizedExpression => this.BindParenthesizedExpression((ParenthesizedExpressionSyntax)syntax),
+				SyntaxKind.LiteralExpression => Binder.BindLiteralExpression((LiteralExpressionSyntax)syntax),
+				SyntaxKind.UnaryExpression => this.BindUnaryExpression((UnaryExpressionSyntax)syntax),
+				SyntaxKind.BinaryExpression => this.BindBinaryExpression((BinaryExpressionSyntax)syntax),
+				SyntaxKind.UpdateLineCountExpression => this.BindUpdateLineCountExpression((UpdateLineCountExpressionSyntax)syntax),
+				SyntaxKind.UnaryUpdateLineCountExpression => this.BindUnaryUpdateLineCountExpression((UnaryUpdateLineCountExpressionSyntax)syntax),
+				SyntaxKind.CallExpression => this.BindCallExpression((CallExpressionSyntax)syntax),
+				_ => throw new BindingException($"Unexpected expression syntax {syntax.Kind}"),
+			};
+
+		private BoundStatement BindExpressionStatement(ExpressionStatementSyntax syntax) =>
+			new BoundExpressionStatement(this.BindExpression(syntax.Expression, true));
 
 		private BoundStatement BindLineStatements(LineStatementsSyntax syntax)
 		{
@@ -204,6 +211,60 @@ namespace WSharp.Compiler.Binding
 			return new BoundLineStatement(boundLineNumber, boundLines);
 		}
 
+		private static BoundExpression BindLiteralExpression(LiteralExpressionSyntax syntax) =>
+			new BoundLiteralExpression(syntax.Value ?? BigInteger.Zero);
+
+		private BoundExpression BindParenthesizedExpression(ParenthesizedExpressionSyntax syntax) =>
+			this.BindExpression(syntax.Expression);
+
+		private BoundStatement BindStatement(StatementSyntax syntax) =>
+			syntax.Kind switch
+			{
+				SyntaxKind.LineStatements => this.BindLineStatements((LineStatementsSyntax)syntax),
+				SyntaxKind.LineStatement => this.BindLineStatement((LineStatementSyntax)syntax),
+				SyntaxKind.ExpressionStatement => this.BindExpressionStatement((ExpressionStatementSyntax)syntax),
+				_ => throw new BindingException($"Unexpected statement syntax {syntax.Kind}"),
+			};
+
+		private BoundExpression BindUnaryExpression(UnaryExpressionSyntax syntax)
+		{
+			var boundOperand = this.BindExpression(syntax.Operand);
+
+			if (boundOperand.Type == TypeSymbol.Error)
+			{
+				return new BoundErrorExpression();
+			}
+
+			var boundOperator = BoundUnaryOperator.Bind(syntax.OperatorToken.Kind, boundOperand.Type);
+
+			if (boundOperator == null)
+			{
+				this.Diagnostics.ReportUndefinedUnaryOperator(syntax.OperatorToken.Location, syntax.OperatorToken.Text, boundOperand.Type);
+				return new BoundErrorExpression();
+			}
+
+			return new BoundUnaryExpression(boundOperator, boundOperand);
+		}
+
+		private BoundExpression BindUnaryUpdateLineCountExpression(UnaryUpdateLineCountExpressionSyntax syntax)
+		{
+			var boundLineNumber = this.BindExpression(syntax.LineNumber);
+
+			if (boundLineNumber.Type == TypeSymbol.Error)
+			{
+				return new BoundErrorExpression();
+			}
+
+			if (boundLineNumber is BoundLiteralExpression literalArgument &&
+				literalArgument.Type == TypeSymbol.Integer)
+			{
+				var targetLineNumber = (BigInteger)literalArgument.Value;
+				this.LineNumberValidations.Add((targetLineNumber, syntax.Location));
+			}
+
+			return new BoundUnaryUpdateLineCountExpression(boundLineNumber);
+		}
+
 		private BoundExpression BindUpdateLineCountExpression(UpdateLineCountExpressionSyntax syntax)
 		{
 			var boundLeft = this.BindExpression(syntax.Left);
@@ -232,25 +293,6 @@ namespace WSharp.Compiler.Binding
 			return new BoundUpdateLineCountExpression(boundLeft, boundOperatorKind.Value, boundRight);
 		}
 
-		private BoundExpression BindUnaryUpdateLineCountExpression(UnaryUpdateLineCountExpressionSyntax syntax)
-		{
-			var boundLineNumber = this.BindExpression(syntax.LineNumber);
-
-			if (boundLineNumber.Type == TypeSymbol.Error)
-			{
-				return new BoundErrorExpression();
-			}
-
-			if (boundLineNumber is BoundLiteralExpression literalArgument &&
-				literalArgument.Type == TypeSymbol.Integer)
-			{
-				var targetLineNumber = (BigInteger)literalArgument.Value;
-				this.LineNumberValidations.Add((targetLineNumber, syntax.Location));
-			}
-
-			return new BoundUnaryUpdateLineCountExpression(boundLineNumber);
-		}
-
 		private static BoundUpdateLineCountOperatorKind? BindUpdateLineCountOperatorKind(SyntaxKind kind, TypeSymbol leftType, TypeSymbol rightType)
 		{
 			if (leftType != TypeSymbol.Integer || rightType != TypeSymbol.Integer)
@@ -267,50 +309,6 @@ namespace WSharp.Compiler.Binding
 				throw new BindingException($"Unexpected update line count operator {kind}");
 			}
 		}
-
-		private BoundExpression BindBinaryExpression(BinaryExpressionSyntax syntax)
-		{
-			var boundLeft = this.BindExpression(syntax.Left);
-			var boundRight = this.BindExpression(syntax.Right);
-
-			if (boundLeft.Type == TypeSymbol.Error || boundRight.Type == TypeSymbol.Error)
-			{
-				return new BoundErrorExpression();
-			}
-
-			var boundOperator = BoundBinaryOperator.Bind(syntax.OperatorToken.Kind, boundLeft.Type, boundRight.Type);
-
-			if (boundOperator == null)
-			{
-				this.Diagnostics.ReportUndefinedBinaryOperator(syntax.OperatorToken.Location, syntax.OperatorToken.Text, boundLeft.Type, boundRight.Type);
-				return new BoundErrorExpression();
-			}
-
-			return new BoundBinaryExpression(boundLeft, boundOperator, boundRight);
-		}
-
-		private BoundExpression BindUnaryExpression(UnaryExpressionSyntax syntax)
-		{
-			var boundOperand = this.BindExpression(syntax.Operand);
-
-			if (boundOperand.Type == TypeSymbol.Error)
-			{
-				return new BoundErrorExpression();
-			}
-
-			var boundOperator = BoundUnaryOperator.Bind(syntax.OperatorToken.Kind, boundOperand.Type);
-
-			if (boundOperator == null)
-			{
-				this.Diagnostics.ReportUndefinedUnaryOperator(syntax.OperatorToken.Location, syntax.OperatorToken.Text, boundOperand.Type);
-				return new BoundErrorExpression();
-			}
-
-			return new BoundUnaryExpression(boundOperator, boundOperand);
-		}
-
-		private static BoundExpression BindLiteralExpression(LiteralExpressionSyntax syntax) =>
-			new BoundLiteralExpression(syntax.Value ?? BigInteger.Zero);
 
 		public BoundStatement CompilationUnit { get; }
 		public DiagnosticBag Diagnostics { get; } = new DiagnosticBag();

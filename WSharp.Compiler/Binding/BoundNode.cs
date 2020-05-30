@@ -11,15 +11,13 @@ namespace WSharp.Compiler.Binding
 
 		public abstract IEnumerable<(string name, object value)> GetProperties();
 
-		public void WriteTo(TextWriter writer)
-		{
-			if (writer is null)
+		private static string GetText(BoundNode node) =>
+			node switch
 			{
-				throw new ArgumentNullException(nameof(writer));
-			}
-
-			BoundNode.Print(writer, this);
-		}
+				BoundBinaryExpression binary => $"{binary.Operator.OperatorKind}Expression",
+				BoundUnaryExpression unary => $"{unary.Operator.OperatorKind}Expression",
+				_ => node.Kind.ToString()
+			};
 
 		private static void Print(TextWriter writer, BoundNode node, string indent = "", bool isLast = true)
 		{
@@ -41,19 +39,21 @@ namespace WSharp.Compiler.Binding
 			}
 		}
 
+		private static void WriteNode(TextWriter writer, BoundNode node) =>
+			writer.Write(BoundNode.GetText(node));
+
 		private static void WriteProperties(TextWriter writer, BoundNode node) => 
 			writer.Write($"{string.Join(",", node.GetProperties().Select(_ => $" {_.name} = {_.value}"))}");
 
-		private static void WriteNode(TextWriter writer, BoundNode node) => 
-			writer.Write(BoundNode.GetText(node));
-
-		private static string GetText(BoundNode node) =>
-			node switch
+		public void WriteTo(TextWriter writer)
+		{
+			if (writer is null)
 			{
-				BoundBinaryExpression binary => $"{binary.Operator.OperatorKind}Expression",
-				BoundUnaryExpression unary => $"{unary.Operator.OperatorKind}Expression",
-				_ => node.Kind.ToString()
-			};
+				throw new ArgumentNullException(nameof(writer));
+			}
+
+			BoundNode.Print(writer, this);
+		}
 
 		public abstract BoundNodeKind Kind { get; }
 	}
