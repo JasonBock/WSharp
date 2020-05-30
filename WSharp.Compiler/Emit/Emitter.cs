@@ -8,6 +8,7 @@ using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 using System.Numerics;
+using System.Text;
 using WSharp.Compiler.Binding;
 using WSharp.Compiler.Extensions;
 using WSharp.Compiler.Symbols;
@@ -205,6 +206,123 @@ namespace WSharp.Compiler.Emit
 					break;
 				default:
 					throw new EmitException($"Unexpected kind: {statement.Kind}.");
+			}
+		}
+
+		private void EmitStringConcatExpression(ILProcessor ilProcessor, BoundBinaryExpression node)
+		{
+			// [a, "foo", "bar", b, ""] --> [a, "foobar", b]
+			static IEnumerable<BoundExpression> FoldConstants(IEnumerable<BoundExpression> nodes)
+			{
+				StringBuilder? builder = null;
+
+				foreach (var node in nodes)
+				{
+					if (node.ConstantValue != null)
+					{
+						var value = (string)node.ConstantValue.Value;
+
+						if (string.IsNullOrEmpty(value))
+						{
+							continue;
+						}
+
+						builder ??= new StringBuilder();
+						builder.Append(value);
+					}
+					else
+					{
+						if (builder?.Length > 0)
+						{
+							yield return new BoundLiteralExpression(builder.ToString());
+							builder.Clear();
+						}
+
+						yield return node;
+					}
+				}
+
+				if (builder?.Length > 0)
+				{
+					yield return new BoundLiteralExpression(builder.ToString());
+				}
+			}
+
+			// (a + b) + (c + d) --> [a, b, c, d]
+			static IEnumerable<BoundExpression> Flatten(BoundExpression node)
+			{
+				if (node is BoundBinaryExpression binaryExpression &&
+					 binaryExpression.Operator.OperatorKind == BoundBinaryOperatorKind.Addition &&
+					 binaryExpression.Left.Type == TypeSymbol.String &&
+					 binaryExpression.Right.Type == TypeSymbol.String)
+				{
+					foreach (var result in Flatten(binaryExpression.Left))
+					{
+						yield return result;
+					}
+
+					foreach (var result in Flatten(binaryExpression.Right))
+					{
+						yield return result;
+					}
+				}
+				else
+				{
+					if (node.Type != TypeSymbol.String)
+					{
+						throw new EmitException($"Unexpected node type in string concatenation: {node.Type}.");
+					}
+
+					yield return node;
+				}
+			}
+
+			var nodes = FoldConstants(Flatten(node)).ToList();
+
+			switch (nodes.Count)
+			{
+				case 0:
+					ilProcessor.Emit(OpCodes.Ldstr, string.Empty);
+					break;
+				case 1:
+					this.EmitExpression(nodes[0], ilProcessor);
+					break;
+				case 2:
+					this.EmitExpression(nodes[0], ilProcessor);
+					this.EmitExpression(nodes[1], ilProcessor);
+					ilProcessor.Emit(OpCodes.Call, ilProcessor.Body.Method.Module.ImportReference(
+						typeof(string).GetMethod(nameof(string.Concat), new[] { typeof(string), typeof(string) })));
+					break;
+				case 3:
+					this.EmitExpression(nodes[0], ilProcessor);
+					this.EmitExpression(nodes[1], ilProcessor);
+					this.EmitExpression(nodes[2], ilProcessor);
+					ilProcessor.Emit(OpCodes.Call, ilProcessor.Body.Method.Module.ImportReference(
+						typeof(string).GetMethod(nameof(string.Concat), new[] { typeof(string), typeof(string), typeof(string) })));
+					break;
+				case 4:
+					this.EmitExpression(nodes[0], ilProcessor);
+					this.EmitExpression(nodes[1], ilProcessor);
+					this.EmitExpression(nodes[2], ilProcessor);
+					this.EmitExpression(nodes[3], ilProcessor);
+					ilProcessor.Emit(OpCodes.Call, ilProcessor.Body.Method.Module.ImportReference(
+						typeof(string).GetMethod(nameof(string.Concat), new[] { typeof(string), typeof(string), typeof(string), typeof(string) })));
+					break;
+				default:
+					ilProcessor.Emit(OpCodes.Ldc_I4, nodes.Count);
+					ilProcessor.Emit(OpCodes.Newarr, this.knownTypes[TypeSymbol.String]);
+
+					for (var i = 0; i < nodes.Count; i++)
+					{
+						ilProcessor.Emit(OpCodes.Dup);
+						ilProcessor.Emit(OpCodes.Ldc_I4, i);
+						this.EmitExpression(nodes[i], ilProcessor);
+						ilProcessor.Emit(OpCodes.Stelem_Ref);
+					}
+
+					ilProcessor.Emit(OpCodes.Call, ilProcessor.Body.Method.Module.ImportReference(
+						typeof(string).GetMethod(nameof(string.Concat), new[] { typeof(string[]) })));
+					break;
 			}
 		}
 
@@ -484,19 +602,22 @@ namespace WSharp.Compiler.Emit
 
 		private void EmitBinaryExpression(BoundBinaryExpression binary, ILProcessor ilProcessor)
 		{
+			if (binary.Operator.OperatorKind == BoundBinaryOperatorKind.Addition)
+			{
+				if (binary.Left.Type == TypeSymbol.String && binary.Right.Type == TypeSymbol.String)
+				{
+					this.EmitStringConcatExpression(ilProcessor, binary);
+					this.currentStackType = TypeSymbol.String;
+					return;
+				}
+			}
+
 			this.EmitExpression(binary.Left, ilProcessor);
 			this.EmitExpression(binary.Right, ilProcessor);
 
 			if (binary.Operator.OperatorKind == BoundBinaryOperatorKind.Addition)
 			{
-				if (binary.Type == TypeSymbol.String)
-				{
-					ilProcessor.Emit(OpCodes.Call,
-						ilProcessor.Body.Method.Module.ImportReference(typeof(string)
-							.GetMethod(nameof(string.Concat), new[] { typeof(string), typeof(string) })));
-					this.currentStackType = TypeSymbol.String;
-				}
-				else if(binary.Type == TypeSymbol.Integer)
+				if(binary.Type == TypeSymbol.Integer)
 				{
 					ilProcessor.Emit(OpCodes.Call,
 						ilProcessor.Body.Method.Module.ImportReference(typeof(BigInteger)

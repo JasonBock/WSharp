@@ -29,11 +29,6 @@ namespace WSharp.Compiler.Extensions
 				throw new ArgumentNullException(nameof(@this));
 			}
 
-			if (value < BigInteger.Zero)
-			{
-				throw new ArgumentException($"The value, {value}, must be greater than or equal to zero.", nameof(value));
-			}
-
 			if (value.IsZero)
 			{
 				@this.Emit(OpCodes.Call,

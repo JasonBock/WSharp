@@ -37,13 +37,6 @@ namespace WSharp.Compiler.Tests.Extensions
 			Assert.That(() => (null as ILProcessor)!.EmitBigInteger(BigInteger.Zero), Throws.TypeOf<ArgumentNullException>());
 
 		[Test]
-		public static void EmitWhenValueIsLessThanZero() =>
-			ILProcessorExtensionsTests.UseProcessor(processor =>
-			{
-				Assert.That(() => processor.EmitBigInteger(BigInteger.MinusOne), Throws.TypeOf<ArgumentException>());
-			});
-
-		[Test]
 		public static void EmitWhenValueIsZero() =>
 			ILProcessorExtensionsTests.UseProcessor(processor =>
 			{
