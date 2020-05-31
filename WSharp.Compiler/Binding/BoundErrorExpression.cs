@@ -1,12 +1,16 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using WSharp.Compiler.Symbols;
+using WSharp.Compiler.Syntax;
 
 namespace WSharp.Compiler.Binding
 {
-	public sealed class BoundErrorExpression
+	internal sealed class BoundErrorExpression
 		: BoundExpression
 	{
+		public BoundErrorExpression(SyntaxNode syntax)
+			: base(syntax) { }
+
 		public override IEnumerable<BoundNode> GetChildren() =>
 			Enumerable.Empty<BoundNode>();
 

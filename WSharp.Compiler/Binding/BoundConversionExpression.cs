@@ -1,14 +1,16 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using WSharp.Compiler.Symbols;
+using WSharp.Compiler.Syntax;
 
 namespace WSharp.Compiler.Binding
 {
-	public sealed class BoundConversionExpression
+	internal sealed class BoundConversionExpression
 		: BoundExpression
 	{
-		internal BoundConversionExpression(BoundExpression expression, TypeSymbol type) =>
-			(this.Expression, this.Type) = (expression, type);
+		public BoundConversionExpression(SyntaxNode syntax, BoundExpression expression, TypeSymbol type) 
+			: base(syntax) =>
+				(this.Expression, this.Type) = (expression, type);
 
 		public override IEnumerable<BoundNode> GetChildren()
 		{

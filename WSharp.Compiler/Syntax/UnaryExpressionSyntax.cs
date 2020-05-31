@@ -5,7 +5,7 @@ namespace WSharp.Compiler.Syntax
 	public sealed class UnaryExpressionSyntax
 		: ExpressionSyntax
 	{
-		public UnaryExpressionSyntax(SyntaxTree tree, SyntaxToken operatorToken, ExpressionSyntax operand)
+		internal UnaryExpressionSyntax(SyntaxTree tree, SyntaxToken operatorToken, ExpressionSyntax operand)
 			: base(tree) => 
 				(this.OperatorToken, this.Operand) = (operatorToken, operand);
 

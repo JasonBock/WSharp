@@ -1,13 +1,14 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using WSharp.Compiler.Syntax;
 
 namespace WSharp.Compiler.Binding
 {
-	public sealed class BoundExpressionStatement
+	internal sealed class BoundExpressionStatement
 		: BoundStatement
 	{
-		internal BoundExpressionStatement(BoundExpression expression) => 
-			this.Expression = expression;
+		public BoundExpressionStatement(SyntaxNode syntax, BoundExpression expression) 
+			: base(syntax) => this.Expression = expression;
 
 		public override IEnumerable<BoundNode> GetChildren()
 		{

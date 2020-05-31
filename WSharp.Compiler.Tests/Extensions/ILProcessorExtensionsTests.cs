@@ -15,21 +15,19 @@ namespace WSharp.Compiler.Tests.Extensions
 			var assemblyName = Guid.NewGuid().ToString("N");
 			var assemblyFileName = $"{assemblyName}.dll";
 
-			using (var assembly = AssemblyDefinition.CreateAssembly(
+			using var assembly = AssemblyDefinition.CreateAssembly(
 				new AssemblyNameDefinition(assemblyName, new Version(1, 0, 0, 0)), assemblyFileName,
-				ModuleKind.Dll))
-			{
-				var type = new TypeDefinition(string.Empty, Guid.NewGuid().ToString("N"), TypeAttributes.Public);
-				assembly.MainModule.Types.Add(type);
+				ModuleKind.Dll);
+			var type = new TypeDefinition(string.Empty, Guid.NewGuid().ToString("N"), TypeAttributes.Public);
+			assembly.MainModule.Types.Add(type);
 
-				var method = new MethodDefinition(Guid.NewGuid().ToString("N"),
-					MethodAttributes.Public | MethodAttributes.Static,
-					type.Module.Assembly.MainModule.ImportReference(typeof(void)));
+			var method = new MethodDefinition(Guid.NewGuid().ToString("N"),
+				MethodAttributes.Public | MethodAttributes.Static,
+				type.Module.Assembly.MainModule.ImportReference(typeof(void)));
 
-				type.Methods.Add(method);
+			type.Methods.Add(method);
 
-				processor(method.Body.GetILProcessor());
-			}
+			processor(method.Body.GetILProcessor());
 		}
 
 		[Test]

@@ -1,12 +1,14 @@
 ﻿using System.Collections.Generic;
 using WSharp.Compiler.Symbols;
+using WSharp.Compiler.Syntax;
 
 namespace WSharp.Compiler.Binding
 {
 	internal sealed class BoundUnaryExpression
 		: BoundExpression
 	{
-		public BoundUnaryExpression(BoundUnaryOperator @operator, BoundExpression operand) => 
+		public BoundUnaryExpression(SyntaxNode syntax, BoundUnaryOperator @operator, BoundExpression operand)
+			: base(syntax) => 
 			(this.Operator, this.Operand, this.ConstantValue) = 
 				(@operator, operand, ConstantFolding.ComputeConstant(@operator, operand));
 

@@ -2,13 +2,15 @@
 using System.Linq;
 using System.Numerics;
 using WSharp.Compiler.Symbols;
+using WSharp.Compiler.Syntax;
 
 namespace WSharp.Compiler.Binding
 {
-	public sealed class BoundLiteralExpression
+	internal sealed class BoundLiteralExpression
 		: BoundExpression
 	{
-		internal BoundLiteralExpression(object value)
+		public BoundLiteralExpression(SyntaxNode syntax, object value)
+			: base(syntax)
 		{
 			this.Type = value is bool ? TypeSymbol.Boolean :
 				value is BigInteger ? TypeSymbol.Integer :

@@ -1,14 +1,16 @@
 ﻿using System.Collections.Generic;
 using WSharp.Compiler.Symbols;
+using WSharp.Compiler.Syntax;
 
 namespace WSharp.Compiler.Binding
 {
-	public sealed class BoundBinaryExpression
+	internal sealed class BoundBinaryExpression
 		: BoundExpression
 	{
-		internal BoundBinaryExpression(BoundExpression left, BoundBinaryOperator @operator, BoundExpression right) =>
-			(this.Left, this.Operator, this.Right, this.ConstantValue) = 
-				(left, @operator, right, ConstantFolding.ComputeConstant(left, @operator, right));
+		public BoundBinaryExpression(SyntaxNode syntax, BoundExpression left, BoundBinaryOperator @operator, BoundExpression right)
+			: base(syntax) =>
+				(this.Left, this.Operator, this.Right, this.ConstantValue) =
+					(left, @operator, right, ConstantFolding.ComputeConstant(left, @operator, right));
 
 		public override IEnumerable<BoundNode> GetChildren()
 		{

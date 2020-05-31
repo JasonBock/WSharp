@@ -2,14 +2,16 @@
 using System.Collections.Immutable;
 using System.Linq;
 using WSharp.Compiler.Symbols;
+using WSharp.Compiler.Syntax;
 
 namespace WSharp.Compiler.Binding
 {
-	public sealed class BoundCallExpression
+	internal sealed class BoundCallExpression
 		: BoundExpression
 	{
-		internal BoundCallExpression(FunctionSymbol function, ImmutableArray<BoundExpression> arguments) =>
-			(this.Function, this.Arguments) = (function, arguments);
+		public BoundCallExpression(SyntaxNode syntax, FunctionSymbol function, ImmutableArray<BoundExpression> arguments) 
+			: base(syntax) =>
+				(this.Function, this.Arguments) = (function, arguments);
 
 		public override IEnumerable<BoundNode> GetChildren()
 		{

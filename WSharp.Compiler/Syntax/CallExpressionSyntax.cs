@@ -5,7 +5,7 @@ namespace WSharp.Compiler.Syntax
 	public sealed class CallExpressionSyntax
 		: ExpressionSyntax
 	{
-		public CallExpressionSyntax(SyntaxTree tree, SyntaxToken identifier, SyntaxToken openParenthesisToken,
+		internal CallExpressionSyntax(SyntaxTree tree, SyntaxToken identifier, SyntaxToken openParenthesisToken,
 			SeparatedSyntaxList<ExpressionSyntax> arguments, SyntaxToken closeParenthesisToken)
 			: base(tree) => 
 				(this.Identifier, this.OpenParenthesisToken, this.Arguments, this.CloseParenthesisToken) =

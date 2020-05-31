@@ -1,13 +1,15 @@
 ﻿using System.Collections.Generic;
 using WSharp.Compiler.Symbols;
+using WSharp.Compiler.Syntax;
 
 namespace WSharp.Compiler.Binding
 {
-	public sealed class BoundUnaryUpdateLineCountExpression
+	internal sealed class BoundUnaryUpdateLineCountExpression
 		: BoundExpression
 	{
-		internal BoundUnaryUpdateLineCountExpression(BoundExpression lineNumber) =>
-			this.LineNumber = lineNumber;
+		public BoundUnaryUpdateLineCountExpression(SyntaxNode syntax, BoundExpression lineNumber) 
+			: base(syntax) =>
+				this.LineNumber = lineNumber;
 
 		public override IEnumerable<BoundNode> GetChildren()
 		{

@@ -1,13 +1,15 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using WSharp.Compiler.Syntax;
 
 namespace WSharp.Compiler.Binding
 {
-	public sealed class BoundLineStatements
+	internal sealed class BoundLineStatements
 		: BoundStatement
 	{
-		internal BoundLineStatements(List<BoundLineStatement> lineStatements) =>
-			this.LineStatements = lineStatements;
+		public BoundLineStatements(SyntaxNode syntax, List<BoundLineStatement> lineStatements)
+			: base(syntax) =>
+				this.LineStatements = lineStatements;
 
 		public override IEnumerable<BoundNode> GetChildren()
 		{

@@ -2,11 +2,14 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using WSharp.Compiler.Syntax;
 
 namespace WSharp.Compiler.Binding
 {
-	public abstract class BoundNode
+	internal abstract class BoundNode
 	{
+		protected BoundNode(SyntaxNode syntax) => this.Syntax = syntax;
+
 		public abstract IEnumerable<BoundNode> GetChildren();
 
 		public abstract IEnumerable<(string name, object value)> GetProperties();
@@ -56,5 +59,6 @@ namespace WSharp.Compiler.Binding
 		}
 
 		public abstract BoundNodeKind Kind { get; }
+		public SyntaxNode Syntax { get; }
 	}
 }

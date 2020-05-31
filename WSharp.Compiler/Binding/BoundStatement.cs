@@ -1,6 +1,11 @@
-﻿namespace WSharp.Compiler.Binding
+﻿using WSharp.Compiler.Syntax;
+
+namespace WSharp.Compiler.Binding
 {
-	public abstract class BoundStatement
+	internal abstract class BoundStatement
 		: BoundNode
-	{ }
+	{
+		protected BoundStatement(SyntaxNode syntax)
+			: base(syntax) { }
+	}
 }

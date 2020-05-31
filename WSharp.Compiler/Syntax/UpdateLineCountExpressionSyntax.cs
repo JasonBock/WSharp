@@ -5,7 +5,7 @@ namespace WSharp.Compiler.Syntax
 	public sealed class UpdateLineCountExpressionSyntax
 		: ExpressionSyntax
 	{
-		public UpdateLineCountExpressionSyntax(SyntaxTree tree, ExpressionSyntax left, SyntaxToken operatorToken, ExpressionSyntax right)
+		internal UpdateLineCountExpressionSyntax(SyntaxTree tree, ExpressionSyntax left, SyntaxToken operatorToken, ExpressionSyntax right)
 			: base(tree) =>
 				(this.Left, this.OperatorToken, this.Right) = (left, operatorToken, right);
 
