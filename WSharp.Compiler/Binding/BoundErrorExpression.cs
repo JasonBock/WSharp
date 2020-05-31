@@ -8,6 +8,7 @@ namespace WSharp.Compiler.Binding
 	internal sealed class BoundErrorExpression
 		: BoundExpression
 	{
+		// TODO: Should this accept an array of bound nodes?
 		public BoundErrorExpression(SyntaxNode syntax)
 			: base(syntax) { }
 

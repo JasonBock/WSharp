@@ -12,6 +12,7 @@ using System.Text;
 using WSharp.Compiler.Binding;
 using WSharp.Compiler.Extensions;
 using WSharp.Compiler.Symbols;
+using WSharp.Compiler.Syntax;
 using WSharp.Runtime;
 
 namespace WSharp.Compiler.Emit
@@ -591,7 +592,7 @@ namespace WSharp.Compiler.Emit
 		private void EmitStringConcatExpression(ILProcessor ilProcessor, BoundBinaryExpression node)
 		{
 			// [a, "foo", "bar", b, ""] --> [a, "foobar", b]
-			static IEnumerable<BoundExpression> FoldConstants(IEnumerable<BoundExpression> nodes)
+			static IEnumerable<BoundExpression> FoldConstants(SyntaxNode syntax, IEnumerable<BoundExpression> nodes)
 			{
 				StringBuilder? builder = null;
 
@@ -613,7 +614,7 @@ namespace WSharp.Compiler.Emit
 					{
 						if (builder?.Length > 0)
 						{
-							yield return new BoundLiteralExpression(builder.ToString());
+							yield return new BoundLiteralExpression(syntax, builder.ToString());
 							builder.Clear();
 						}
 
@@ -623,7 +624,7 @@ namespace WSharp.Compiler.Emit
 
 				if (builder?.Length > 0)
 				{
-					yield return new BoundLiteralExpression(builder.ToString());
+					yield return new BoundLiteralExpression(syntax, builder.ToString());
 				}
 			}
 
@@ -656,7 +657,7 @@ namespace WSharp.Compiler.Emit
 				}
 			}
 
-			var nodes = FoldConstants(Flatten(node)).ToList();
+			var nodes = FoldConstants(node.Syntax, Flatten(node)).ToList();
 
 			switch (nodes.Count)
 			{

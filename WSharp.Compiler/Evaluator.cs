@@ -18,7 +18,7 @@ namespace WSharp.Compiler
 	{
 		private object lastValue = new object();
 
-		public Evaluator(BoundStatement root) => this.Root = root;
+		internal Evaluator(BoundStatement root) => this.Root = root;
 
 		public ImmutableArray<Line> Evaluate()
 		{
@@ -233,6 +233,6 @@ namespace WSharp.Compiler
 
 		private static object EvaluateConstantExpression(BoundExpression literal) => literal.ConstantValue!.Value;
 
-		public BoundStatement Root { get; }
+		internal BoundStatement Root { get; }
 	}
 }

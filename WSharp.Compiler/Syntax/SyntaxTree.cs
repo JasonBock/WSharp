@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using WSharp.Compiler.Text;
 
@@ -11,10 +12,44 @@ namespace WSharp.Compiler.Syntax
 	{
 		private delegate (CompilationUnitSyntax root, ImmutableArray<Diagnostic> diagnostics) ParseHandler(SyntaxTree tree);
 
+		// TODO: Why not make this a Lazy<>?
+		private Dictionary<SyntaxNode, SyntaxNode?>? parents;
+
 		private SyntaxTree(SourceText text, ParseHandler handler)
 		{
 			this.Text = text;
 			(this.Root, this.Diagnostics) = handler(this);
+		}
+
+		private static Dictionary<SyntaxNode, SyntaxNode?> CreateParentsDictionary(CompilationUnitSyntax root)
+		{
+			static void CreateParentsDictionary(Dictionary<SyntaxNode, SyntaxNode?> result, SyntaxNode node)
+			{
+				foreach (var child in node.GetChildren())
+				{
+					result.Add(child, node);
+					CreateParentsDictionary(result, child);
+				}
+			}
+
+			var result = new Dictionary<SyntaxNode, SyntaxNode?>
+			{
+				{ root, null }
+			};
+			CreateParentsDictionary(result, root);
+
+			return result;
+		}
+
+		public SyntaxNode? GetParent(SyntaxNode node)
+		{
+			if (this.parents is null)
+			{
+				var parents = SyntaxTree.CreateParentsDictionary(this.Root);
+				Interlocked.CompareExchange(ref this.parents, parents, null);
+			}
+
+			return this.parents[node];
 		}
 
 		public static async Task<SyntaxTree> LoadAsync(FileInfo file)

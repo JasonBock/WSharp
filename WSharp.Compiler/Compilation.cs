@@ -41,7 +41,7 @@ namespace WSharp.Compiler
 			Emitter.Emit((BoundLineStatements)this.Statement, moduleName, references, outputPath);
 
 		public DiagnosticBag Diagnostics { get; }
-		public BoundStatement Statement { get; }
+		internal BoundStatement Statement { get; }
 		public SyntaxTree Tree { get; }
 	}
 }

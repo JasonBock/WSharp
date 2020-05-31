@@ -10,18 +10,20 @@ namespace WSharp.Compiler.Syntax
 	{
 		protected SyntaxNode(SyntaxTree tree) => this.Tree = tree;
 
-		public abstract IEnumerable<SyntaxNode> GetChildren();
+		public IEnumerable<SyntaxNode> Ancestors() => this.AncestorsAndSelf().Skip(1);
 
-		public void WriteTo(TextWriter writer)
+		public IEnumerable<SyntaxNode> AncestorsAndSelf()
 		{
-			if (writer is null)
-			{
-				throw new ArgumentNullException(nameof(writer));
-			}
+			var node = this;
 
-			SyntaxNode.Print(writer, this);
+			while (node is { })
+			{
+				yield return node;
+				node = node.Parent;
+			}
 		}
 
+		// TODO: Can I use this.parents to descend?
 		public IEnumerable<SyntaxNode> DescendentNodes()
 		{
 			static IEnumerable<SyntaxNode> Descend(SyntaxNode node)
@@ -37,21 +39,16 @@ namespace WSharp.Compiler.Syntax
 				}
 			}
 
-			foreach(var childNode in Descend(this))
+			foreach (var childNode in Descend(this))
 			{
 				yield return childNode;
 			}
 		}
 
-		public TextLocation Location => new TextLocation(this.Tree.Text, this.Span);
+		public abstract IEnumerable<SyntaxNode> GetChildren();
 
-		public SyntaxToken GetLastToken()
-		{
-			if (this is SyntaxToken token)
-				return token;
-
-			return this.GetChildren().Last().GetLastToken();
-		}
+		public SyntaxToken GetLastToken() =>
+			this is SyntaxToken token ? token : this.GetChildren().Last().GetLastToken();
 
 		private static void Print(TextWriter writer, SyntaxNode? node, string indent = "", bool isLast = true)
 		{
@@ -62,7 +59,7 @@ namespace WSharp.Compiler.Syntax
 
 			var token = node as SyntaxToken;
 
-			if(token is { })
+			if (token is { })
 			{
 				foreach (var trivia in token.LeadingTrivia)
 				{
@@ -112,7 +109,15 @@ namespace WSharp.Compiler.Syntax
 
 		public override string ToString() => $"{this.Kind}, {this.Span}";
 
-		public abstract SyntaxKind Kind { get; }
+		public void WriteTo(TextWriter writer)
+		{
+			if (writer is null)
+			{
+				throw new ArgumentNullException(nameof(writer));
+			}
+
+			SyntaxNode.Print(writer, this);
+		}
 
 		public virtual TextSpan FullSpan
 		{
@@ -123,6 +128,12 @@ namespace WSharp.Compiler.Syntax
 				return TextSpan.FromBounds(first.Start, last.End);
 			}
 		}
+
+		public abstract SyntaxKind Kind { get; }
+
+		public TextLocation Location => new TextLocation(this.Tree.Text, this.Span);
+
+		public SyntaxNode? Parent => this.Tree.GetParent(this);
 
 		public virtual TextSpan Span
 		{
