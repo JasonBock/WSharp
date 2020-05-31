@@ -81,10 +81,20 @@ namespace WSharp.Compiler.Emit
 				this.assemblyDefinition.MainModule.Types.Add(programTypeDefinition);
 
 				var lines = this.EmitLineMethods(statements, programTypeDefinition);
-				var mainMethod = this.EmitMainMethod(programTypeDefinition, lines);
 
+				var mainMethod = this.EmitMainMethod(programTypeDefinition, lines);
 				this.assemblyDefinition.EntryPoint = mainMethod;
-				this.assemblyDefinition.Write(outputPath.FullName);
+
+				using var outputStream = File.Create(outputPath.FullName);
+				using var symbolStream = File.Create(Path.ChangeExtension(outputPath.FullName, ".pdb"));
+				var parameters = new WriterParameters
+				{
+					WriteSymbols = true,
+					SymbolStream = symbolStream,
+					SymbolWriterProvider = new PortablePdbWriterProvider()
+				};
+
+				this.assemblyDefinition.Write(outputStream, parameters);
 			}
 
 			this.Result = new EmitResult(this.diagnostics.ToImmutableArray());

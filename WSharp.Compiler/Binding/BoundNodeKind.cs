@@ -6,6 +6,7 @@
 		LineStatements,
 		LineStatement,
 		ExpressionStatement,
+		SequencePointStatement,
 
 		// Expressions
 		UnaryExpression,
