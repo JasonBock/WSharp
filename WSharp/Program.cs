@@ -11,7 +11,7 @@ namespace WSharp
 {
 	public static class Program
 	{
-		public static async Task<int> Main(FileInfo? file, FileInfo[]? references, FileInfo? outputPath, Interaction interaction)
+		public static async Task<int> Main(FileInfo? file, FileInfo[]? references, FileInfo? outputPath, Interaction interaction, bool emitDebugging = false)
 		{
 			//System.Diagnostics.Debugger.Launch();
 			//interaction = Interaction.Compile;
@@ -59,7 +59,7 @@ namespace WSharp
 					}
 					else
 					{
-						var result = compilation.Emit(moduleName, targetReferences, outputPath);
+						var result = compilation.Emit(moduleName, targetReferences, outputPath, emitDebugging);
 
 						if (result.Diagnostics.Length > 0)
 						{

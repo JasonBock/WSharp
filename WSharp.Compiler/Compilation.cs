@@ -37,8 +37,8 @@ namespace WSharp.Compiler
 			return new EvaluationResult(ImmutableArray<Diagnostic>.Empty, lines);
 		}
 
-		public EmitResult Emit(string moduleName, FileInfo[] references, FileInfo outputPath) => 
-			Emitter.Emit((BoundLineStatements)this.Statement, moduleName, references, outputPath);
+		public EmitResult Emit(string moduleName, FileInfo[] references, FileInfo outputPath, bool emitDebugging = false) => 
+			Emitter.Emit((BoundLineStatements)this.Statement, moduleName, references, outputPath, emitDebugging);
 
 		public DiagnosticBag Diagnostics { get; }
 		internal BoundStatement Statement { get; }

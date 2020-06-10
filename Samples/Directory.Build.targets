@@ -9,7 +9,7 @@
 					'%(FileName)' != 'System.Runtime.Numerics' AND
 					'%(FileName)' != 'WSharp.Runtime'" />
 		</ItemGroup>
-		<Exec Command="dotnet run --project &quot;$(MSBuildThisFileDirectory)\..\WSharp\WSharp.csproj&quot; -- --file @(Compile->'&quot;%(Identity)&quot;', ' ') --interaction Compile --output-path &quot;@(IntermediateAssembly)&quot; --references @(ReferencePath->'&quot;%(Identity)&quot;', ' ')"
+		<Exec Command="dotnet run --project &quot;$(MSBuildThisFileDirectory)\..\WSharp\WSharp.csproj&quot; -- --file @(Compile->'&quot;%(Identity)&quot;', ' ') --interaction Compile --emit-debugging true --output-path &quot;@(IntermediateAssembly)&quot; --references @(ReferencePath->'&quot;%(Identity)&quot;', ' ')"
 			WorkingDirectory="$(MSBuildProjectDirectory)" />
 	</Target>
 </Project>

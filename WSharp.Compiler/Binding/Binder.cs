@@ -163,7 +163,7 @@ namespace WSharp.Compiler.Binding
 				_ => throw new BindingException($"Unexpected expression syntax {syntax.Kind}"),
 			};
 
-		private BoundStatement BindExpressionStatement(ExpressionStatementSyntax syntax) =>
+		private BoundStatement BindExpressionStatement(ExpressionStatementSyntax syntax) => 
 			new BoundExpressionStatement(syntax, this.BindExpression(syntax.Expression, true));
 
 		private BoundStatement BindLineStatements(LineStatementsSyntax syntax)

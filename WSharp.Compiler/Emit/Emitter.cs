@@ -5,6 +5,7 @@ using Spackle;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Numerics;
@@ -13,6 +14,7 @@ using WSharp.Compiler.Binding;
 using WSharp.Compiler.Extensions;
 using WSharp.Compiler.Symbols;
 using WSharp.Compiler.Syntax;
+using WSharp.Compiler.Text;
 using WSharp.Runtime;
 
 namespace WSharp.Compiler.Emit
@@ -21,13 +23,16 @@ namespace WSharp.Compiler.Emit
 	{
 		private readonly HashSet<AssemblyDefinition> assemblies = new HashSet<AssemblyDefinition>();
 		private readonly AssemblyDefinition assemblyDefinition;
-		private readonly Dictionary<TypeSymbol, TypeReference> knownTypes;
-		private readonly DiagnosticBag diagnostics = new DiagnosticBag();
 		private TypeSymbol? currentStackType;
 		private Instruction? deferGuardLabel;
+		private readonly DiagnosticBag diagnostics = new DiagnosticBag();
+		private readonly Dictionary<SourceText, Document> documents = new Dictionary<SourceText, Document>();
+		private readonly bool emitDebugging;
+		private readonly Dictionary<TypeSymbol, TypeReference> knownTypes;
 
-		private Emitter(string moduleName, FileInfo[] references)
+		private Emitter(string moduleName, FileInfo[] references, bool emitDebugging)
 		{
+			this.emitDebugging = emitDebugging;
 			this.assemblies = new HashSet<AssemblyDefinition>();
 
 			if (references is { })
@@ -45,6 +50,10 @@ namespace WSharp.Compiler.Emit
 				}
 			}
 
+			var assemblyName = new AssemblyNameDefinition(moduleName, new Version(1, 0));
+			this.assemblyDefinition = AssemblyDefinition.CreateAssembly(assemblyName, moduleName,
+				ModuleKind.Console);
+
 			var builtInTypes = new List<(TypeSymbol type, string metadataName)>
 			{
 				(TypeSymbol.Any, "System.Object"),
@@ -56,10 +65,6 @@ namespace WSharp.Compiler.Emit
 
 			this.knownTypes = new Dictionary<TypeSymbol, TypeReference>();
 
-			var assemblyName = new AssemblyNameDefinition(moduleName, new Version(1, 0));
-			this.assemblyDefinition = AssemblyDefinition.CreateAssembly(assemblyName, moduleName,
-				ModuleKind.Console);
-
 			foreach (var (typeSymbol, metadataName) in builtInTypes)
 			{
 				var typeReference = this.ResolveType(metadataName);
@@ -68,6 +73,16 @@ namespace WSharp.Compiler.Emit
 				{
 					this.knownTypes.Add(typeSymbol, typeReference);
 				}
+			}
+
+			if(this.emitDebugging)
+			{
+				var debuggableAttributeCtor = this.assemblyDefinition.MainModule.ImportReference(
+					typeof(DebuggableAttribute).GetConstructor(new[] { typeof(bool), typeof(bool) }));
+				var debuggableAttribute = new CustomAttribute(debuggableAttributeCtor);
+				debuggableAttribute.ConstructorArguments.Add(new CustomAttributeArgument(this.knownTypes[TypeSymbol.Boolean], true));
+				debuggableAttribute.ConstructorArguments.Add(new CustomAttributeArgument(this.knownTypes[TypeSymbol.Boolean], true));
+				this.assemblyDefinition.CustomAttributes.Add(debuggableAttribute);
 			}
 		}
 
@@ -100,9 +115,9 @@ namespace WSharp.Compiler.Emit
 			this.Result = new EmitResult(this.diagnostics.ToImmutableArray());
 		}
 
-		public static EmitResult Emit(BoundLineStatements statement, string moduleName, FileInfo[] references, FileInfo outputPath)
+		public static EmitResult Emit(BoundLineStatements statement, string moduleName, FileInfo[] references, FileInfo outputPath, bool emitDebugging = false)
 		{
-			var emitter = new Emitter(moduleName, references);
+			var emitter = new Emitter(moduleName, references, emitDebugging);
 			emitter.Emit(statement, outputPath);
 			return emitter.Result!;
 		}
@@ -116,7 +131,7 @@ namespace WSharp.Compiler.Emit
 			{
 				if (binary.Left.Type == TypeSymbol.String && binary.Right.Type == TypeSymbol.String)
 				{
-					this.EmitStringConcatExpression(ilProcessor, binary);
+					this.EmitStringConcatExpression(binary, ilProcessor);
 					this.currentStackType = TypeSymbol.String;
 					return;
 				}
@@ -508,7 +523,7 @@ namespace WSharp.Compiler.Emit
 
 			foreach (var lineStatement in statements.LineStatements)
 			{
-				var lineNumber = (BigInteger)((lineStatement.Number as BoundExpressionStatement)!.Expression as BoundLiteralExpression)!.Value;
+				var lineNumber = (BigInteger)(((BoundExpressionStatement)lineStatement.Number)!.Expression as BoundLiteralExpression)!.Value;
 
 				var lineMethod = new MethodDefinition($"Line{lineNumber}", MethodAttributes.Static | MethodAttributes.Private,
 					this.knownTypes[TypeSymbol.Void]);
@@ -518,9 +533,33 @@ namespace WSharp.Compiler.Emit
 
 				lines.Add((lineNumber, lineMethod));
 				programTypeDefinition.Methods.Add(lineMethod);
+
 				this.currentStackType = null;
-				this.EmitLineMethod(lineStatement, lineMethod.Body.GetILProcessor());
+				var ilProcessor = lineMethod.Body.GetILProcessor();
+				this.EmitLineMethod(lineStatement, ilProcessor);
 				this.currentStackType = null;
+
+				if(this.emitDebugging)
+				{
+					var instruction = ilProcessor.Body.Instructions[0];
+					var lineStatementLocation = lineStatement.Syntax.Location;
+
+					if (!this.documents.TryGetValue(lineStatementLocation.Text, out var document))
+					{
+						document = new Document(lineStatementLocation.Text.File!.FullName);
+						this.documents.Add(lineStatementLocation.Text, document);
+					}
+
+					var point = new SequencePoint(instruction, document)
+					{
+						StartLine = lineStatementLocation.StartLine + 1,
+						StartColumn = lineStatementLocation.StartCharacter + 1,
+						EndLine = lineStatementLocation.EndLine + 1,
+						EndColumn = lineStatementLocation.EndCharacter + 1
+					};
+
+					ilProcessor.Body.Method.DebugInformation.SequencePoints.Add(point);
+				}
 
 				lineMethod.Body.OptimizeMacros();
 			}
@@ -599,7 +638,7 @@ namespace WSharp.Compiler.Emit
 			}
 		}
 
-		private void EmitStringConcatExpression(ILProcessor ilProcessor, BoundBinaryExpression node)
+		private void EmitStringConcatExpression(BoundBinaryExpression node, ILProcessor ilProcessor)
 		{
 			// [a, "foo", "bar", b, ""] --> [a, "foobar", b]
 			static IEnumerable<BoundExpression> FoldConstants(SyntaxNode syntax, IEnumerable<BoundExpression> nodes)
