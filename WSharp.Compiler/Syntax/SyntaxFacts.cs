@@ -16,9 +16,9 @@ namespace WSharp.Compiler.Syntax
 			}
 		}
 
-		public static int GetUnaryOperatorPrecedence(this SyntaxKind @this)
+		public static int GetUnaryOperatorPrecedence(this SyntaxKind self)
 		{
-			switch (@this)
+			switch (self)
 			{
 				case SyntaxKind.PlusToken:
 				case SyntaxKind.MinusToken:
@@ -41,9 +41,9 @@ namespace WSharp.Compiler.Syntax
 			}
 		}
 
-		public static int GetBinaryOperatorPrecedence(this SyntaxKind @this)
+		public static int GetBinaryOperatorPrecedence(this SyntaxKind self)
 		{
-			switch (@this)
+			switch (self)
 			{
 				case SyntaxKind.StarToken:
 				case SyntaxKind.SlashToken:
@@ -110,19 +110,19 @@ namespace WSharp.Compiler.Syntax
 				_ => string.Empty
 			};
 
-		public static bool IsComment(this SyntaxKind @this) =>
-			@this == SyntaxKind.SingleLineCommentTrivia ||
-			@this == SyntaxKind.MultiLineCommentTrivia;
+		public static bool IsComment(this SyntaxKind self) =>
+			self == SyntaxKind.SingleLineCommentTrivia ||
+			self == SyntaxKind.MultiLineCommentTrivia;
 
-		public static bool IsKeyword(this SyntaxKind @this) =>
-			@this.ToString().EndsWith("Keyword");
+		public static bool IsKeyword(this SyntaxKind self) =>
+			self.ToString().EndsWith("Keyword");
 
-		public static bool IsToken(this SyntaxKind @this) =>
-			!@this.IsTrivia() && 
-				(@this.IsKeyword() || @this.ToString().EndsWith("Token"));
+		public static bool IsToken(this SyntaxKind self) =>
+			!self.IsTrivia() && 
+				(self.IsKeyword() || self.ToString().EndsWith("Token"));
 
-		public static bool IsTrivia(this SyntaxKind @this) =>
-			@this switch
+		public static bool IsTrivia(this SyntaxKind self) =>
+			self switch
 			{
 				SyntaxKind.SkippedTextTrivia => true,
 				SyntaxKind.LineBreakTrivia => true,

@@ -561,7 +561,7 @@ namespace WSharp.Compiler.Emit
 					ilProcessor.Body.Method.DebugInformation.SequencePoints.Add(point);
 				}
 
-				lineMethod.Body.OptimizeMacros();
+				lineMethod.Body.Optimize();
 			}
 
 			return lines;
@@ -622,7 +622,7 @@ namespace WSharp.Compiler.Emit
 					typeof(ExecutionEngine).GetMethod(nameof(ExecutionEngine.Execute))));
 			mainIlProcessor.Emit(OpCodes.Ret);
 
-			mainMethod.Body.OptimizeMacros();
+			mainMethod.Body.Optimize();
 			return mainMethod;
 		}
 

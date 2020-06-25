@@ -6,13 +6,6 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
-    <None Remove="Binding\BoundErrorExpression.cs~RF949ce113.TMP" />
-    <None Remove="Binding\BoundExpression.cs~RF10d72b3d.TMP" />
-    <None Remove="Binding\BoundSequencePointStatement.cs~RF142b3743.TMP" />
-    <None Remove="Binding\BoundUpdateLineCountOperatorKind.cs~RF8e1eca72.TMP" />
-    <None Remove="Syntax\ExpressionStatementSyntax.cs~RF7cb574af.TMP" />
-  </ItemGroup>
-  <ItemGroup>
     <PackageReference Include="Mono.Cecil" Version="0.11.2" />
     <PackageReference Include="Spackle" Version="9.1.5" />
     <PackageReference Include="System.Collections.Immutable" Version="1.7.1" />
