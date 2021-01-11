@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.Text.Json;
 
 namespace WSharp.Runtime.Tests
 {
@@ -37,12 +38,7 @@ namespace WSharp.Runtime.Tests
 		public static void Roundtrip()
 		{
 			var exception = new ExecutionEngineLinesException();
-			var formatter = new BinaryFormatter();
-
-			using var stream = new MemoryStream();
-			formatter.Serialize(stream, exception);
-			stream.Position = 0;
-			var newException = (ExecutionEngineLinesException)formatter.Deserialize(stream);
+			var newException = JsonSerializer.Deserialize<ExecutionEngineLinesException>(JsonSerializer.Serialize(exception))!;
 
 			Assert.Multiple(() =>
 			{

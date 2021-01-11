@@ -17,9 +17,5 @@ namespace WSharp.Compiler.Tests
 		[Test]
 		public void CreateWithMessageAndInnerException() =>
 			base.CreateExceptionWithMessageAndInnerExceptionTest(Guid.NewGuid().ToString("N"));
-
-		[Test]
-		public void Roundtrip() =>
-			base.RoundtripExceptionTest(Guid.NewGuid().ToString("N"));
 	}
 }
