@@ -18,24 +18,18 @@ namespace WSharp.Compiler.Tests.Text
 				Assert.That(rangeC, Is.EqualTo(rangeA));
 				Assert.That(rangeC, Is.Not.EqualTo(rangeB));
 
-#pragma warning disable CS1718 // Comparison made to same variable
-				Assert.That(rangeA == rangeA, Is.True);
-#pragma warning restore CS1718 // Comparison made to same variable
-				Assert.That(rangeA == rangeB, Is.False);
-				Assert.That(rangeA == rangeC, Is.True);
-				Assert.That(rangeB == rangeC, Is.False);
+				Assert.That(rangeA, Is.Not.EqualTo(rangeB));
+				Assert.That(rangeA, Is.EqualTo(rangeC));
+				Assert.That(rangeB, Is.Not.EqualTo(rangeC));
 
-				Assert.That(rangeA != rangeB, Is.True);
-				Assert.That(rangeA != rangeC, Is.False);
-				Assert.That(rangeB != rangeC, Is.True);
+				Assert.That(rangeA, Is.Not.EqualTo(rangeB));
+				Assert.That(rangeA, Is.EqualTo(rangeC));
+				Assert.That(rangeB, Is.Not.EqualTo(rangeC));
 			});
 		}
 
 		[Test]
-		public static void CheckEqualityViaEqualsAndObject() => Assert.That(new TextSpan(1, 2).Equals(new object()), Is.False);
-
-		[Test]
-		public static void CheckEqualityViaEqualsAndTextSpan() => Assert.That(new TextSpan(1, 2).Equals(new TextSpan(1, 2)), Is.True);
+		public static void CheckEqualityViaEqualsAndObject() => Assert.That(new TextSpan(1, 2), Is.Not.EqualTo(new object()));
 
 		[Test]
 		public static void CheckHashCode()
