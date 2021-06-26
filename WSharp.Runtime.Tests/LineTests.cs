@@ -30,15 +30,19 @@ namespace WSharp.Runtime.Tests
 		[Test]
 		public static void CreateWhenIdentifierIsLessThanOne() =>
 			Assert.That(() => new Line(BigInteger.Zero, new BigInteger(2), new Action<IExecutionEngineActions>(_ => { })), 
-				Throws.TypeOf<ArgumentException>());
+				Throws.TypeOf<ArgumentException>()
+					.And.Message.EqualTo("The identifier, 0, must be greater than zero. (Parameter 'identifier')"));
 
 		[Test]
 		public static void CreateWhenCountIsLessThanZero() =>
-			Assert.That(() => new Line(BigInteger.One, -1, new Action<IExecutionEngineActions>(_ => { })), Throws.TypeOf<ArgumentException>());
+			Assert.That(() => new Line(BigInteger.One, -1, new Action<IExecutionEngineActions>(_ => { })), 
+				Throws.TypeOf<ArgumentException>()
+					.And.Message.EqualTo("Cannot use a negative count for a line. (Parameter 'count')"));
 
 		[TestCase(1ul, 2ul, 1L, 3ul)]
 		[TestCase(1ul, 2ul, -1L, 1ul)]
 		[TestCase(1ul, 2ul, -3L, 0ul)]
+		[TestCase(1ul, 2ul, -2L, 0ul)]
 		public static void UpdateCount(ulong identifier, ulong count, long delta, ulong expectedResult)
 		{
 			var code = new Action<IExecutionEngineActions>(_ => { });

@@ -16,19 +16,13 @@ namespace WSharp.Compiler.Syntax
 			}
 		}
 
-		public static int GetUnaryOperatorPrecedence(this SyntaxKind self)
-		{
-			switch (self)
+		public static int GetUnaryOperatorPrecedence(this SyntaxKind self) => 
+			self switch
 			{
-				case SyntaxKind.PlusToken:
-				case SyntaxKind.MinusToken:
-				case SyntaxKind.BangToken:
-				case SyntaxKind.TildeToken:
-					return 6;
-				default:
-					return 0;
-			}
-		}
+				SyntaxKind.PlusToken or SyntaxKind.MinusToken or 
+					SyntaxKind.BangToken or SyntaxKind.TildeToken => 6,
+				_ => 0,
+			};
 
 		public static IEnumerable<SyntaxKind> GetBinaryOperatorKinds()
 		{
@@ -41,35 +35,17 @@ namespace WSharp.Compiler.Syntax
 			}
 		}
 
-		public static int GetBinaryOperatorPrecedence(this SyntaxKind self)
-		{
-			switch (self)
+		public static int GetBinaryOperatorPrecedence(this SyntaxKind self) => 
+			self switch
 			{
-				case SyntaxKind.StarToken:
-				case SyntaxKind.SlashToken:
-				case SyntaxKind.PercentToken:
-					return 5;
-				case SyntaxKind.PlusToken:
-				case SyntaxKind.MinusToken:
-					return 4;
-				case SyntaxKind.EqualsEqualsToken:
-				case SyntaxKind.BangEqualsToken:
-				case SyntaxKind.LessToken:
-				case SyntaxKind.LessOrEqualsToken:
-				case SyntaxKind.GreaterToken:
-				case SyntaxKind.GreaterOrEqualsToken:
-					return 3;
-				case SyntaxKind.AmpersandToken:
-				case SyntaxKind.AmpersandAmpersandToken:
-					return 2;
-				case SyntaxKind.PipeToken:
-				case SyntaxKind.PipePipeToken:
-				case SyntaxKind.HatToken:
-					return 1;
-				default:
-					return 0;
-			}
-		}
+				SyntaxKind.StarToken or SyntaxKind.SlashToken or SyntaxKind.PercentToken => 5,
+				SyntaxKind.PlusToken or SyntaxKind.MinusToken => 4,
+				SyntaxKind.EqualsEqualsToken or SyntaxKind.BangEqualsToken or SyntaxKind.LessToken or 
+					SyntaxKind.LessOrEqualsToken or SyntaxKind.GreaterToken or SyntaxKind.GreaterOrEqualsToken => 3,
+				SyntaxKind.AmpersandToken or SyntaxKind.AmpersandAmpersandToken => 2,
+				SyntaxKind.PipeToken or SyntaxKind.PipePipeToken or SyntaxKind.HatToken => 1,
+				_ => 0,
+			};
 
 		public static SyntaxKind GetKeywordKind(string text) =>
 			text switch
@@ -124,12 +100,9 @@ namespace WSharp.Compiler.Syntax
 		public static bool IsTrivia(this SyntaxKind self) =>
 			self switch
 			{
-				SyntaxKind.SkippedTextTrivia => true,
-				SyntaxKind.LineBreakTrivia => true,
-				SyntaxKind.WhitespaceTrivia => true,
-				SyntaxKind.SingleLineCommentTrivia => true,
-				SyntaxKind.MultiLineCommentTrivia => true,
-				SyntaxKind.BadToken => true,
+				SyntaxKind.SkippedTextTrivia or SyntaxKind.LineBreakTrivia or 
+					SyntaxKind.WhitespaceTrivia or SyntaxKind.SingleLineCommentTrivia or 
+					SyntaxKind.MultiLineCommentTrivia or SyntaxKind.BadToken => true,
 				_ => false
 			};
 	}

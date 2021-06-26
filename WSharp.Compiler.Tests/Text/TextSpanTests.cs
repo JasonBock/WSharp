@@ -12,20 +12,34 @@ namespace WSharp.Compiler.Tests.Text
 			var rangeB = new TextSpan(2, 2);
 			var rangeC = new TextSpan(1, 1);
 
+#pragma warning disable NUnit2010 // Use EqualConstraint for better assertion messages in case of failure
 			Assert.Multiple(() =>
 			{
-				Assert.That(rangeB, Is.Not.EqualTo(rangeA));
+				Assert.That(rangeB, Is.Not.EqualTo(rangeA), "rangeB.Equals(rangeA)");
+				Assert.That(rangeB == rangeA, Is.False, "rangeB == rangeA");
+				Assert.That(rangeB != rangeA, Is.True, "rangeB != rangeA");
+
 				Assert.That(rangeC, Is.EqualTo(rangeA));
+				Assert.That(rangeC == rangeA, Is.True, "rangeC == rangeA");
+				Assert.That(rangeC != rangeA, Is.False, "rangeC != rangeA");
+
 				Assert.That(rangeC, Is.Not.EqualTo(rangeB));
+				Assert.That(rangeC == rangeB, Is.False, "rangeC == rangeB");
+				Assert.That(rangeC != rangeB, Is.True, "rangeC != rangeB");
 
 				Assert.That(rangeA, Is.Not.EqualTo(rangeB));
-				Assert.That(rangeA, Is.EqualTo(rangeC));
-				Assert.That(rangeB, Is.Not.EqualTo(rangeC));
+				Assert.That(rangeA == rangeB, Is.False, "rangeA == rangeB");
+				Assert.That(rangeA != rangeB, Is.True, "rangeA != rangeB");
 
-				Assert.That(rangeA, Is.Not.EqualTo(rangeB));
 				Assert.That(rangeA, Is.EqualTo(rangeC));
+				Assert.That(rangeA == rangeC, Is.True, "rangeA == rangeC");
+				Assert.That(rangeA != rangeC, Is.False, "rangeA != rangeC");
+
 				Assert.That(rangeB, Is.Not.EqualTo(rangeC));
+				Assert.That(rangeB == rangeC, Is.False, "rangeB == rangeC");
+				Assert.That(rangeB != rangeC, Is.True, "rangeB != rangeC");
 			});
+#pragma warning restore NUnit2010 // Use EqualConstraint for better assertion messages in case of failure
 		}
 
 		[Test]
@@ -81,6 +95,21 @@ namespace WSharp.Compiler.Tests.Text
 				Assert.That(span.Start, Is.EqualTo(1), nameof(span.Start));
 				Assert.That(span.Length, Is.EqualTo(3), nameof(span.Length));
 				Assert.That(span.End, Is.EqualTo(4), nameof(span.End));
+			});
+		}
+
+		[Test]
+		public static void OverlapsWith()
+		{
+			var span1 = TextSpan.FromBounds(1, 4);
+			var span2 = TextSpan.FromBounds(3, 8);
+			var span3 = TextSpan.FromBounds(6, 12);
+
+			Assert.Multiple(() =>
+			{
+				Assert.That(span1.OverlapsWith(span2), Is.True, "span1.OverlapsWith(span2)");
+				Assert.That(span1.OverlapsWith(span3), Is.False, "span1.OverlapsWith(span3)");
+				Assert.That(span2.OverlapsWith(span3), Is.True, "span2.OverlapsWith(span3)");
 			});
 		}
 

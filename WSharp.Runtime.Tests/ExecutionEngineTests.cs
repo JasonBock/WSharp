@@ -40,14 +40,18 @@ namespace WSharp.Runtime.Tests
 		public static void CreateWhenGivenEmptyList()
 		{
 			var lines = ImmutableArray<Line>.Empty;
-			Assert.That(() => new ExecutionEngine(lines, new SecureRandom(), new StringReader(string.Empty), new StringWriter()), Throws.TypeOf<ArgumentException>());
+			Assert.That(() => new ExecutionEngine(lines, new SecureRandom(), new StringReader(string.Empty), new StringWriter()), 
+				Throws.TypeOf<ArgumentException>()
+					.And.Message.EqualTo("Must pass in at least one line. (Parameter 'lines')"));
 		}
 
 		[Test]
 		public static void CreateWhenListContainsNullEntries()
 		{
 			var lines = ImmutableArray.Create(new Line(1, 1, _ => { }), null!, new Line(2, 1, _ => { }), null!);
-			Assert.That(() => new ExecutionEngine(lines, new SecureRandom(), new StringReader(string.Empty), new StringWriter()), Throws.TypeOf<ExecutionEngineLinesException>());
+			Assert.That(() => new ExecutionEngine(lines, new SecureRandom(), new StringReader(string.Empty), new StringWriter()), 
+				Throws.TypeOf<ExecutionEngineLinesException>()
+					.With.Property(nameof(ExecutionEngineLinesException.Messages)).Contains("The line at index 1 is null."));
 		}
 
 		[Test]
@@ -157,10 +161,10 @@ namespace WSharp.Runtime.Tests
 			Assert.That(writer.GetStringBuilder().ToString(), Is.EqualTo($"{message}{Environment.NewLine}"));
 		}
 
-		[Test]
-		public static void CallRead()
+		[TestCase("hello")]
+		[TestCase("")]
+		public static void CallRead(string message)
 		{
-			const string message = "hello";
 			var lines = ImmutableArray.Create(new Line(1, 3, _ => { }));
 			using var random = new SecureRandom();
 			var engine = new ExecutionEngine(lines, random, new StringReader(message), new StringWriter());

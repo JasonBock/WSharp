@@ -1,10 +1,34 @@
 ﻿using NUnit.Framework;
+using System;
 using WSharp.Compiler.Text;
 
 namespace WSharp.Compiler.Tests.Text
 {
 	public static class SourceTextTests
 	{
+		[Test]
+		public static void GetLineIndex()
+		{
+			var text = $"1 2#3;{Environment.NewLine}2 2;{Environment.NewLine}3 1#3;";
+			var source = SourceText.From(text);
+
+			Assert.Multiple(() =>
+			{
+				for(var i = 0; i < 6; i++)
+				{
+					Assert.That(source.GetLineIndex(i), Is.EqualTo(0), i.ToString());
+				}
+				for (var i = 8; i < 12; i++)
+				{
+					Assert.That(source.GetLineIndex(i), Is.EqualTo(1), i.ToString());
+				}
+				for (var i = 14; i < 20; i++)
+				{
+					Assert.That(source.GetLineIndex(i), Is.EqualTo(2), i.ToString());
+				}
+			});
+		}
+
 		[Test]
 		public static void Create()
 		{
