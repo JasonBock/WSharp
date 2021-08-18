@@ -35,7 +35,7 @@ namespace WSharp
 
 		public async Task RunAsync(FileInfo file)
 		{
-			await this.EvaluateMetaCommandAsync($"#loadFile {file.FullName}").ConfigureAwait(false);
+			await this.EvaluateMetaCommandAsync($"#runFile {file.FullName}").ConfigureAwait(false);
 			await this.RunAsync().ConfigureAwait(false);
 		}
 
