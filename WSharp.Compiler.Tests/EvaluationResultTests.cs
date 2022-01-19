@@ -2,7 +2,7 @@
 using System.Collections.Immutable;
 using WSharp.Runtime;
 
-namespace WSharp.Compiler.Tests.Compiler
+namespace WSharp.Compiler.Tests
 {
 	public static class EvaluationResultTests
 	{

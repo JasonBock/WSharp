@@ -1,12 +1,11 @@
 ﻿using Spackle;
-using System;
 using System.Collections.Immutable;
 using System.Numerics;
 using WSharp.Runtime;
 
 namespace WSharp
 {
-	internal static class FibonacciSequenceGenerator
+   internal static class FibonacciSequenceGenerator
 	{
 		/*
 1 again (1) defer (3 || N(1)<=N(2) || N(7)>99) 2#N(1),3,7;

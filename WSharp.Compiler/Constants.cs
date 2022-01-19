@@ -1,10 +1,9 @@
-﻿namespace WSharp.Compiler
+﻿namespace WSharp.Compiler;
+
+public static class TreePrint
 {
-	public static class TreePrint
-	{
-		public const string Branch = "└──";
-		public const string Down = "│  ";
-		public const string Center = "├──";
-		public const string Space = "   ";
-	}
+	public const string Branch = "└──";
+	public const string Down = "│  ";
+	public const string Center = "├──";
+	public const string Space = "   ";
 }

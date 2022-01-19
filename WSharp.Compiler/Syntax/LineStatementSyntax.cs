@@ -1,26 +1,25 @@
-﻿using System.Collections.Generic;
+﻿namespace WSharp.Compiler.Syntax;
 
-namespace WSharp.Compiler.Syntax
+public sealed class LineStatementSyntax
+	: StatementSyntax
 {
-	public sealed class LineStatementSyntax 
-		: StatementSyntax
+	internal LineStatementSyntax(SyntaxTree tree, ExpressionStatementSyntax number, List<ExpressionStatementSyntax> statements)
+		: base(tree) =>
+			(this.Number, this.Statements) = (number, statements);
+
+	public override IEnumerable<SyntaxNode> GetChildren()
 	{
-		internal LineStatementSyntax(SyntaxTree tree, ExpressionStatementSyntax number, List<ExpressionStatementSyntax> statements) 
-			: base(tree) =>
-				(this.Number, this.Statements) = (number, statements);
+		yield return this.Number;
 
-		public override IEnumerable<SyntaxNode> GetChildren()
+		foreach (var expression in this.Statements)
 		{
-			yield return this.Number;
-
-			foreach(var expression in this.Statements)
-			{
-				yield return expression;
-			}
+			yield return expression;
 		}
-
-		public List<ExpressionStatementSyntax> Statements { get; }
-		public override SyntaxKind Kind => SyntaxKind.LineStatement;
-		public ExpressionStatementSyntax Number { get; }
 	}
+
+#pragma warning disable CA1002 // Do not expose generic lists
+	public List<ExpressionStatementSyntax> Statements { get; }
+#pragma warning restore CA1002 // Do not expose generic lists
+	public override SyntaxKind Kind => SyntaxKind.LineStatement;
+	public ExpressionStatementSyntax Number { get; }
 }

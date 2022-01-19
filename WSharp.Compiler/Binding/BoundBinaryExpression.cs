@@ -1,10 +1,9 @@
-﻿using System.Collections.Generic;
-using WSharp.Compiler.Symbols;
+﻿using WSharp.Compiler.Symbols;
 using WSharp.Compiler.Syntax;
 
 namespace WSharp.Compiler.Binding
 {
-	internal sealed class BoundBinaryExpression
+   internal sealed class BoundBinaryExpression
 		: BoundExpression
 	{
 		public BoundBinaryExpression(SyntaxNode syntax, BoundExpression left, BoundBinaryOperator @operator, BoundExpression right)

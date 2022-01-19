@@ -1,15 +1,11 @@
 ﻿using Spackle.Extensions;
-using System;
-using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.IO;
-using System.Threading.Tasks;
 using WSharp.Compiler;
 using WSharp.Compiler.Syntax;
 
 namespace WSharp
 {
-	public static class Program
+   public static class Program
 	{
 		public static async Task<int> Main(FileInfo? file, FileInfo[]? references, FileInfo? outputPath, Interaction interaction, bool emitDebugging = false)
 		{
@@ -46,7 +42,7 @@ namespace WSharp
 
 					if (tree.Diagnostics.Length > 0)
 					{
-						DiagnosticsPrinter.Print(tree.Diagnostics);
+						await DiagnosticsPrinter.PrintAsync(tree.Diagnostics).ConfigureAwait(false);
 						return 1;
 					}
 
@@ -54,7 +50,7 @@ namespace WSharp
 
 					if (compilation.Diagnostics.Count > 0)
 					{
-						DiagnosticsPrinter.Print(compilation.Diagnostics.ToImmutableArray());
+						await DiagnosticsPrinter.PrintAsync(compilation.Diagnostics.ToImmutableArray()).ConfigureAwait(false);
 						return 1;
 					}
 					else
@@ -63,7 +59,7 @@ namespace WSharp
 
 						if (result.Diagnostics.Length > 0)
 						{
-							DiagnosticsPrinter.Print(result.Diagnostics);
+							await DiagnosticsPrinter.PrintAsync(result.Diagnostics).ConfigureAwait(false);
 							return 1;
 						}
 					}

@@ -1,70 +1,67 @@
 ﻿using Spackle.Extensions;
-using System;
 using System.Collections.Immutable;
-using System.Linq;
 using WSharp.Compiler;
 using WSharp.Compiler.Text;
 
-namespace WSharp
+namespace WSharp;
+
+internal static class DiagnosticsPrinter
 {
-	internal static class DiagnosticsPrinter
+	internal static async Task PrintAsync(ImmutableArray<Diagnostic> diagnostics)
 	{
-		internal static void Print(ImmutableArray<Diagnostic> diagnostics)
+		foreach (var diagnostic in diagnostics
+			.Where(_ => _.Location.Text is null))
 		{
-			foreach (var diagnostic in diagnostics
-				.Where(_ => _.Location.Text is null))
-			{
-				using (ConsoleColor.DarkRed.Bind(() => Console.ForegroundColor))
-				Console.Error.WriteLine(diagnostic.Message);
-				Console.Out.WriteLine(diagnostic.Message);
-			}
-
-			foreach (var diagnostic in diagnostics
-				.Where(_ => _.Location.Text is { })
-				.OrderBy(_ => _.Location.Text.File?.FullName)
-				.ThenBy(_ => _.Location.Span.Start)
-				.ThenBy(_ => _.Location.Span.Length))
-			{
-				var text = diagnostic.Location.Text;
-				var fileName = diagnostic.Location.Text.File?.FullName ?? string.Empty;
-				var startLine = diagnostic.Location.StartLine + 1;
-				var startCharacter = diagnostic.Location.StartCharacter + 1;
-				var endLine = diagnostic.Location.EndLine + 1;
-				var endCharacter = diagnostic.Location.EndCharacter + 1;
-
-				var span = diagnostic.Location.Span;
-				var lineIndex = text.GetLineIndex(span.Start);
-				var line = text.Lines[lineIndex];
-
-				Console.Out.WriteLine();
-				using (ConsoleColor.DarkRed.Bind(() => Console.ForegroundColor))
-				{
-					var origin = $"{fileName}({startLine},{startCharacter},{endLine},{endCharacter}): ";
-					Console.Out.Write(origin);
-					Console.Out.WriteLine(diagnostic);
-				}
-
-				var lineSpan = line.SpanIncludingLineBreak;
-				var prefixSpan = TextSpan.FromBounds(lineSpan.Start, span.Start);
-				var suffixSpan = TextSpan.FromBounds(span.End, lineSpan.End);
-
-				var prefix = text.ToString(prefixSpan);
-				var error = text.ToString(span);
-				var suffix = text.ToString(suffixSpan);
-
-				Console.Out.Write(TreePrint.Space);
-				Console.Out.Write(prefix);
-
-				using (ConsoleColor.DarkRed.Bind(() => Console.ForegroundColor))
-				{
-					Console.Out.Write(error);
-				}
-
-				Console.Out.Write(suffix);
-				Console.Out.WriteLine();
-			}
-
-			Console.Out.WriteLine();
+			using (ConsoleColor.DarkRed.Bind(() => Console.ForegroundColor))
+			await Console.Error.WriteLineAsync(diagnostic.Message).ConfigureAwait(false);
+			await Console.Out.WriteLineAsync(diagnostic.Message).ConfigureAwait(false);
 		}
+
+		foreach (var diagnostic in diagnostics
+			.Where(_ => _.Location.Text is { })
+			.OrderBy(_ => _.Location.Text.File?.FullName)
+			.ThenBy(_ => _.Location.Span.Start)
+			.ThenBy(_ => _.Location.Span.Length))
+		{
+			var text = diagnostic.Location.Text;
+			var fileName = diagnostic.Location.Text.File?.FullName ?? string.Empty;
+			var startLine = diagnostic.Location.StartLine + 1;
+			var startCharacter = diagnostic.Location.StartCharacter + 1;
+			var endLine = diagnostic.Location.EndLine + 1;
+			var endCharacter = diagnostic.Location.EndCharacter + 1;
+
+			var span = diagnostic.Location.Span;
+			var lineIndex = text.GetLineIndex(span.Start);
+			var line = text.Lines[lineIndex];
+
+			await Console.Out.WriteLineAsync().ConfigureAwait(false);
+			using (ConsoleColor.DarkRed.Bind(() => Console.ForegroundColor))
+			{
+				var origin = $"{fileName}({startLine},{startCharacter},{endLine},{endCharacter}): ";
+				await Console.Out.WriteAsync(origin).ConfigureAwait(false);
+				await Console.Out.WriteLineAsync(diagnostic.ToString()).ConfigureAwait(false);
+			}
+
+			var lineSpan = line.SpanIncludingLineBreak;
+			var prefixSpan = TextSpan.FromBounds(lineSpan.Start, span.Start);
+			var suffixSpan = TextSpan.FromBounds(span.End, lineSpan.End);
+
+			var prefix = text.ToString(prefixSpan);
+			var error = text.ToString(span);
+			var suffix = text.ToString(suffixSpan);
+
+			await Console.Out.WriteAsync(TreePrint.Space).ConfigureAwait(false);
+			await Console.Out.WriteAsync(prefix).ConfigureAwait(false);
+
+			using (ConsoleColor.DarkRed.Bind(() => Console.ForegroundColor))
+			{
+				await Console.Out.WriteAsync(error).ConfigureAwait(false);
+			}
+
+			await Console.Out.WriteAsync(suffix).ConfigureAwait(false);
+			await Console.Out.WriteLineAsync().ConfigureAwait(false);
+		}
+
+		await Console.Out.WriteLineAsync().ConfigureAwait(false);
 	}
 }

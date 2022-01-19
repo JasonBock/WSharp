@@ -1,8 +1,6 @@
-﻿using System;
-
-namespace WSharp
+﻿namespace WSharp
 {
-	[AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
+   [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
 	internal sealed class MetaCommandAttribute
 		: Attribute
 	{

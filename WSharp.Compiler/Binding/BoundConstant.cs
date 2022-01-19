@@ -1,10 +1,9 @@
-﻿namespace WSharp.Compiler.Binding
-{
-	public sealed class BoundConstant
-	{
-		public BoundConstant(object value) =>
-			this.Value = value;
+﻿namespace WSharp.Compiler.Binding;
 
-		public object Value { get; }
-	}
+public sealed class BoundConstant
+{
+	public BoundConstant(object value) =>
+		this.Value = value;
+
+	public object Value { get; }
 }

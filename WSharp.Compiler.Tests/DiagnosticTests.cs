@@ -1,7 +1,7 @@
 ﻿using NUnit.Framework;
 using WSharp.Compiler.Text;
 
-namespace WSharp.Compiler.Tests.Compiler
+namespace WSharp.Compiler.Tests
 {
 	public static class DiagnosticTests
 	{
@@ -20,5 +20,4 @@ namespace WSharp.Compiler.Tests.Compiler
 				Assert.That(diagnostic.ToString(), Is.EqualTo(message), nameof(diagnostic.ToString));
 			});
 		}
-	}
-}
+	}}

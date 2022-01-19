@@ -1,24 +1,23 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <AssemblyName>WSharp.Runtime.Tests</AssemblyName>
-    <RootNamespace>WSharp.Runtime.Tests</RootNamespace>
-    <TargetFramework>net5.0</TargetFramework>
-  </PropertyGroup>
-  <ItemGroup>
-    <Compile Remove="StrykerOutput\**" />
-    <EmbeddedResource Remove="StrykerOutput\**" />
-    <None Remove="StrykerOutput\**" />
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.11.0" />
-    <PackageReference Include="NUnit" Version="3.13.2" />
-    <PackageReference Include="NUnit.Analyzers" Version="3.1.0" />
-    <PackageReference Include="NUnit3TestAdapter" Version="4.0.0">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\WSharp.Runtime\WSharp.Runtime.csproj" />
-  </ItemGroup>
+	<PropertyGroup>
+		<AssemblyName>WSharp.Runtime.Tests</AssemblyName>
+		<RootNamespace>WSharp.Runtime.Tests</RootNamespace>
+	</PropertyGroup>
+	<ItemGroup>
+		<Compile Remove="StrykerOutput\**" />
+		<EmbeddedResource Remove="StrykerOutput\**" />
+		<None Remove="StrykerOutput\**" />
+	</ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.11.0" />
+		<PackageReference Include="NUnit" Version="3.13.2" />
+		<PackageReference Include="NUnit.Analyzers" Version="3.1.0" />
+		<PackageReference Include="NUnit3TestAdapter" Version="4.0.0">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+	</ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\WSharp.Runtime\WSharp.Runtime.csproj" />
+	</ItemGroup>
 </Project>

@@ -1,29 +1,27 @@
 ﻿using NUnit.Framework;
-using System;
 using WSharp.Compiler.Symbols;
 
-namespace WSharp.Compiler.Tests.Symbols
+namespace WSharp.Compiler.Tests.Symbols;
+
+public static class TypeSymbolTests
 {
-	public static class TypeSymbolTests
+	[Test]
+	public static void LookupUnknownTypeSymbol() =>
+		Assert.That(TypeSymbol.Lookup(Guid.NewGuid().ToString()), Is.Null);
+
+	[TestCase(TypeSymbol.BooleanName)]
+	[TestCase(TypeSymbol.ErrorName)]
+	[TestCase(TypeSymbol.IntegerName)]
+	[TestCase(TypeSymbol.StringName)]
+	[TestCase(TypeSymbol.VoidName)]
+	public static void VerifyTypeSymbol(string typeName)
 	{
-		[Test]
-		public static void LookupUnknownTypeSymbol() =>
-			Assert.That(TypeSymbol.Lookup(Guid.NewGuid().ToString()), Is.Null);
+		var symbol = TypeSymbol.Lookup(typeName)!;
 
-		[TestCase(TypeSymbol.BooleanName)]
-		[TestCase(TypeSymbol.ErrorName)]
-		[TestCase(TypeSymbol.IntegerName)]
-		[TestCase(TypeSymbol.StringName)]
-		[TestCase(TypeSymbol.VoidName)]
-		public static void VerifyTypeSymbol(string typeName)
+		Assert.Multiple(() =>
 		{
-			var symbol = TypeSymbol.Lookup(typeName)!;
-
-			Assert.Multiple(() =>
-			{
-				Assert.That(symbol.Name, Is.EqualTo(typeName), nameof(symbol.Name));
-				Assert.That(symbol.Kind, Is.EqualTo(SymbolKind.Type), nameof(symbol.Kind));
-			});
-		}
+			Assert.That(symbol.Name, Is.EqualTo(typeName), nameof(symbol.Name));
+			Assert.That(symbol.Kind, Is.EqualTo(SymbolKind.Type), nameof(symbol.Kind));
+		});
 	}
 }

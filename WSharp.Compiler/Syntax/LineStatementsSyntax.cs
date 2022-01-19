@@ -1,23 +1,22 @@
-﻿using System.Collections.Generic;
+﻿namespace WSharp.Compiler.Syntax;
 
-namespace WSharp.Compiler.Syntax
+public sealed class LineStatementsSyntax
+	: StatementSyntax
 {
-	public sealed class LineStatementsSyntax
-		: StatementSyntax
+	internal LineStatementsSyntax(SyntaxTree tree, List<LineStatementSyntax> lines)
+		: base(tree) =>
+			this.Lines = lines;
+
+	public override IEnumerable<SyntaxNode> GetChildren()
 	{
-		internal LineStatementsSyntax(SyntaxTree tree, List<LineStatementSyntax> lines)
-			: base(tree) =>
-				this.Lines = lines;
-
-		public override IEnumerable<SyntaxNode> GetChildren()
+		foreach (var line in this.Lines)
 		{
-			foreach (var line in this.Lines)
-			{
-				yield return line;
-			}
+			yield return line;
 		}
-
-		public List<LineStatementSyntax> Lines { get; }
-		public override SyntaxKind Kind => SyntaxKind.LineStatements;
 	}
+
+#pragma warning disable CA1002 // Do not expose generic lists
+	public List<LineStatementSyntax> Lines { get; }
+#pragma warning restore CA1002 // Do not expose generic lists
+	public override SyntaxKind Kind => SyntaxKind.LineStatements;
 }

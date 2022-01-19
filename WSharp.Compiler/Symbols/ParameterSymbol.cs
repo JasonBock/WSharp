@@ -1,13 +1,12 @@
-﻿namespace WSharp.Compiler.Symbols
+﻿namespace WSharp.Compiler.Symbols;
+
+public sealed class ParameterSymbol
+	: Symbol
 {
-	public sealed class ParameterSymbol
-		: Symbol
-	{
-		public ParameterSymbol(string name, TypeSymbol type)
-			: base(name) => this.Type = type;
+	public ParameterSymbol(string name, TypeSymbol type)
+		: base(name) => this.Type = type;
 
-		public override SymbolKind Kind => SymbolKind.Parameter;
+	public override SymbolKind Kind => SymbolKind.Parameter;
 
-		public TypeSymbol Type { get; }
-	}
+	public TypeSymbol Type { get; }
 }

@@ -1,9 +1,8 @@
-﻿namespace WSharp.Compiler.Syntax
+﻿namespace WSharp.Compiler.Syntax;
+
+public abstract class ExpressionSyntax
+	: SyntaxNode
 {
-	public abstract class ExpressionSyntax 
-		: SyntaxNode 
-	{
-		protected ExpressionSyntax(SyntaxTree tree)
-			: base(tree) { }
-	}
+	protected ExpressionSyntax(SyntaxTree tree)
+		: base(tree) { }
 }

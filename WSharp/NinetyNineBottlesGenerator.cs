@@ -1,12 +1,11 @@
 ﻿using Spackle;
-using System;
 using System.Collections.Immutable;
 using System.Numerics;
 using WSharp.Runtime;
 
 namespace WSharp
 {
-	internal static class NinetyNineBottlesGenerator
+   internal static class NinetyNineBottlesGenerator
 	{
 		/*
 1 defer (4 || N(1)<N(2) || N(2)<N(3)) print(N(1)+" bottles of beer on the wall, "+N(1)+" bottles of beer,");

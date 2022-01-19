@@ -1,22 +1,20 @@
-﻿using System;
-using System.Runtime.Serialization;
+﻿using System.Runtime.Serialization;
 
-namespace WSharp.Runtime
+namespace WSharp.Runtime;
+
+[Serializable]
+public sealed class EngineException
+	: Exception
 {
-	[Serializable]
-	public sealed class EngineException 
-		: Exception
-	{
-		public EngineException()
-			: base() { }
+	public EngineException()
+		: base() { }
 
-		public EngineException(string? message)
-			: base(message) { }
+	public EngineException(string? message)
+		: base(message) { }
 
-		public EngineException(string? message, Exception? innerException)
-			: base(message, innerException) { }
+	public EngineException(string? message, Exception? innerException)
+		: base(message, innerException) { }
 
-		private EngineException(SerializationInfo info, StreamingContext context)
-			: base(info, context) { }
-	}
+	private EngineException(SerializationInfo info, StreamingContext context)
+		: base(info, context) { }
 }

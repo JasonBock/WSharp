@@ -1,7 +1,7 @@
 ﻿using NUnit.Framework;
 using WSharp.Compiler.Syntax;
 
-namespace WSharp.Compiler.Tests.Compiler
+namespace WSharp.Compiler.Tests
 {
 	public static class EvaluatorTests
 	{

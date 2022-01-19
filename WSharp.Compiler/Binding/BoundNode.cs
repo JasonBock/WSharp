@@ -1,64 +1,59 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using WSharp.Compiler.Syntax;
+﻿using WSharp.Compiler.Syntax;
 
-namespace WSharp.Compiler.Binding
+namespace WSharp.Compiler.Binding;
+
+internal abstract class BoundNode
 {
-	internal abstract class BoundNode
+	protected BoundNode(SyntaxNode syntax) => this.Syntax = syntax;
+
+	public abstract IEnumerable<BoundNode> GetChildren();
+
+	public abstract IEnumerable<(string name, object value)> GetProperties();
+
+	private static string GetText(BoundNode node) =>
+		node switch
+		{
+			BoundBinaryExpression binary => $"{binary.Operator.OperatorKind}Expression",
+			BoundUnaryExpression unary => $"{unary.Operator.OperatorKind}Expression",
+			_ => node.Kind.ToString()
+		};
+
+	private static void Print(TextWriter writer, BoundNode node, string indent = "", bool isLast = true)
 	{
-		protected BoundNode(SyntaxNode syntax) => this.Syntax = syntax;
+		var marker = isLast ? TreePrint.Branch : TreePrint.Center;
 
-		public abstract IEnumerable<BoundNode> GetChildren();
+		writer.Write(indent);
+		writer.Write(marker);
+		BoundNode.WriteNode(writer, node);
+		BoundNode.WriteProperties(writer, node);
+		writer.WriteLine();
 
-		public abstract IEnumerable<(string name, object value)> GetProperties();
+		indent += isLast ? TreePrint.Space : TreePrint.Down;
 
-		private static string GetText(BoundNode node) =>
-			node switch
-			{
-				BoundBinaryExpression binary => $"{binary.Operator.OperatorKind}Expression",
-				BoundUnaryExpression unary => $"{unary.Operator.OperatorKind}Expression",
-				_ => node.Kind.ToString()
-			};
+		var lastChild = node.GetChildren().LastOrDefault();
 
-		private static void Print(TextWriter writer, BoundNode node, string indent = "", bool isLast = true)
+		foreach (var child in node.GetChildren())
 		{
-			var marker = isLast ? TreePrint.Branch : TreePrint.Center;
-
-			writer.Write(indent);
-			writer.Write(marker);
-			BoundNode.WriteNode(writer, node);
-			BoundNode.WriteProperties(writer, node);
-			writer.WriteLine();
-
-			indent += isLast ? TreePrint.Space : TreePrint.Down;
-
-			var lastChild = node.GetChildren().LastOrDefault();
-
-			foreach (var child in node.GetChildren())
-			{
-				BoundNode.Print(writer, child, indent, child == lastChild);
-			}
+			BoundNode.Print(writer, child, indent, child == lastChild);
 		}
-
-		private static void WriteNode(TextWriter writer, BoundNode node) =>
-			writer.Write(BoundNode.GetText(node));
-
-		private static void WriteProperties(TextWriter writer, BoundNode node) => 
-			writer.Write($"{string.Join(",", node.GetProperties().Select(_ => $" {_.name} = {_.value}"))}");
-
-		public void WriteTo(TextWriter writer)
-		{
-			if (writer is null)
-			{
-				throw new ArgumentNullException(nameof(writer));
-			}
-
-			BoundNode.Print(writer, this);
-		}
-
-		public abstract BoundNodeKind Kind { get; }
-		public SyntaxNode Syntax { get; }
 	}
+
+	private static void WriteNode(TextWriter writer, BoundNode node) =>
+		writer.Write(BoundNode.GetText(node));
+
+	private static void WriteProperties(TextWriter writer, BoundNode node) =>
+		writer.Write($"{string.Join(",", node.GetProperties().Select(_ => $" {_.name} = {_.value}"))}");
+
+	public void WriteTo(TextWriter writer)
+	{
+		if (writer is null)
+		{
+			throw new ArgumentNullException(nameof(writer));
+		}
+
+		BoundNode.Print(writer, this);
+	}
+
+	public abstract BoundNodeKind Kind { get; }
+	public SyntaxNode Syntax { get; }
 }

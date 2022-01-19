@@ -1,16 +1,15 @@
 <Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <AssemblyName>WSharp.Compiler</AssemblyName>
-    <Description>A Whenever compiler written in C#.</Description>
-    <RootNamespace>WSharp.Compiler</RootNamespace>
-    <TargetFramework>net5.0</TargetFramework>
-  </PropertyGroup>
-  <ItemGroup>
-    <PackageReference Include="Mono.Cecil" Version="0.11.4" />
-    <PackageReference Include="Spackle" Version="10.0.0" />
-    <PackageReference Include="System.Collections.Immutable" Version="5.0.0" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\WSharp.Runtime\WSharp.Runtime.csproj" />
-  </ItemGroup>
+	<PropertyGroup>
+		<AssemblyName>WSharp.Compiler</AssemblyName>
+		<Description>A Whenever compiler written in C#.</Description>
+		<RootNamespace>WSharp.Compiler</RootNamespace>
+	</PropertyGroup>
+	<ItemGroup>
+		<PackageReference Include="Mono.Cecil" Version="0.11.4" />
+		<PackageReference Include="Spackle" Version="10.0.0" />
+		<PackageReference Include="System.Collections.Immutable" Version="5.0.0" />
+	</ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\WSharp.Runtime\WSharp.Runtime.csproj" />
+	</ItemGroup>
 </Project>

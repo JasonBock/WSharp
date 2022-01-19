@@ -1,10 +1,9 @@
-﻿namespace WSharp.Compiler.Binding
+﻿namespace WSharp.Compiler.Binding;
+
+public enum BoundUnaryOperatorKind
 {
-	public enum BoundUnaryOperatorKind
-	{
-		Identity,
-		Negation,
-		LogicalNegation,
-		OnesComplement
-	}
+	Identity,
+	Negation,
+	LogicalNegation,
+	OnesComplement
 }

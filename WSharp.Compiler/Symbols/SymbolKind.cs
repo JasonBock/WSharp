@@ -1,8 +1,8 @@
-﻿namespace WSharp.Compiler.Symbols
+﻿namespace WSharp.Compiler.Symbols;
+
+public enum SymbolKind
 {
-	public enum SymbolKind {
-		Type,
-		Function,
-		Parameter
-	}
+	Type,
+	Function,
+	Parameter
 }

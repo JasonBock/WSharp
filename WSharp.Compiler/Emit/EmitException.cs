@@ -1,22 +1,20 @@
-﻿using System;
-using System.Runtime.Serialization;
+﻿using System.Runtime.Serialization;
 
-namespace WSharp.Compiler.Emit
+namespace WSharp.Compiler.Emit;
+
+[Serializable]
+public sealed class EmitException
+	: Exception
 {
-	[Serializable]
-	public sealed class EmitException 
-		: Exception
-	{
-		public EmitException()
-			: base() { }
+	public EmitException()
+		: base() { }
 
-		public EmitException(string? message)
-			: base(message) { }
+	public EmitException(string? message)
+		: base(message) { }
 
-		public EmitException(string? message, Exception? innerException)
-			: base(message, innerException) { }
+	public EmitException(string? message, Exception? innerException)
+		: base(message, innerException) { }
 
-		private EmitException(SerializationInfo info, StreamingContext context)
-			: base(info, context) { }
-	}
+	private EmitException(SerializationInfo info, StreamingContext context)
+		: base(info, context) { }
 }

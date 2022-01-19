@@ -1,12 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <AssemblyName>WSharp.Runtime</AssemblyName>
-    <Description>Contains the runtime for Whenever.</Description>
-    <RootNamespace>WSharp.Runtime</RootNamespace>
-    <TargetFramework>net5.0</TargetFramework>
-  </PropertyGroup>
-  <ItemGroup>
-    <PackageReference Include="Spackle" Version="10.0.0" />
-    <PackageReference Include="System.Collections.Immutable" Version="5.0.0" />
-  </ItemGroup>
+	<PropertyGroup>
+		<AssemblyName>WSharp.Runtime</AssemblyName>
+		<Description>Contains the runtime for Whenever.</Description>
+		<RootNamespace>WSharp.Runtime</RootNamespace>
+	</PropertyGroup>
+	<ItemGroup>
+		<PackageReference Include="Spackle" Version="10.0.0" />
+		<PackageReference Include="System.Collections.Immutable" Version="5.0.0" />
+	</ItemGroup>
 </Project>

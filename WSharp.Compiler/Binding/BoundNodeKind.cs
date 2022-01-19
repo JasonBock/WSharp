@@ -1,21 +1,20 @@
-﻿namespace WSharp.Compiler.Binding
-{
-	public enum BoundNodeKind
-	{
-		// Statements
-		LineStatements,
-		LineStatement,
-		ExpressionStatement,
-		SequencePointStatement,
+﻿namespace WSharp.Compiler.Binding;
 
-		// Expressions
-		UnaryExpression,
-		LiteralExpression,
-		BinaryExpression,
-		UpdateLineCountExpression,
-		UnaryUpdateLineCountExpression,
-		CallExpression,
-		ErrorExpression,
-		ConversionExpression,
-	}
+public enum BoundNodeKind
+{
+	// Statements
+	LineStatements,
+	LineStatement,
+	ExpressionStatement,
+	SequencePointStatement,
+
+	// Expressions
+	UnaryExpression,
+	LiteralExpression,
+	BinaryExpression,
+	UpdateLineCountExpression,
+	UnaryUpdateLineCountExpression,
+	CallExpression,
+	ErrorExpression,
+	ConversionExpression,
 }

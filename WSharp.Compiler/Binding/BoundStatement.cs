@@ -1,11 +1,10 @@
 ﻿using WSharp.Compiler.Syntax;
 
-namespace WSharp.Compiler.Binding
+namespace WSharp.Compiler.Binding;
+
+internal abstract class BoundStatement
+	: BoundNode
 {
-	internal abstract class BoundStatement
-		: BoundNode
-	{
-		protected BoundStatement(SyntaxNode syntax)
-			: base(syntax) { }
-	}
+	protected BoundStatement(SyntaxNode syntax)
+		: base(syntax) { }
 }

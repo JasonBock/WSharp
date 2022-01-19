@@ -1,8 +1,6 @@
 ﻿using NUnit.Framework;
-using System;
-using System.Text.Json;
 
-namespace WSharp.Tests
+namespace WSharp.Compiler.Tests
 {
 	public abstract class ExceptionTests<T, TInner>
 		where T : Exception, new()

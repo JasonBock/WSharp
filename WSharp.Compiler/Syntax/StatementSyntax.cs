@@ -1,9 +1,8 @@
-﻿namespace WSharp.Compiler.Syntax
+﻿namespace WSharp.Compiler.Syntax;
+
+public abstract class StatementSyntax
+	: SyntaxNode
 {
-	public abstract class StatementSyntax
-		: SyntaxNode
-	{
-		protected StatementSyntax(SyntaxTree tree)
-			: base(tree) { }
-	}
+	protected StatementSyntax(SyntaxTree tree)
+		: base(tree) { }
 }

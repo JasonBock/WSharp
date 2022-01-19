@@ -1,20 +1,19 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <AssemblyName>WSharp</AssemblyName>
-    <Description>A console app that drives the WSharp runtime.</Description>
-    <OutputType>Exe</OutputType>
-    <RootNamespace>WSharp</RootNamespace>
-    <TargetFramework>net5.0</TargetFramework>
-  </PropertyGroup>
-  <ItemGroup>
-    <PackageReference Include="System.CommandLine.DragonFruit" Version="0.3.0-alpha.20303.1" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\WSharp.Compiler\WSharp.Compiler.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Update="*.ws">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
+	<PropertyGroup>
+		<AssemblyName>WSharp</AssemblyName>
+		<Description>A console app that drives the WSharp runtime.</Description>
+		<OutputType>Exe</OutputType>
+		<RootNamespace>WSharp</RootNamespace>
+	</PropertyGroup>
+	<ItemGroup>
+		<PackageReference Include="System.CommandLine.DragonFruit" Version="0.3.0-alpha.20303.1" />
+	</ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\WSharp.Compiler\WSharp.Compiler.csproj" />
+	</ItemGroup>
+	<ItemGroup>
+		<None Update="*.ws">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+	</ItemGroup>
 </Project>
