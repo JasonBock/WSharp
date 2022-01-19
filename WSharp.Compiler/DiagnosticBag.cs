@@ -23,11 +23,7 @@ public sealed class DiagnosticBag
 
 	public void ReportInvalidReference(FileInfo reference)
 	{
-		if (reference is null)
-		{
-			throw new ArgumentNullException(nameof(reference));
-		}
-
+		ArgumentNullException.ThrowIfNull(reference);
 		this.Report(default, $"The reference is not a valid .NET assembly: '{reference.FullName}'.");
 	}
 
@@ -82,11 +78,7 @@ public sealed class DiagnosticBag
 
 	public void ReportUndefinedFunction(SyntaxToken identifier)
 	{
-		if (identifier is null)
-		{
-			throw new ArgumentNullException(nameof(identifier));
-		}
-
+		ArgumentNullException.ThrowIfNull(identifier);
 		this.Report(identifier.Location, $"Function '{identifier.Text}' doesn't exist.");
 	}
 

@@ -49,11 +49,7 @@ public sealed class SyntaxTree
 
 	public static async Task<SyntaxTree> LoadAsync(FileInfo file)
 	{
-		if (file is null)
-		{
-			throw new ArgumentNullException(nameof(file));
-		}
-
+		ArgumentNullException.ThrowIfNull(file);
 		return SyntaxTree.Parse(SourceText.From(
 			await File.ReadAllTextAsync(file.FullName).ConfigureAwait(false), file));
 	}

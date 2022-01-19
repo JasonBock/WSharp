@@ -46,11 +46,7 @@ internal abstract class BoundNode
 
 	public void WriteTo(TextWriter writer)
 	{
-		if (writer is null)
-		{
-			throw new ArgumentNullException(nameof(writer));
-		}
-
+		ArgumentNullException.ThrowIfNull(writer);
 		BoundNode.Print(writer, this);
 	}
 

@@ -107,11 +107,7 @@ public abstract class SyntaxNode
 
 	public void WriteTo(TextWriter writer)
 	{
-		if (writer is null)
-		{
-			throw new ArgumentNullException(nameof(writer));
-		}
-
+		ArgumentNullException.ThrowIfNull(writer);
 		SyntaxNode.Print(writer, this);
 	}
 
