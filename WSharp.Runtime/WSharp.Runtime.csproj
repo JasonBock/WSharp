@@ -2,6 +2,7 @@
 	<PropertyGroup>
 		<AssemblyName>WSharp.Runtime</AssemblyName>
 		<Description>Contains the runtime for Whenever.</Description>
+		<NoWarn>CA1001</NoWarn>
 		<RootNamespace>WSharp.Runtime</RootNamespace>
 	</PropertyGroup>
 	<ItemGroup>
