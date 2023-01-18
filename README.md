@@ -9,6 +9,6 @@ You can also build executables from WSharp code. Navigate to the `Samples\Playgr
 error : Expected file "obj\Debug\net5.0\refint\Playground.dll" does not exist. [C:\Users\jason\source\repos\WSharp\Samples\Playground\Playground.wsproj]
 ```
 
-Ignore that :). Just look in the `bin\Debug\net5.0` directory (.NET 5.0 is the default runtime used in `Playground.wsproj`), and you should see `Playground.exe`.
+Ignore that :). Just look in the `bin\Debug\net7.0` directory (.NET 7.0 is the default runtime used in `Playground.wsproj`), and you should see `Playground.exe`.
 
 If you want to debug the executable in Visual Studio, "open" the executable by saying `File -> Open -> Project/Solution`, and then select `Playground.exe`. Next, add `Playground.ws` to this project, and then change the `Debugger Type` project setting to `Managed`. If all is well, you should be able to set breakpoints in `Playground.ws` and when you launch the solution under the debugger, the breakpoints will be hit.
