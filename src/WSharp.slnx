@@ -1,0 +1,13 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path=".editorconfig" />
+    <File Path="Directory.Build.props" />
+    <File Path="LICENSE" />
+    <File Path="README.md" />
+  </Folder>
+  <Project Path="WSharp.Compiler.Tests/WSharp.Compiler.Tests.csproj" />
+  <Project Path="WSharp.Compiler/WSharp.Compiler.csproj" />
+  <Project Path="WSharp.Runtime.Tests/WSharp.Runtime.Tests.csproj" />
+  <Project Path="WSharp.Runtime/WSharp.Runtime.csproj" />
+  <Project Path="WSharp/WSharp.csproj" />
+</Solution>

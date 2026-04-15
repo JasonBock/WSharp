@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<AssemblyName>WSharp.Compiler</AssemblyName>
+		<Description>A Whenever compiler written in C#.</Description>
+		<RootNamespace>WSharp.Compiler</RootNamespace>
+	</PropertyGroup>
+	<ItemGroup>
+		<PackageReference Include="Mono.Cecil" />
+		<PackageReference Include="Spackle" />
+	</ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\WSharp.Runtime\WSharp.Runtime.csproj" />
+	</ItemGroup>
+</Project>
