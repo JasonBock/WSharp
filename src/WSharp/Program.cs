@@ -3,110 +3,109 @@ using System.Collections.Immutable;
 using WSharp.Compiler;
 using WSharp.Compiler.Syntax;
 
-namespace WSharp
+namespace WSharp;
+
+internal static class Program
 {
-   public static class Program
+	public static async Task<int> Main(FileInfo? file, FileInfo[]? references, FileInfo? outputPath, Interaction interaction, bool emitDebugging = false)
 	{
-		public static async Task<int> Main(FileInfo? file, FileInfo[]? references, FileInfo? outputPath, Interaction interaction, bool emitDebugging = false)
+		//System.Diagnostics.Debugger.Launch();
+		//interaction = Interaction.Compile;
+		//file = new FileInfo("HelloWorld.ws");
+
+		if (interaction == Interaction.Interpret)
 		{
-			//System.Diagnostics.Debugger.Launch();
-			//interaction = Interaction.Compile;
-			//file = new FileInfo("HelloWorld.ws");
+			var repl = new Repl();
 
-			if (interaction == Interaction.Interpret)
+			if (file != null)
 			{
-				var repl = new Repl();
-
-				if (file != null)
-				{
-					await repl.RunAsync(file).ConfigureAwait(false);
-				}
-				else
-				{
-					await repl.RunAsync().ConfigureAwait(false);
-				}
-
-				return 0;
+				await repl.RunAsync(file).ConfigureAwait(false);
 			}
 			else
 			{
-				if (Program.ValidateParameters(file, references ?? Array.Empty<FileInfo>()))
+				await repl.RunAsync().ConfigureAwait(false);
+			}
+
+			return 0;
+		}
+		else
+		{
+			if (Program.ValidateParameters(file, references ?? Array.Empty<FileInfo>()))
+			{
+				var targetFile = file ?? file!;
+				var targetReferences = references ?? Array.Empty<FileInfo>();
+
+				var moduleName = targetFile.Name.Replace(targetFile.Extension, string.Empty);
+				outputPath ??= new FileInfo(Path.ChangeExtension(targetFile.Name, ".exe"));
+
+				var tree = await SyntaxTree.LoadAsync(targetFile).ConfigureAwait(false);
+
+				if (tree.Diagnostics.Length > 0)
 				{
-					var targetFile = file ?? file!;
-					var targetReferences = references ?? Array.Empty<FileInfo>();
-
-					var moduleName = targetFile.Name.Replace(targetFile.Extension, string.Empty);
-					outputPath ??= new FileInfo(Path.ChangeExtension(targetFile.Name, ".exe"));
-
-					var tree = await SyntaxTree.LoadAsync(targetFile).ConfigureAwait(false);
-
-					if (tree.Diagnostics.Length > 0)
-					{
-						await DiagnosticsPrinter.PrintAsync(tree.Diagnostics).ConfigureAwait(false);
-						return 1;
-					}
-
-					var compilation = new Compilation(tree);
-
-					if (compilation.Diagnostics.Count > 0)
-					{
-						await DiagnosticsPrinter.PrintAsync(compilation.Diagnostics.ToImmutableArray()).ConfigureAwait(false);
-						return 1;
-					}
-					else
-					{
-						var result = compilation.Emit(moduleName, targetReferences, outputPath, emitDebugging);
-
-						if (result.Diagnostics.Length > 0)
-						{
-							await DiagnosticsPrinter.PrintAsync(result.Diagnostics).ConfigureAwait(false);
-							return 1;
-						}
-					}
+					await DiagnosticsPrinter.PrintAsync(tree.Diagnostics).ConfigureAwait(false);
+					return 1;
 				}
 
-				return 0;
+				var compilation = new Compilation(tree);
+
+				if (compilation.Diagnostics.Count > 0)
+				{
+					await DiagnosticsPrinter.PrintAsync(compilation.Diagnostics.ToImmutableArray()).ConfigureAwait(false);
+					return 1;
+				}
+				else
+				{
+					var result = compilation.Emit(moduleName, targetReferences, outputPath, emitDebugging);
+
+					if (result.Diagnostics.Length > 0)
+					{
+						await DiagnosticsPrinter.PrintAsync(result.Diagnostics).ConfigureAwait(false);
+						return 1;
+					}
+				}
+			}
+
+			return 0;
+		}
+	}
+
+	private static bool ValidateParameters(FileInfo? file, FileInfo[] references)
+	{
+		var errors = new List<string>();
+
+		if (file == null)
+		{
+			errors.Add($"No file was provided.");
+		}
+		else if (!file.Exists)
+		{
+			errors.Add($"File {file} does not exist.");
+		}
+
+		if (references is { } && references.Length > 0)
+		{
+			foreach (var reference in references)
+			{
+				if (!reference.Exists)
+				{
+					errors.Add($"Reference {reference} does not exist.");
+				}
 			}
 		}
 
-		private static bool ValidateParameters(FileInfo? file, FileInfo[] references)
+		if (errors.Count > 0)
 		{
-			var errors = new List<string>();
-
-			if (file == null)
-			{
-				errors.Add($"No file was provided.");
-			}
-			else if (!file.Exists)
-			{
-				errors.Add($"File {file} does not exist.");
-			}
-
-			if(references is { } && references.Length > 0)
-			{
-				foreach(var reference in references)
-				{
-					if(!reference.Exists)
-					{
-						errors.Add($"Reference {reference} does not exist.");
-					}
-				}
-			}
-
-			if (errors.Count > 0)
-			{
-				using (ConsoleColor.Red.Bind(() => Console.ForegroundColor))
+			using (ConsoleColor.Red.Bind(() => Console.ForegroundColor))
 				foreach (var error in errors)
 				{
 					Console.Out.WriteLine(error);
 				}
 
-				return false;
-			}
-			else
-			{
-				return true;
-			}
+			return false;
+		}
+		else
+		{
+			return true;
 		}
 	}
 }

@@ -1,7 +1,6 @@
-﻿namespace WSharp
+﻿namespace WSharp;
+
+internal enum Interaction
 {
-	public enum Interaction
-	{
-		Interpret, Compile
-	}
+	Interpret, Compile
 }

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Immutable;
 using System.Numerics;
+using System.Security.Cryptography;
 using WSharp.Runtime;
 
 namespace WSharp
@@ -20,7 +21,7 @@ namespace WSharp
 
 		internal static void Run()
 		{
-			using var random = new SecureRandom();
+			using var random = RandomNumberGenerator.Create();
 			new ExecutionEngine(FibonacciSequenceGenerator.Generate(), random, Console.In, Console.Out).Execute();
 		}
 

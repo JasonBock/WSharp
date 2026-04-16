@@ -1,16 +1,17 @@
 ﻿using NUnit.Framework;
 using System.Collections.Immutable;
 using System.Numerics;
+using System.Security.Cryptography;
 
 namespace WSharp.Runtime.Tests;
 
-public static class ExecutionEngineTests
+internal static class ExecutionEngineTests
 {
 	[Test]
 	public static void Create()
 	{
 		var lines = ImmutableArray.Create(new Line(1, 1, _ => { }));
-		using var random = new SecureRandom();
+		using var random = RandomNumberGenerator.Create();
 		using var writer = new StringWriter();
 		var reader = new StringReader(string.Empty);
 
@@ -19,24 +20,24 @@ public static class ExecutionEngineTests
 
 	[Test]
 	public static void CreateWhenGivenNullRandom() =>
-		Assert.That(() => new ExecutionEngine(ImmutableArray.Create(new Line(1, 1, _ => { })), null!, new StringReader(string.Empty), new StringWriter()),
+		Assert.That(() => new ExecutionEngine([new Line(1, 1, _ => { })], null!, new StringReader(string.Empty), new StringWriter()),
 			Throws.TypeOf<ArgumentNullException>());
 
 	[Test]
 	public static void CreateWhenGivenNullWriter() =>
-		Assert.That(() => new ExecutionEngine(ImmutableArray.Create(new Line(1, 1, _ => { })), new SecureRandom(), new StringReader(string.Empty), null!),
+		Assert.That(() => new ExecutionEngine([new Line(1, 1, _ => { })], RandomNumberGenerator.Create(), new StringReader(string.Empty), null!),
 			Throws.TypeOf<ArgumentNullException>());
 
 	[Test]
 	public static void CreateWhenGivenNullReader() =>
-		Assert.That(() => new ExecutionEngine(ImmutableArray.Create(new Line(1, 1, _ => { })), new SecureRandom(), null!, new StringWriter()),
+		Assert.That(() => new ExecutionEngine([new Line(1, 1, _ => { })], RandomNumberGenerator.Create(), null!, new StringWriter()),
 			Throws.TypeOf<ArgumentNullException>());
 
 	[Test]
 	public static void CreateWhenGivenEmptyList()
 	{
 		var lines = ImmutableArray<Line>.Empty;
-		Assert.That(() => new ExecutionEngine(lines, new SecureRandom(), new StringReader(string.Empty), new StringWriter()),
+		Assert.That(() => new ExecutionEngine(lines, RandomNumberGenerator.Create(), new StringReader(string.Empty), new StringWriter()),
 			Throws.TypeOf<ArgumentException>()
 				.And.Message.EqualTo("Must pass in at least one line. (Parameter 'lines')"));
 	}
@@ -45,7 +46,7 @@ public static class ExecutionEngineTests
 	public static void CreateWhenListContainsNullEntries()
 	{
 		var lines = ImmutableArray.Create(new Line(1, 1, _ => { }), null!, new Line(2, 1, _ => { }), null!);
-		Assert.That(() => new ExecutionEngine(lines, new SecureRandom(), new StringReader(string.Empty), new StringWriter()),
+		Assert.That(() => new ExecutionEngine(lines, RandomNumberGenerator.Create(), new StringReader(string.Empty), new StringWriter()),
 			Throws.TypeOf<ExecutionEngineLinesException>()
 				.With.Property(nameof(ExecutionEngineLinesException.Messages)).Contains("The line at index 1 is null."));
 	}
@@ -54,7 +55,7 @@ public static class ExecutionEngineTests
 	public static void CreateWhenListContainsDuplicateIdentifiers()
 	{
 		var lines = ImmutableArray.Create(new Line(1, 1, _ => { }), new Line(1, 1, _ => { }));
-		Assert.That(() => new ExecutionEngine(lines, new SecureRandom(), new StringReader(string.Empty), new StringWriter()), Throws.TypeOf<ArgumentException>());
+		Assert.That(() => new ExecutionEngine(lines, RandomNumberGenerator.Create(), new StringReader(string.Empty), new StringWriter()), Throws.TypeOf<ArgumentException>());
 	}
 
 	[TestCase(1ul, 1ul, 1ul, true)]
@@ -62,7 +63,7 @@ public static class ExecutionEngineTests
 	public static void CallDoesLineExist(ulong identifier, ulong count, ulong identifierToSearch, bool expectedDoesLineExist)
 	{
 		var lines = ImmutableArray.Create(new Line(identifier, count, _ => { }));
-		using var random = new SecureRandom();
+		using var random = RandomNumberGenerator.Create();
 		var engine = new ExecutionEngine(lines, random, new StringReader(string.Empty), new StringWriter());
 
 		Assert.That(engine.E(identifierToSearch), Is.EqualTo(expectedDoesLineExist));
@@ -72,7 +73,7 @@ public static class ExecutionEngineTests
 	public static void CallDoesLineExistWhereLineDoesNotExist()
 	{
 		var lines = ImmutableArray.Create(new Line(1, 3, _ => { }));
-		using var random = new SecureRandom();
+		using var random = RandomNumberGenerator.Create();
 		var engine = new ExecutionEngine(lines, random, new StringReader(string.Empty), new StringWriter());
 
 		Assert.That(() => engine.E(2), Throws.TypeOf<KeyNotFoundException>());
@@ -84,7 +85,7 @@ public static class ExecutionEngineTests
 		var codeExecutionCount = 0;
 		var lines = ImmutableArray.Create(new Line(1, 1, _ => { codeExecutionCount++; }));
 
-		using var random = new SecureRandom();
+		using var random = RandomNumberGenerator.Create();
 		var engine = new ExecutionEngine(lines, random, new StringReader(string.Empty), new StringWriter());
 		engine.Execute();
 		Assert.That(codeExecutionCount, Is.EqualTo(1));
@@ -102,23 +103,23 @@ public static class ExecutionEngineTests
 
 		var lines = ImmutableArray.Create(line0, line1, line2);
 
-		using var random = new SecureRandom();
+		using var random = RandomNumberGenerator.Create();
 		var engine = new ExecutionEngine(lines, random, new StringReader(string.Empty), new StringWriter());
 		engine.Execute();
 
-		Assert.Multiple(() =>
-		{
+	  using (Assert.EnterMultipleScope())
+	  {
 			Assert.That(codeExecutionCount0, Is.EqualTo(line0.Count));
 			Assert.That(codeExecutionCount1, Is.EqualTo(line1.Count));
 			Assert.That(codeExecutionCount2, Is.EqualTo(line2.Count));
-		});
+		}
 	}
 
 	[Test]
 	public static void CallGetCurrentLineCount()
 	{
 		var lines = ImmutableArray.Create(new Line(1, 3, _ => { }), new Line(2, 4, _ => { }));
-		using var random = new SecureRandom();
+		using var random = RandomNumberGenerator.Create();
 		var engine = new ExecutionEngine(lines, random, new StringReader(string.Empty), new StringWriter());
 
 		Assert.That(engine.CurrentLineCount, Is.EqualTo(new BigInteger(7)));
@@ -128,7 +129,7 @@ public static class ExecutionEngineTests
 	public static void CallN()
 	{
 		var lines = ImmutableArray.Create(new Line(1, 3, _ => { }));
-		using var random = new SecureRandom();
+		using var random = RandomNumberGenerator.Create();
 		var engine = new ExecutionEngine(lines, random, new StringReader(string.Empty), new StringWriter());
 
 		Assert.That(engine.N(1), Is.EqualTo(new BigInteger(3)));
@@ -138,7 +139,7 @@ public static class ExecutionEngineTests
 	public static void CallNWhereLineDoesNotExist()
 	{
 		var lines = ImmutableArray.Create(new Line(1, 3, _ => { }));
-		using var random = new SecureRandom();
+		using var random = RandomNumberGenerator.Create();
 		var engine = new ExecutionEngine(lines, random, new StringReader(string.Empty), new StringWriter());
 
 		Assert.That(() => engine.N(2), Throws.TypeOf<KeyNotFoundException>());
@@ -150,7 +151,7 @@ public static class ExecutionEngineTests
 		const string message = "hello";
 		var writer = new StringWriter();
 		var lines = ImmutableArray.Create(new Line(1, 3, _ => { }));
-		using var random = new SecureRandom();
+		using var random = RandomNumberGenerator.Create();
 		var engine = new ExecutionEngine(lines, random, new StringReader(string.Empty), writer);
 		engine.Print(message);
 
@@ -162,7 +163,7 @@ public static class ExecutionEngineTests
 	public static void CallRead(string message)
 	{
 		var lines = ImmutableArray.Create(new Line(1, 3, _ => { }));
-		using var random = new SecureRandom();
+		using var random = RandomNumberGenerator.Create();
 		var engine = new ExecutionEngine(lines, random, new StringReader(message), new StringWriter());
 
 		Assert.That(engine.Read(), Is.EqualTo(message));
@@ -173,7 +174,7 @@ public static class ExecutionEngineTests
 	public static void CallDefer(bool shouldDefer)
 	{
 		var lines = ImmutableArray.Create(new Line(1, 3, _ => { }));
-		using var random = new SecureRandom();
+		using var random = RandomNumberGenerator.Create();
 		var engine = new ExecutionEngine(lines, random, new StringReader(string.Empty), new StringWriter());
 		engine.Defer(shouldDefer);
 
@@ -185,7 +186,7 @@ public static class ExecutionEngineTests
 	public static void CallAgain(bool shouldKeep)
 	{
 		var lines = ImmutableArray.Create(new Line(1, 3, _ => { }));
-		using var random = new SecureRandom();
+		using var random = RandomNumberGenerator.Create();
 		var engine = new ExecutionEngine(lines, random, new StringReader(string.Empty), new StringWriter());
 		engine.Again(shouldKeep);
 
@@ -197,7 +198,7 @@ public static class ExecutionEngineTests
 	{
 		const long number = 65;
 		var lines = ImmutableArray.Create(new Line(1, 3, _ => { }));
-		using var random = new SecureRandom();
+		using var random = RandomNumberGenerator.Create();
 		var engine = new ExecutionEngine(lines, random, new StringReader(string.Empty), new StringWriter());
 
 		Assert.That(engine.U(number), Is.EqualTo("A"));
@@ -207,7 +208,7 @@ public static class ExecutionEngineTests
 	public static void CallUpdateCount()
 	{
 		var lines = ImmutableArray.Create(new Line(1, 3, _ => { }));
-		using var random = new SecureRandom();
+		using var random = RandomNumberGenerator.Create();
 		var engine = new ExecutionEngine(lines, random, new StringReader(string.Empty), new StringWriter());
 		engine.UpdateCount(1, 2);
 
@@ -218,7 +219,7 @@ public static class ExecutionEngineTests
 	public static void CallUpdateCountWhereLineDoesNotExist()
 	{
 		var lines = ImmutableArray.Create(new Line(1, 3, _ => { }));
-		using var random = new SecureRandom();
+		using var random = RandomNumberGenerator.Create();
 		var engine = new ExecutionEngine(lines, random, new StringReader(string.Empty), new StringWriter());
 
 		Assert.That(() => engine.UpdateCount(2, BigInteger.Zero), Throws.TypeOf<KeyNotFoundException>());

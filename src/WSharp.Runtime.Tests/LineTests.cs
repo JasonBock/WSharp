@@ -3,7 +3,7 @@ using System.Numerics;
 
 namespace WSharp.Runtime.Tests;
 
-public static class LineTests
+internal static class LineTests
 {
 	[Test]
 	public static void Create()
@@ -14,12 +14,12 @@ public static class LineTests
 
 		var line = new Line(identifier, count, code);
 
-		Assert.Multiple(() =>
-		{
+	  using (Assert.EnterMultipleScope())
+	  {
 			Assert.That(line.Identifier, Is.EqualTo(identifier));
 			Assert.That(line.Count, Is.EqualTo(count));
 			Assert.That(line.Code, Is.SameAs(code));
-		});
+		}
 	}
 
 	[Test]
@@ -48,11 +48,11 @@ public static class LineTests
 		var line = new Line(identifier, count, code);
 		var newLine = line.UpdateCount(delta);
 
-		Assert.Multiple(() =>
-		{
+	  using (Assert.EnterMultipleScope())
+	  {
 			Assert.That(newLine.Identifier, Is.EqualTo((BigInteger)identifier));
 			Assert.That(newLine.Count, Is.EqualTo(new BigInteger(expectedResult)));
 			Assert.That(newLine.Code, Is.SameAs(code));
-		});
+		}
 	}
 }
