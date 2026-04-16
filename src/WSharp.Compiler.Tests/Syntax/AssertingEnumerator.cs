@@ -13,17 +13,23 @@ internal sealed class AssertingEnumerator
 
 	public void AssertNode(SyntaxKind kind)
 	{
-		Assert.That(this.enumerator.MoveNext(), Is.True);
-		Assert.That(this.enumerator.Current.Kind, Is.EqualTo(kind));
-		Assert.That(this.enumerator.Current, Is.Not.TypeOf<SyntaxToken>());
+		using (Assert.EnterMultipleScope())
+		{
+			Assert.That(this.enumerator.MoveNext(), Is.True);
+			Assert.That(this.enumerator.Current.Kind, Is.EqualTo(kind));
+			Assert.That(this.enumerator.Current, Is.Not.TypeOf<SyntaxToken>());
+		}
 	}
 
 	public void AssertToken(SyntaxKind kind, string text)
 	{
-		Assert.That(this.enumerator.MoveNext(), Is.True);
-		Assert.That(this.enumerator.Current.Kind, Is.EqualTo(kind));
-		var token = (SyntaxToken)this.enumerator.Current;
-		Assert.That(token.Text, Is.EqualTo(text));
+		using (Assert.EnterMultipleScope())
+		{
+			Assert.That(this.enumerator.MoveNext(), Is.True);
+			Assert.That(this.enumerator.Current.Kind, Is.EqualTo(kind));
+			var token = (SyntaxToken)this.enumerator.Current;
+			Assert.That(token.Text, Is.EqualTo(text));
+		}
 	}
 
 	private static IEnumerable<SyntaxNode> Flatten(SyntaxNode node)

@@ -128,7 +128,7 @@ internal static class ParserTests
 		return statement;
 	}
 
-	public static IEnumerable<(SyntaxKind, SyntaxKind)> GetUnaryOperatorPairsData()
+	private static IEnumerable<(SyntaxKind, SyntaxKind)> GetUnaryOperatorPairsData()
 	{
 		foreach (var unary in SyntaxFacts.GetUnaryOperatorKinds())
 		{
@@ -139,7 +139,7 @@ internal static class ParserTests
 		}
 	}
 
-	public static IEnumerable<(SyntaxKind, SyntaxKind)> GetBinaryOperatorPairsData()
+	private static IEnumerable<(SyntaxKind, SyntaxKind)> GetBinaryOperatorPairsData()
 	{
 		foreach (var operator1 in SyntaxFacts.GetBinaryOperatorKinds())
 		{

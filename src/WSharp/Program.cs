@@ -19,30 +19,30 @@ internal static class Program
 
 			if (file != null)
 			{
-				await repl.RunAsync(file).ConfigureAwait(false);
+				await repl.RunAsync(file);
 			}
 			else
 			{
-				await repl.RunAsync().ConfigureAwait(false);
+				await repl.RunAsync();
 			}
 
 			return 0;
 		}
 		else
 		{
-			if (Program.ValidateParameters(file, references ?? Array.Empty<FileInfo>()))
+			if (Program.ValidateParameters(file, references ?? []))
 			{
 				var targetFile = file ?? file!;
-				var targetReferences = references ?? Array.Empty<FileInfo>();
+				var targetReferences = references ?? [];
 
 				var moduleName = targetFile.Name.Replace(targetFile.Extension, string.Empty);
 				outputPath ??= new FileInfo(Path.ChangeExtension(targetFile.Name, ".exe"));
 
-				var tree = await SyntaxTree.LoadAsync(targetFile).ConfigureAwait(false);
+				var tree = await SyntaxTree.LoadAsync(targetFile);
 
 				if (tree.Diagnostics.Length > 0)
 				{
-					await DiagnosticsPrinter.PrintAsync(tree.Diagnostics).ConfigureAwait(false);
+					await DiagnosticsPrinter.PrintAsync(tree.Diagnostics);
 					return 1;
 				}
 
@@ -50,7 +50,7 @@ internal static class Program
 
 				if (compilation.Diagnostics.Count > 0)
 				{
-					await DiagnosticsPrinter.PrintAsync(compilation.Diagnostics.ToImmutableArray()).ConfigureAwait(false);
+					await DiagnosticsPrinter.PrintAsync([.. compilation.Diagnostics]);
 					return 1;
 				}
 				else
@@ -59,7 +59,7 @@ internal static class Program
 
 					if (result.Diagnostics.Length > 0)
 					{
-						await DiagnosticsPrinter.PrintAsync(result.Diagnostics).ConfigureAwait(false);
+						await DiagnosticsPrinter.PrintAsync(result.Diagnostics);
 						return 1;
 					}
 				}

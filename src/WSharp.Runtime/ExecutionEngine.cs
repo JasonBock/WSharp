@@ -38,11 +38,11 @@ public sealed class ExecutionEngine
 
 			if (messages.Count > 0)
 			{
-				throw new ExecutionEngineLinesException(messages.ToImmutableArray());
+				throw new ExecutionEngineLinesException([.. messages]);
 			}
 		}
 
-		this.lines = new Dictionary<BigInteger, Line>();
+		this.lines = [];
 
 		foreach (var line in lines)
 		{

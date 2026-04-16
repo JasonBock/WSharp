@@ -15,11 +15,11 @@ internal static class LexerTests
 
 	  using (Assert.EnterMultipleScope())
 	  {
-			Assert.That(tokens.Length, Is.EqualTo(1), $"{nameof(tokens)}.{nameof(tokens.Length)}");
+			Assert.That(tokens, Has.Length.EqualTo(1), $"{nameof(tokens)}.{nameof(tokens.Length)}");
 			var token = tokens[0];
 			Assert.That(token.Kind, Is.EqualTo(SyntaxKind.StringToken), nameof(token.Kind));
 			Assert.That(token.Text, Is.EqualTo(text), nameof(token.Text));
-			Assert.That(diagnostics.Length, Is.EqualTo(1), $"{nameof(diagnostics)}.{nameof(diagnostics.Length)}");
+			Assert.That(diagnostics, Has.Length.EqualTo(1), $"{nameof(diagnostics)}.{nameof(diagnostics.Length)}");
 			var diagnostic = diagnostics[0];
 			Assert.That(diagnostic.Location.Span, Is.EqualTo(new TextSpan(0, 1)), nameof(diagnostic.Location));
 			Assert.That(diagnostic.Message, Is.EqualTo("Unterminated string literal."), nameof(diagnostic.Message));
@@ -53,7 +53,7 @@ internal static class LexerTests
 
 	  using (Assert.EnterMultipleScope())
 	  {
-			Assert.That(tokens.Length, Is.EqualTo(1), nameof(tokens.Length));
+			Assert.That(tokens, Has.Length.EqualTo(1), nameof(tokens.Length));
 			var token = tokens[0];
 			Assert.That(token.Kind, Is.EqualTo(value.kind), nameof(token.Kind));
 			Assert.That(token.Text, Is.EqualTo(value.text), nameof(token.Text));
@@ -68,9 +68,9 @@ internal static class LexerTests
 
 	  using (Assert.EnterMultipleScope())
 	  {
-			Assert.That(tokens.Length, Is.EqualTo(1), nameof(tokens.Length));
+			Assert.That(tokens, Has.Length.EqualTo(1), nameof(tokens.Length));
 			var token = tokens[0];
-			Assert.That(token.LeadingTrivia.Length, Is.EqualTo(1), nameof(token.LeadingTrivia));
+			Assert.That(token.LeadingTrivia, Has.Length.EqualTo(1), nameof(token.LeadingTrivia));
 			var trivia = token.LeadingTrivia[0];
 			Assert.That(trivia.Kind, Is.EqualTo(value.kind), nameof(trivia.Kind));
 			Assert.That(trivia.Text, Is.EqualTo(value.text), nameof(trivia.Text));
@@ -86,7 +86,7 @@ internal static class LexerTests
 
 	  using (Assert.EnterMultipleScope())
 	  {
-			Assert.That(tokens.Length, Is.EqualTo(2), nameof(tokens.Length));
+			Assert.That(tokens, Has.Length.EqualTo(2), nameof(tokens.Length));
 			var token1 = tokens[0];
 			Assert.That(token1.Kind, Is.EqualTo(value.t1Kind), $"1 - {nameof(token1.Kind)}");
 			Assert.That(token1.Text, Is.EqualTo(value.t1Text), $"1 - {nameof(token1.Text)}");
@@ -106,12 +106,12 @@ internal static class LexerTests
 
 	  using (Assert.EnterMultipleScope())
 	  {
-			Assert.That(tokens.Length, Is.EqualTo(2), nameof(tokens.Length));
+			Assert.That(tokens, Has.Length.EqualTo(2), nameof(tokens.Length));
 
 			var token1 = tokens[0];
 			Assert.That(token1.Kind, Is.EqualTo(value.t1Kind), $"1 - {nameof(token1.Kind)}");
 			Assert.That(token1.Text, Is.EqualTo(value.t1Text), $"1 - {nameof(token1.Text)}");
-			Assert.That(token1.TrailingTrivia.Length, Is.EqualTo(1), $"1 - {nameof(token1.TrailingTrivia)}");
+			Assert.That(token1.TrailingTrivia, Has.Length.EqualTo(1), $"1 - {nameof(token1.TrailingTrivia)}");
 
 			var separator = token1.TrailingTrivia[0];
 			Assert.That(separator.Kind, Is.EqualTo(value.separatorKind), $"Separator - {nameof(separator.Kind)}");

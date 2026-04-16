@@ -7,7 +7,7 @@ public sealed class ExecutionEngineLinesException
 	: Exception
 {
 	public ExecutionEngineLinesException()
-		: base() => this.Messages = ImmutableArray<string>.Empty;
+		: base() => this.Messages = [];
 
 	public ExecutionEngineLinesException(string message)
 		: base(message) { }

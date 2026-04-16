@@ -30,8 +30,8 @@ internal sealed class Repl
 
 	public async Task RunAsync(FileInfo file)
 	{
-		await this.EvaluateMetaCommandAsync($"#runFile {file.FullName}").ConfigureAwait(false);
-		await this.RunAsync().ConfigureAwait(false);
+		await this.EvaluateMetaCommandAsync($"#runFile {file.FullName}");
+		await this.RunAsync();
 	}
 
 	public async Task RunAsync()
@@ -40,16 +40,16 @@ internal sealed class Repl
 		{
 			using (ConsoleColor.Green.Bind(() => Console.ForegroundColor))
 			{
-				await Console.Out.WriteAsync("» ").ConfigureAwait(false);
+				await Console.Out.WriteAsync("» ");
 			}
 
-			var input = await Console.In.ReadLineAsync().ConfigureAwait(false);
+			var input = await Console.In.ReadLineAsync();
 
 			if (!string.IsNullOrWhiteSpace(input))
 			{
 				if (input.StartsWith('#'))
 				{
-					await this.EvaluateMetaCommandAsync(input).ConfigureAwait(false);
+					await this.EvaluateMetaCommandAsync(input);
 					continue;
 				}
 				else
@@ -133,7 +133,7 @@ internal sealed class Repl
 		if (command == null)
 		{
 			using (ConsoleColor.Red.Bind(() => Console.ForegroundColor))
-				await Console.Out.WriteLineAsync($"Invalid command: {input}.").ConfigureAwait(false);
+				await Console.Out.WriteLineAsync($"Invalid command: {input}.");
 		}
 		else
 		{
@@ -143,12 +143,12 @@ internal sealed class Repl
 			{
 				var parameterNames = string.Join(" ", parameters.Select(_ => $"<{_.Name}>"));
 				using (ConsoleColor.Red.Bind(() => Console.ForegroundColor))
-					await Console.Out.WriteLineAsync($"Invalid number of arguments (given {arguments.Count}, expected {parameters.Length}).").ConfigureAwait(false);
-				await Console.Out.WriteLineAsync($"Usage: #{command.Name} {parameterNames}").ConfigureAwait(false);
+					await Console.Out.WriteLineAsync($"Invalid number of arguments (given {arguments.Count}, expected {parameters.Length}).");
+				await Console.Out.WriteLineAsync($"Usage: #{command.Name} {parameterNames}");
 			}
 			else
 			{
-				await ((Task)command.Method.Invoke(this, arguments.ToArray())!).ConfigureAwait(false);
+				await ((Task)command.Method.Invoke(this, [.. arguments])!);
 			}
 		}
 	}
@@ -159,18 +159,18 @@ internal sealed class Repl
 		if (File.Exists(fileName))
 		{
 			this.lines.Clear();
-			await this.EvaluateAsync(await SyntaxTree.LoadAsync(new FileInfo(fileName)).ConfigureAwait(false)).ConfigureAwait(false);
+			await this.EvaluateAsync(await SyntaxTree.LoadAsync(new FileInfo(fileName)));
 		}
 		else
 		{
 			using (ConsoleColor.Red.Bind(() => Console.ForegroundColor))
-				await Console.Out.WriteLineAsync($"File {fileName} does not exist.").ConfigureAwait(false);
+				await Console.Out.WriteLineAsync($"File {fileName} does not exist.");
 		}
 	}
 
 	[MetaCommand("run", "Evaluates the program.")]
 	private async Task EvaluateRunAsync() => 
-		await this.EvaluateAsync(this.lines).ConfigureAwait(false);
+		await this.EvaluateAsync(this.lines);
 
 	[MetaCommand("reset", "Clears the screen and the current lines of code.")]
 	private Task EvaluateReset()
@@ -193,14 +193,14 @@ internal sealed class Repl
 	private async Task EvaluateShowProgram()
 	{
 		this.showProgram = !this.showProgram;
-		await Console.Out.WriteLineAsync(this.showProgram ? "Showing program." : "Not showing program.").ConfigureAwait(false);
+		await Console.Out.WriteLineAsync(this.showProgram ? "Showing program." : "Not showing program.");
 	}
 
 	[MetaCommand("showTree", "Displays/hides syntax tree.")]
 	private async Task EvaluateShowTree()
 	{
 		this.showTree = !this.showTree;
-		await Console.Out.WriteLineAsync(this.showTree ? "Showing parse trees." : "Not showing parse trees.").ConfigureAwait(false);
+		await Console.Out.WriteLineAsync(this.showTree ? "Showing parse trees." : "Not showing parse trees.");
 	}
 
 	[MetaCommand("help", "Shows help")]
@@ -215,12 +215,12 @@ internal sealed class Repl
 			if (metaParameters.Length == 0)
 			{
 				var paddedName = metaCommand.Name.PadRight(maxNameLength);
-				await Console.Out.WriteLineAsync($"{paddedName}    {metaCommand.Description}").ConfigureAwait(false);
+				await Console.Out.WriteLineAsync($"{paddedName}    {metaCommand.Description}");
 			}
 			else
 			{
-				await Console.Out.WriteLineAsync($"{metaCommand.Name} {string.Join(" ", metaParameters.Select(_ => $"<{_.Name}>"))}").ConfigureAwait(false);
-				await Console.Out.WriteLineAsync($"{string.Empty.PadRight(maxNameLength)}    {metaCommand.Description}").ConfigureAwait(false);
+				await Console.Out.WriteLineAsync($"{metaCommand.Name} {string.Join(" ", metaParameters.Select(_ => $"<{_.Name}>"))}");
+				await Console.Out.WriteLineAsync($"{string.Empty.PadRight(maxNameLength)}    {metaCommand.Description}");
 			}
 		}
 	}
@@ -229,7 +229,7 @@ internal sealed class Repl
 	{
 		if (tree.Diagnostics.Length > 0)
 		{
-			await DiagnosticsPrinter.PrintAsync(tree.Diagnostics).ConfigureAwait(false);
+			await DiagnosticsPrinter.PrintAsync(tree.Diagnostics);
 		}
 		else
 		{
@@ -239,7 +239,7 @@ internal sealed class Repl
 
 			if (this.showTree)
 			{
-				await Console.Out.WriteLineAsync("Tree:").ConfigureAwait(false);
+				await Console.Out.WriteLineAsync("Tree:");
 				using (ConsoleColor.DarkGray.Bind(() => Console.ForegroundColor))
 				{
 					tree.Root.WriteTo(Console.Out);
@@ -248,7 +248,7 @@ internal sealed class Repl
 
 			if (this.showProgram)
 			{
-				await Console.Out.WriteLineAsync("Program:").ConfigureAwait(false);
+				await Console.Out.WriteLineAsync("Program:");
 				using (ConsoleColor.DarkGray.Bind(() => Console.ForegroundColor))
 				{
 					compilation.EmitTree(Console.Out);
@@ -257,7 +257,7 @@ internal sealed class Repl
 
 			if (diagnostics.Length > 0)
 			{
-				await DiagnosticsPrinter.PrintAsync(diagnostics).ConfigureAwait(false);
+				await DiagnosticsPrinter.PrintAsync(diagnostics);
 			}
 			else
 			{
@@ -267,7 +267,7 @@ internal sealed class Repl
 	}
 
 	private async Task EvaluateAsync(List<string> lines) =>
-		await this.EvaluateAsync(SyntaxTree.Parse(string.Join(Environment.NewLine, lines))).ConfigureAwait(false);
+		await this.EvaluateAsync(SyntaxTree.Parse(string.Join(Environment.NewLine, lines)));
 
 	private static void RunEvaluator(EvaluationResult evaluation)
 	{

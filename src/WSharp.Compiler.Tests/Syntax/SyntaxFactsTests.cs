@@ -17,7 +17,7 @@ internal static class SyntaxFactsTests
 
 		 using (Assert.EnterMultipleScope())
 		 {
-				Assert.That(tokens.Length, Is.EqualTo(1), nameof(tokens.Length));
+				Assert.That(tokens, Has.Length.EqualTo(1), nameof(tokens.Length));
 				var token = tokens[0];
 				Assert.That(token.Kind, Is.EqualTo(kind), nameof(token.Kind));
 				Assert.That(token.Text, Is.EqualTo(text), nameof(token.Text));
@@ -32,7 +32,7 @@ internal static class SyntaxFactsTests
 
 	  using (Assert.EnterMultipleScope())
 	  {
-			Assert.That(operatorKinds.Length, Is.EqualTo(4), nameof(operatorKinds.Length));
+			Assert.That(operatorKinds, Has.Length.EqualTo(4), nameof(operatorKinds.Length));
 			Assert.That(operatorKinds, Contains.Item(SyntaxKind.PlusToken), nameof(SyntaxKind.PlusToken));
 			Assert.That(operatorKinds, Contains.Item(SyntaxKind.MinusToken), nameof(SyntaxKind.MinusToken));
 			Assert.That(operatorKinds, Contains.Item(SyntaxKind.BangToken), nameof(SyntaxKind.BangToken));
@@ -47,7 +47,7 @@ internal static class SyntaxFactsTests
 
 	  using (Assert.EnterMultipleScope())
 	  {
-			Assert.That(binaryKinds.Length, Is.EqualTo(16), nameof(binaryKinds.Length));
+			Assert.That(binaryKinds, Has.Length.EqualTo(16), nameof(binaryKinds.Length));
 			Assert.That(binaryKinds, Contains.Item(SyntaxKind.StarToken), nameof(SyntaxKind.StarToken));
 			Assert.That(binaryKinds, Contains.Item(SyntaxKind.SlashToken), nameof(SyntaxKind.SlashToken));
 			Assert.That(binaryKinds, Contains.Item(SyntaxKind.PercentToken), nameof(SyntaxKind.PercentToken));

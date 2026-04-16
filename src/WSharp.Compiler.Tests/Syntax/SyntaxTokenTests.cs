@@ -65,8 +65,8 @@ internal static class SyntaxTokenTests
 			Assert.That(token.Span.Length, Is.EqualTo(1), nameof(token.Span.Length));
 			Assert.That(token.Text, Is.EqualTo("1"), nameof(token.Text));
 			Assert.That(token.Value, Is.EqualTo(BigInteger.One), nameof(token.Value));
-			Assert.That(token.LeadingTrivia.Length, Is.EqualTo(1), nameof(token.LeadingTrivia));
-			Assert.That(token.TrailingTrivia.Length, Is.EqualTo(1), nameof(token.TrailingTrivia));
+			Assert.That(token.LeadingTrivia, Has.Length.EqualTo(1), nameof(token.LeadingTrivia));
+			Assert.That(token.TrailingTrivia, Has.Length.EqualTo(1), nameof(token.TrailingTrivia));
 		}
 	}
 }

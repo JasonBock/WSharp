@@ -36,7 +36,7 @@ internal static class SourceTextTests
 
 	  using (Assert.EnterMultipleScope())
 	  {
-			Assert.That(source.Lines.Length, Is.EqualTo(1), nameof(source.Lines));
+			Assert.That(source.Lines, Has.Length.EqualTo(1), nameof(source.Lines));
 			var line = source.Lines[0];
 			Assert.That(line.Start, Is.Zero, nameof(line.Start));
 			Assert.That(line.Length, Is.EqualTo(6), nameof(line.Length));
@@ -56,7 +56,7 @@ internal static class SourceTextTests
 
 	  using (Assert.EnterMultipleScope())
 	  {
-			Assert.That(source.Lines.Length, Is.EqualTo(2), nameof(source.Lines));
+			Assert.That(source.Lines, Has.Length.EqualTo(2), nameof(source.Lines));
 			var line1 = source.Lines[0];
 			Assert.That(line1.Start, Is.Zero, $"{nameof(line1)} - {nameof(line1.Start)}");
 			Assert.That(line1.Length, Is.EqualTo(6), $"{nameof(line1)} - {nameof(line1.Length)}");
@@ -85,7 +85,7 @@ internal static class SourceTextTests
 
 	  using (Assert.EnterMultipleScope())
 	  {
-			Assert.That(source.Lines.Length, Is.EqualTo(2), nameof(source.Lines));
+			Assert.That(source.Lines, Has.Length.EqualTo(2), nameof(source.Lines));
 			var line1 = source.Lines[0];
 			Assert.That(line1.Start, Is.Zero, $"{nameof(line1)} - {nameof(line1.Start)}");
 			Assert.That(line1.Length, Is.EqualTo(6), $"{nameof(line1)} - {nameof(line1.Length)}");
@@ -114,7 +114,7 @@ internal static class SourceTextTests
 
 	  using (Assert.EnterMultipleScope())
 	  {
-			Assert.That(source.Lines.Length, Is.EqualTo(2), nameof(source.Lines));
+			Assert.That(source.Lines, Has.Length.EqualTo(2), nameof(source.Lines));
 			var line1 = source.Lines[0];
 			Assert.That(line1.Start, Is.Zero, $"{nameof(line1)} - {nameof(line1.Start)}");
 			Assert.That(line1.Length, Is.EqualTo(6), $"{nameof(line1)} - {nameof(line1.Length)}");

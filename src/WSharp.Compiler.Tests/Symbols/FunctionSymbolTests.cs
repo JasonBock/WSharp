@@ -13,13 +13,13 @@ internal static class FunctionSymbolTests
 		var parameter = new ParameterSymbol("b", TypeSymbol.Boolean);
 		var returnType = TypeSymbol.Void;
 
-		var function = new FunctionSymbol(name, ImmutableArray.Create<ParameterSymbol>(parameter), returnType);
+		var function = new FunctionSymbol(name, [parameter], returnType);
 
 	  using (Assert.EnterMultipleScope())
 	  {
 			Assert.That(function.Name, Is.EqualTo(name), nameof(function.Name));
 			Assert.That(function.ReturnType, Is.EqualTo(returnType), nameof(function.ReturnType));
-			Assert.That(function.Parameters.Length, Is.EqualTo(1), nameof(function.Parameters.Length));
+			Assert.That(function.Parameters, Has.Length.EqualTo(1), nameof(function.Parameters.Length));
 			Assert.That(function.Parameters[0], Is.EqualTo(parameter), nameof(function.Parameters));
 		}
 	}

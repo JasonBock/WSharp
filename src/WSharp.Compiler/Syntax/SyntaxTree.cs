@@ -51,7 +51,7 @@ public sealed class SyntaxTree
 	{
 		ArgumentNullException.ThrowIfNull(file);
 		return SyntaxTree.Parse(SourceText.From(
-			await File.ReadAllTextAsync(file.FullName).ConfigureAwait(false), file));
+			await File.ReadAllTextAsync(file.FullName), file));
 	}
 
 	public static SyntaxTree Parse(string text) =>

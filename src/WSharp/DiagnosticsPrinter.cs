@@ -13,8 +13,8 @@ internal static class DiagnosticsPrinter
 			.Where(_ => _.Location.Text is null))
 		{
 			using (ConsoleColor.DarkRed.Bind(() => Console.ForegroundColor))
-			await Console.Error.WriteLineAsync(diagnostic.Message).ConfigureAwait(false);
-			await Console.Out.WriteLineAsync(diagnostic.Message).ConfigureAwait(false);
+			await Console.Error.WriteLineAsync(diagnostic.Message);
+			await Console.Out.WriteLineAsync(diagnostic.Message);
 		}
 
 		foreach (var diagnostic in diagnostics
@@ -34,12 +34,12 @@ internal static class DiagnosticsPrinter
 			var lineIndex = text.GetLineIndex(span.Start);
 			var line = text.Lines[lineIndex];
 
-			await Console.Out.WriteLineAsync().ConfigureAwait(false);
+			await Console.Out.WriteLineAsync();
 			using (ConsoleColor.DarkRed.Bind(() => Console.ForegroundColor))
 			{
 				var origin = $"{fileName}({startLine},{startCharacter},{endLine},{endCharacter}): ";
-				await Console.Out.WriteAsync(origin).ConfigureAwait(false);
-				await Console.Out.WriteLineAsync(diagnostic.ToString()).ConfigureAwait(false);
+				await Console.Out.WriteAsync(origin);
+				await Console.Out.WriteLineAsync(diagnostic.ToString());
 			}
 
 			var lineSpan = line.SpanIncludingLineBreak;
@@ -50,18 +50,18 @@ internal static class DiagnosticsPrinter
 			var error = text.ToString(span);
 			var suffix = text.ToString(suffixSpan);
 
-			await Console.Out.WriteAsync(TreePrint.Space).ConfigureAwait(false);
-			await Console.Out.WriteAsync(prefix).ConfigureAwait(false);
+			await Console.Out.WriteAsync(TreePrint.Space);
+			await Console.Out.WriteAsync(prefix);
 
 			using (ConsoleColor.DarkRed.Bind(() => Console.ForegroundColor))
 			{
-				await Console.Out.WriteAsync(error).ConfigureAwait(false);
+				await Console.Out.WriteAsync(error);
 			}
 
-			await Console.Out.WriteAsync(suffix).ConfigureAwait(false);
-			await Console.Out.WriteLineAsync().ConfigureAwait(false);
+			await Console.Out.WriteAsync(suffix);
+			await Console.Out.WriteLineAsync();
 		}
 
-		await Console.Out.WriteLineAsync().ConfigureAwait(false);
+		await Console.Out.WriteLineAsync();
 	}
 }

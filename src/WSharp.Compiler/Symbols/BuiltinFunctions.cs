@@ -6,21 +6,21 @@ namespace WSharp.Compiler.Symbols;
 internal static class BuiltinFunctions
 {
 	public static readonly FunctionSymbol Again =
-		new("again", ImmutableArray.Create(new ParameterSymbol("shouldKeep", TypeSymbol.Boolean)), TypeSymbol.Void);
+		new("again", [new ParameterSymbol("shouldKeep", TypeSymbol.Boolean)], TypeSymbol.Void);
 	public static readonly FunctionSymbol Defer =
-		new("defer", ImmutableArray.Create(new ParameterSymbol("shouldDefer", TypeSymbol.Boolean)), TypeSymbol.Void);
+		new("defer", [new ParameterSymbol("shouldDefer", TypeSymbol.Boolean)], TypeSymbol.Void);
 	public static readonly FunctionSymbol E =
-		new("E", ImmutableArray.Create(new ParameterSymbol("lineNumber", TypeSymbol.Integer)), TypeSymbol.Boolean);
+		new("E", [new ParameterSymbol("lineNumber", TypeSymbol.Integer)], TypeSymbol.Boolean);
 	public static readonly FunctionSymbol N =
-		new("N", ImmutableArray.Create(new ParameterSymbol("lineNumber", TypeSymbol.Integer)), TypeSymbol.Integer);
+		new("N", [new ParameterSymbol("lineNumber", TypeSymbol.Integer)], TypeSymbol.Integer);
 	public static readonly FunctionSymbol Print =
-		new("print", ImmutableArray.Create(new ParameterSymbol("value", TypeSymbol.Any)), TypeSymbol.Void);
+		new("print", [new ParameterSymbol("value", TypeSymbol.Any)], TypeSymbol.Void);
 	public static readonly FunctionSymbol Random =
-		new("random", ImmutableArray.Create(new ParameterSymbol("maximum", TypeSymbol.Integer)), TypeSymbol.Integer);
+		new("random", [new ParameterSymbol("maximum", TypeSymbol.Integer)], TypeSymbol.Integer);
 	public static readonly FunctionSymbol Read =
 		new("read", [], TypeSymbol.String);
 	public static readonly FunctionSymbol U =
-		new("U", ImmutableArray.Create(new ParameterSymbol("unicodeCharacter", TypeSymbol.Integer)), TypeSymbol.String);
+		new("U", [new ParameterSymbol("unicodeCharacter", TypeSymbol.Integer)], TypeSymbol.String);
 
 	internal static IEnumerable<FunctionSymbol> GetAll() =>
 		typeof(BuiltinFunctions).GetFields(BindingFlags.Public | BindingFlags.Static)
