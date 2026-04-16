@@ -2,7 +2,7 @@
 
 namespace WSharp.Compiler.Tests;
 
-public sealed class EvaluationExceptionTests
+internal sealed class EvaluationExceptionTests
 	 : ExceptionTests<EvaluationException, Exception>
 {
 	[Test]

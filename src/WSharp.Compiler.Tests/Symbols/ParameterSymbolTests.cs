@@ -3,7 +3,7 @@ using WSharp.Compiler.Symbols;
 
 namespace WSharp.Compiler.Tests.Symbols;
 
-public static class ParameterSymbolTests
+internal static class ParameterSymbolTests
 {
 	[Test]
 	public static void Create()
@@ -13,10 +13,10 @@ public static class ParameterSymbolTests
 
 		var parameter = new ParameterSymbol(name, type);
 
-		Assert.Multiple(() =>
-		{
+	  using (Assert.EnterMultipleScope())
+	  {
 			Assert.That(parameter.Name, Is.EqualTo(name), nameof(parameter.Name));
 			Assert.That(parameter.Type, Is.EqualTo(type), nameof(parameter.Type));
-		});
+		}
 	}
 }

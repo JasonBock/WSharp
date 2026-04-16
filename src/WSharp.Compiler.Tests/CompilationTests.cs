@@ -1,6 +1,6 @@
 ﻿namespace WSharp.Compiler.Tests;
 
-public static class CompilationTests
+internal static class CompilationTests
 {
 	// TODO: All of this needs to be done with syntax nodes from the tree 
 	// and not bound nodes, because all of them are internal.

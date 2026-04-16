@@ -3,7 +3,7 @@ using WSharp.Compiler.Binding;
 
 namespace WSharp.Compiler.Tests.Binding;
 
-public sealed class BindingExceptionTests
+internal sealed class BindingExceptionTests
 	: ExceptionTests<BindingException, Exception>
 {
 	[Test]

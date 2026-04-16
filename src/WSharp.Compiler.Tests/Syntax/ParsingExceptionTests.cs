@@ -3,7 +3,7 @@ using WSharp.Compiler.Syntax;
 
 namespace WSharp.Compiler.Tests.Syntax;
 
-public sealed class ParsingExceptionTests
+internal sealed class ParsingExceptionTests
 	: ExceptionTests<ParsingException, Exception>
 {
 	[Test]

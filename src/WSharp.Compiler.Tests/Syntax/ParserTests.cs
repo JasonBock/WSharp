@@ -3,7 +3,7 @@ using WSharp.Compiler.Syntax;
 
 namespace WSharp.Compiler.Tests.Syntax;
 
-public static class ParserTests
+internal static class ParserTests
 {
 	[TestCaseSource(nameof(ParserTests.GetUnaryOperatorPairsData))]
 	public static void HonorPrecedenceWhenParsingUnaryExpression((SyntaxKind unaryKind, SyntaxKind binaryKind) value)
@@ -15,8 +15,8 @@ public static class ParserTests
 
 		var text = $"1 2#({unaryText}3{binaryText}4)";
 
-		Assert.Multiple(() =>
-		{
+	  using (Assert.EnterMultipleScope())
+	  {
 			var expression = ParserTests.ParseExpression(text);
 
 			using var enumerator = new AssertingEnumerator(expression);
@@ -48,7 +48,7 @@ public static class ParserTests
 			{
 				Assert.Fail("All the unary operators have higher precedence than the binary ones.");
 			}
-		});
+		}
 	}
 
 	[TestCaseSource(nameof(ParserTests.GetBinaryOperatorPairsData))]
@@ -61,8 +61,8 @@ public static class ParserTests
 
 		var text = $"1 2#(3 {operator1Text} 4 {operator2Text} 5)";
 
-		Assert.Multiple(() =>
-		{
+	  using (Assert.EnterMultipleScope())
+	  {
 			var expression = ParserTests.ParseExpression(text);
 
 			using var enumerator = new AssertingEnumerator(expression);
@@ -118,7 +118,7 @@ public static class ParserTests
 				enumerator.AssertToken(SyntaxKind.NumberToken, "5");
 				enumerator.AssertToken(SyntaxKind.CloseParenthesisToken, ")");
 			}
-		});
+		}
 	}
 
 	private static LineStatementsSyntax ParseExpression(string text)

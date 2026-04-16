@@ -4,7 +4,7 @@ using WSharp.Compiler.Syntax;
 
 namespace WSharp.Compiler.Tests.Syntax;
 
-public static class SyntaxTokenTests
+internal static class SyntaxTokenTests
 {
 	[Test]
 	public static void CreateWithValue()
@@ -15,17 +15,17 @@ public static class SyntaxTokenTests
 		var (tokens, _) = SyntaxTree.ParseTokens(text);
 		var token = tokens[0];
 
-		Assert.Multiple(() =>
-		{
+	  using (Assert.EnterMultipleScope())
+	  {
 			Assert.That(token.Kind, Is.EqualTo(kind), nameof(token.Kind));
 			Assert.That(token.Position, Is.EqualTo(position), nameof(token.Position));
 			Assert.That(token.Span.Start, Is.EqualTo(position), nameof(token.Span.Start));
 			Assert.That(token.Span.Length, Is.EqualTo(text.Length), nameof(token.Span.Length));
 			Assert.That(token.Text, Is.EqualTo(text), nameof(token.Text));
 			Assert.That(token.Value, Is.EqualTo(BigInteger.One), nameof(token.Value));
-			Assert.That(token.LeadingTrivia.Length, Is.EqualTo(0), nameof(token.LeadingTrivia));
-			Assert.That(token.TrailingTrivia.Length, Is.EqualTo(0), nameof(token.TrailingTrivia));
-		});
+			Assert.That(token.LeadingTrivia, Is.Empty, nameof(token.LeadingTrivia));
+			Assert.That(token.TrailingTrivia, Is.Empty, nameof(token.TrailingTrivia));
+		}
 	}
 
 	[Test]
@@ -37,17 +37,17 @@ public static class SyntaxTokenTests
 		var (tokens, _) = SyntaxTree.ParseTokens(text);
 		var token = tokens[0];
 
-		Assert.Multiple(() =>
-		{
+	  using (Assert.EnterMultipleScope())
+	  {
 			Assert.That(token.Kind, Is.EqualTo(kind), nameof(token.Kind));
 			Assert.That(token.Position, Is.EqualTo(position), nameof(token.Position));
 			Assert.That(token.Span.Start, Is.EqualTo(position), nameof(token.Span.Start));
 			Assert.That(token.Span.Length, Is.EqualTo(text.Length), nameof(token.Span.Length));
 			Assert.That(token.Text, Is.EqualTo(text), nameof(token.Text));
 			Assert.That(token.Value, Is.Null, nameof(token.Value));
-			Assert.That(token.LeadingTrivia.Length, Is.EqualTo(0), nameof(token.LeadingTrivia));
-			Assert.That(token.TrailingTrivia.Length, Is.EqualTo(0), nameof(token.TrailingTrivia));
-		});
+			Assert.That(token.LeadingTrivia, Is.Empty, nameof(token.LeadingTrivia));
+			Assert.That(token.TrailingTrivia, Is.Empty, nameof(token.TrailingTrivia));
+		}
 	}
 
 	[Test]
@@ -57,8 +57,8 @@ public static class SyntaxTokenTests
 		var (tokens, _) = SyntaxTree.ParseTokens(text);
 		var token = tokens[0];
 
-		Assert.Multiple(() =>
-		{
+	  using (Assert.EnterMultipleScope())
+	  {
 			Assert.That(token.Kind, Is.EqualTo(SyntaxKind.NumberToken), nameof(token.Kind));
 			Assert.That(token.Position, Is.EqualTo(13), nameof(token.Position));
 			Assert.That(token.Span.Start, Is.EqualTo(13), nameof(token.Span.Start));
@@ -67,6 +67,6 @@ public static class SyntaxTokenTests
 			Assert.That(token.Value, Is.EqualTo(BigInteger.One), nameof(token.Value));
 			Assert.That(token.LeadingTrivia.Length, Is.EqualTo(1), nameof(token.LeadingTrivia));
 			Assert.That(token.TrailingTrivia.Length, Is.EqualTo(1), nameof(token.TrailingTrivia));
-		});
+		}
 	}
 }

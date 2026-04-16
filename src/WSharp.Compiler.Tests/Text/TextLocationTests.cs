@@ -3,7 +3,7 @@ using WSharp.Compiler.Text;
 
 namespace WSharp.Compiler.Tests.Text;
 
-public static class TextLocationTests
+internal static class TextLocationTests
 {
 	[Test]
 	public static void Equality()
@@ -23,8 +23,8 @@ public static class TextLocationTests
 		var location5 = new TextLocation(text1, span1);
 
 #pragma warning disable NUnit2010 // Use EqualConstraint for better assertion messages in case of failure
-		Assert.Multiple(() =>
-		{
+	  using (Assert.EnterMultipleScope())
+	  {
 			Assert.That(location1, Is.Not.EqualTo(location2), "location1.Equals(location2)");
 			Assert.That(location1 == location2, Is.False, "location1 == location2");
 			Assert.That(location1 != location2, Is.True, "location1 != location2");
@@ -40,7 +40,7 @@ public static class TextLocationTests
 			Assert.That(location1, Is.EqualTo(location5), "location1.Equals(location5)");
 			Assert.That(location1 == location5, Is.True, "location1 == location5");
 			Assert.That(location1 != location5, Is.False, "location1 != location5");
-		});
+		}
 #pragma warning restore NUnit2010 // Use EqualConstraint for better assertion messages in case of failure
 	}
 
@@ -52,15 +52,15 @@ public static class TextLocationTests
 		var span = new TextSpan(2, 1);
 		var location = new TextLocation(text, span);
 
-		Assert.Multiple(() =>
-		{
+	  using (Assert.EnterMultipleScope())
+	  {
 			Assert.That(location.EndCharacter, Is.EqualTo(3), nameof(location.EndCharacter));
-			Assert.That(location.EndLine, Is.EqualTo(0), nameof(location.EndLine));
+			Assert.That(location.EndLine, Is.Zero, nameof(location.EndLine));
 			Assert.That(location.Span, Is.EqualTo(span), nameof(location.Span));
 			Assert.That(location.StartCharacter, Is.EqualTo(2), nameof(location.StartCharacter));
-			Assert.That(location.StartLine, Is.EqualTo(0), nameof(location.StartLine));
+			Assert.That(location.StartLine, Is.Zero, nameof(location.StartLine));
 			Assert.That(location.Text, Is.EqualTo(text), nameof(location.Text));
-		});
+		}
 	}
 
 	[Test]
@@ -71,14 +71,14 @@ public static class TextLocationTests
 		var span = new TextSpan(2, 7);
 		var location = new TextLocation(text, span);
 
-		Assert.Multiple(() =>
-		{
+	  using (Assert.EnterMultipleScope())
+	  {
 			Assert.That(location.EndCharacter, Is.EqualTo(9), nameof(location.EndCharacter));
 			Assert.That(location.EndLine, Is.EqualTo(1), nameof(location.EndLine));
 			Assert.That(location.Span, Is.EqualTo(span), nameof(location.Span));
 			Assert.That(location.StartCharacter, Is.EqualTo(2), nameof(location.StartCharacter));
-			Assert.That(location.StartLine, Is.EqualTo(0), nameof(location.StartLine));
+			Assert.That(location.StartLine, Is.Zero, nameof(location.StartLine));
 			Assert.That(location.Text, Is.EqualTo(text), nameof(location.Text));
-		});
+		}
 	}
 }

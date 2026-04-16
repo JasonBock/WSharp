@@ -4,7 +4,7 @@ using WSharp.Compiler.Text;
 
 namespace WSharp.Compiler.Tests.Syntax;
 
-public static class LexerTests
+internal static class LexerTests
 {
 	[Test]
 	public static void LexerLexesUnterminatedString()
@@ -13,8 +13,8 @@ public static class LexerTests
 		var (tokensResult, diagnostics) = SyntaxTree.ParseTokens(text);
 		var tokens = tokensResult.ToArray();
 
-		Assert.Multiple(() =>
-		{
+	  using (Assert.EnterMultipleScope())
+	  {
 			Assert.That(tokens.Length, Is.EqualTo(1), $"{nameof(tokens)}.{nameof(tokens.Length)}");
 			var token = tokens[0];
 			Assert.That(token.Kind, Is.EqualTo(SyntaxKind.StringToken), nameof(token.Kind));
@@ -23,13 +23,13 @@ public static class LexerTests
 			var diagnostic = diagnostics[0];
 			Assert.That(diagnostic.Location.Span, Is.EqualTo(new TextSpan(0, 1)), nameof(diagnostic.Location));
 			Assert.That(diagnostic.Message, Is.EqualTo("Unterminated string literal."), nameof(diagnostic.Message));
-		});
+		}
 	}
 
 	[Test]
 	public static void LexerLexesAllTokens()
 	{
-		var tokenKinds = Enum.GetValues(typeof(SyntaxKind))
+		var tokenKinds = Enum.GetValues<SyntaxKind>()
 			.Cast<SyntaxKind>()
 			.Where(_ => _.IsToken())
 			.ToList();
@@ -51,13 +51,13 @@ public static class LexerTests
 		var (tokensResult, _) = SyntaxTree.ParseTokens(value.text);
 		var tokens = tokensResult.ToArray();
 
-		Assert.Multiple(() =>
-		{
+	  using (Assert.EnterMultipleScope())
+	  {
 			Assert.That(tokens.Length, Is.EqualTo(1), nameof(tokens.Length));
 			var token = tokens[0];
 			Assert.That(token.Kind, Is.EqualTo(value.kind), nameof(token.Kind));
 			Assert.That(token.Text, Is.EqualTo(value.text), nameof(token.Text));
-		});
+		}
 	}
 
 	[TestCaseSource(nameof(LexerTests.GetSeparatorsData))]
@@ -66,15 +66,15 @@ public static class LexerTests
 		var (tokensResult, _) = SyntaxTree.ParseTokens(value.text, true);
 		var tokens = tokensResult.ToArray();
 
-		Assert.Multiple(() =>
-		{
+	  using (Assert.EnterMultipleScope())
+	  {
 			Assert.That(tokens.Length, Is.EqualTo(1), nameof(tokens.Length));
 			var token = tokens[0];
 			Assert.That(token.LeadingTrivia.Length, Is.EqualTo(1), nameof(token.LeadingTrivia));
 			var trivia = token.LeadingTrivia[0];
 			Assert.That(trivia.Kind, Is.EqualTo(value.kind), nameof(trivia.Kind));
 			Assert.That(trivia.Text, Is.EqualTo(value.text), nameof(trivia.Text));
-		});
+		}
 	}
 
 	[TestCaseSource(nameof(LexerTests.GetTokenPairsData))]
@@ -84,8 +84,8 @@ public static class LexerTests
 		var (tokensResult, _) = SyntaxTree.ParseTokens(text);
 		var tokens = tokensResult.ToArray();
 
-		Assert.Multiple(() =>
-		{
+	  using (Assert.EnterMultipleScope())
+	  {
 			Assert.That(tokens.Length, Is.EqualTo(2), nameof(tokens.Length));
 			var token1 = tokens[0];
 			Assert.That(token1.Kind, Is.EqualTo(value.t1Kind), $"1 - {nameof(token1.Kind)}");
@@ -93,7 +93,7 @@ public static class LexerTests
 			var token2 = tokens[1];
 			Assert.That(token2.Kind, Is.EqualTo(value.t2Kind), $"2 - {nameof(token2.Kind)}");
 			Assert.That(token2.Text, Is.EqualTo(value.t2Text), $"2 - {nameof(token2.Text)}");
-		});
+		}
 	}
 
 	[TestCaseSource(nameof(LexerTests.GetTokenPairsWithSeparatorsData))]
@@ -104,8 +104,8 @@ public static class LexerTests
 		var (tokensResult, _) = SyntaxTree.ParseTokens(text);
 		var tokens = tokensResult.ToArray();
 
-		Assert.Multiple(() =>
-		{
+	  using (Assert.EnterMultipleScope())
+	  {
 			Assert.That(tokens.Length, Is.EqualTo(2), nameof(tokens.Length));
 
 			var token1 = tokens[0];
@@ -120,19 +120,18 @@ public static class LexerTests
 			var token2 = tokens[1];
 			Assert.That(token2.Kind, Is.EqualTo(value.t2Kind), $"2 - {nameof(token2.Kind)}");
 			Assert.That(token2.Text, Is.EqualTo(value.t2Text), $"2 - {nameof(token2.Text)}");
-		});
+		}
 	}
 
 	private static IEnumerable<(SyntaxKind kind, string text)> GetSeparators() =>
-		new[]
-		{
-				(SyntaxKind.WhitespaceTrivia, " "),
-				(SyntaxKind.WhitespaceTrivia, "  "),
-				(SyntaxKind.LineBreakTrivia, "\r"),
-				(SyntaxKind.LineBreakTrivia, "\n"),
-				(SyntaxKind.LineBreakTrivia, "\r\n"),
-				(SyntaxKind.MultiLineCommentTrivia, "/**/")
-		};
+		[
+			(SyntaxKind.WhitespaceTrivia, " "),
+			(SyntaxKind.WhitespaceTrivia, "  "),
+			(SyntaxKind.LineBreakTrivia, "\r"),
+			(SyntaxKind.LineBreakTrivia, "\n"),
+			(SyntaxKind.LineBreakTrivia, "\r\n"),
+			(SyntaxKind.MultiLineCommentTrivia, "/**/")
+		];
 
 	private static bool RequiresSeparator(SyntaxKind t1Kind, SyntaxKind t2Kind)
 	{
@@ -192,7 +191,7 @@ public static class LexerTests
 
 	private static IEnumerable<(SyntaxKind kind, string text)> GetTokens()
 	{
-		var fixedTokens = Enum.GetValues(typeof(SyntaxKind))
+		var fixedTokens = Enum.GetValues<SyntaxKind>()
 			.Cast<SyntaxKind>()
 			.Select(kind => (kind, text: SyntaxFacts.GetText(kind)))
 			.Where(_ => !string.IsNullOrWhiteSpace(_.text));

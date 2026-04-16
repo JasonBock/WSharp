@@ -1,9 +1,9 @@
 ﻿using NUnit.Framework;
 using WSharp.Compiler.Text;
 
-namespace WSharp.Compiler.Tests
-{
-	public static class DiagnosticTests
+namespace WSharp.Compiler.Tests;
+
+internal static class DiagnosticTests
 	{
 		[Test]
 		public static void Create()
@@ -13,11 +13,11 @@ namespace WSharp.Compiler.Tests
 			var location = new TextLocation(SourceText.From("1"), span);
 			var diagnostic = new Diagnostic(location, message);
 
-			Assert.Multiple(() =>
-			{
+		 using (Assert.EnterMultipleScope())
+		 {
 				Assert.That(diagnostic.Location, Is.EqualTo(location), nameof(diagnostic.Location));
 				Assert.That(diagnostic.Message, Is.EqualTo(message), nameof(diagnostic.Message));
 				Assert.That(diagnostic.ToString(), Is.EqualTo(message), nameof(diagnostic.ToString));
-			});
+			}
 		}
-	}}
+	}

@@ -3,7 +3,7 @@ using WSharp.Compiler.Syntax;
 
 namespace WSharp.Compiler.Tests.Syntax;
 
-public static class ParenthesizedExpressionSyntaxTests
+internal static class ParenthesizedExpressionSyntaxTests
 {
 	[Test]
 	public static void Create()
@@ -12,13 +12,13 @@ public static class ParenthesizedExpressionSyntaxTests
 		var syntax = (ParenthesizedExpressionSyntax)SyntaxTree.Parse(code).Root.DescendentNodes()
 			.First(_ => _.Kind == SyntaxKind.ParenthesizedExpression);
 
-		Assert.Multiple(() =>
-		{
+	  using (Assert.EnterMultipleScope())
+	  {
 			Assert.That(syntax.OpenParenthesisToken.Kind, Is.EqualTo(SyntaxKind.OpenParenthesisToken), nameof(syntax.OpenParenthesisToken));
 			Assert.That(syntax.Expression.Kind, Is.EqualTo(SyntaxKind.BinaryExpression), nameof(syntax.Expression));
 			Assert.That(syntax.CloseParenthesisToken.Kind, Is.EqualTo(SyntaxKind.CloseParenthesisToken), nameof(syntax.CloseParenthesisToken));
 			Assert.That(syntax.Span.Start, Is.EqualTo(4), nameof(syntax.Span.Start));
 			Assert.That(syntax.Span.End, Is.EqualTo(9), nameof(syntax.Span.End));
-		});
+		}
 	}
 }

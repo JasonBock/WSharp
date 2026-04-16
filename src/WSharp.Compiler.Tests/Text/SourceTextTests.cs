@@ -3,7 +3,7 @@ using WSharp.Compiler.Text;
 
 namespace WSharp.Compiler.Tests.Text;
 
-public static class SourceTextTests
+internal static class SourceTextTests
 {
 	[Test]
 	public static void GetLineIndex()
@@ -11,11 +11,11 @@ public static class SourceTextTests
 		var text = $"1 2#3;{Environment.NewLine}2 2;{Environment.NewLine}3 1#3;";
 		var source = SourceText.From(text);
 
-		Assert.Multiple(() =>
-		{
+	  using (Assert.EnterMultipleScope())
+	  {
 			for (var i = 0; i < 6; i++)
 			{
-				Assert.That(source.GetLineIndex(i), Is.EqualTo(0), i.ToString());
+				Assert.That(source.GetLineIndex(i), Is.Zero, i.ToString());
 			}
 			for (var i = 8; i < 12; i++)
 			{
@@ -25,7 +25,7 @@ public static class SourceTextTests
 			{
 				Assert.That(source.GetLineIndex(i), Is.EqualTo(2), i.ToString());
 			}
-		});
+		}
 	}
 
 	[Test]
@@ -34,18 +34,18 @@ public static class SourceTextTests
 		var text = "1 2#3;";
 		var source = SourceText.From(text);
 
-		Assert.Multiple(() =>
-		{
+	  using (Assert.EnterMultipleScope())
+	  {
 			Assert.That(source.Lines.Length, Is.EqualTo(1), nameof(source.Lines));
 			var line = source.Lines[0];
-			Assert.That(line.Start, Is.EqualTo(0), nameof(line.Start));
+			Assert.That(line.Start, Is.Zero, nameof(line.Start));
 			Assert.That(line.Length, Is.EqualTo(6), nameof(line.Length));
 			Assert.That(line.LengthIncludingLineBreak, Is.EqualTo(6), nameof(line.LengthIncludingLineBreak));
 			Assert.That(line.End, Is.EqualTo(6), nameof(line.End));
 			Assert.That(line.Text, Is.EqualTo(source), nameof(line.Text));
 			Assert.That(line.Span, Is.EqualTo(new TextSpan(0, 6)), nameof(line.Span));
 			Assert.That(line.SpanIncludingLineBreak, Is.EqualTo(new TextSpan(0, 6)), nameof(line.SpanIncludingLineBreak));
-		});
+		}
 	}
 
 	[Test]
@@ -54,11 +54,11 @@ public static class SourceTextTests
 		var text = "1 2#3;\r";
 		var source = SourceText.From(text);
 
-		Assert.Multiple(() =>
-		{
+	  using (Assert.EnterMultipleScope())
+	  {
 			Assert.That(source.Lines.Length, Is.EqualTo(2), nameof(source.Lines));
 			var line1 = source.Lines[0];
-			Assert.That(line1.Start, Is.EqualTo(0), $"{nameof(line1)} - {nameof(line1.Start)}");
+			Assert.That(line1.Start, Is.Zero, $"{nameof(line1)} - {nameof(line1.Start)}");
 			Assert.That(line1.Length, Is.EqualTo(6), $"{nameof(line1)} - {nameof(line1.Length)}");
 			Assert.That(line1.LengthIncludingLineBreak, Is.EqualTo(7), $"{nameof(line1)} - {nameof(line1.LengthIncludingLineBreak)}");
 			Assert.That(line1.End, Is.EqualTo(6), $"{nameof(line1)} - {nameof(line1.End)}");
@@ -68,13 +68,13 @@ public static class SourceTextTests
 
 			var line2 = source.Lines[1];
 			Assert.That(line2.Start, Is.EqualTo(7), $"{nameof(line2)} - {nameof(line2.Start)}");
-			Assert.That(line2.Length, Is.EqualTo(0), $"{nameof(line2)} - {nameof(line2.Length)}");
-			Assert.That(line2.LengthIncludingLineBreak, Is.EqualTo(0), $"{nameof(line2)} - {nameof(line2.LengthIncludingLineBreak)}");
+			Assert.That(line2.Length, Is.Zero, $"{nameof(line2)} - {nameof(line2.Length)}");
+			Assert.That(line2.LengthIncludingLineBreak, Is.Zero, $"{nameof(line2)} - {nameof(line2.LengthIncludingLineBreak)}");
 			Assert.That(line2.End, Is.EqualTo(7), $"{nameof(line2)} - {nameof(line2.End)}");
 			Assert.That(line2.Text, Is.EqualTo(source), $"{nameof(line2)} - {nameof(line2.Text)}");
 			Assert.That(line2.Span, Is.EqualTo(new TextSpan(7, 0)), $"{nameof(line2)} - {nameof(line2.Span)}");
 			Assert.That(line2.SpanIncludingLineBreak, Is.EqualTo(new TextSpan(7, 0)), $"{nameof(line2)} - {nameof(line2.SpanIncludingLineBreak)}");
-		});
+		}
 	}
 
 	[Test]
@@ -83,11 +83,11 @@ public static class SourceTextTests
 		var text = "1 2#3;\n";
 		var source = SourceText.From(text);
 
-		Assert.Multiple(() =>
-		{
+	  using (Assert.EnterMultipleScope())
+	  {
 			Assert.That(source.Lines.Length, Is.EqualTo(2), nameof(source.Lines));
 			var line1 = source.Lines[0];
-			Assert.That(line1.Start, Is.EqualTo(0), $"{nameof(line1)} - {nameof(line1.Start)}");
+			Assert.That(line1.Start, Is.Zero, $"{nameof(line1)} - {nameof(line1.Start)}");
 			Assert.That(line1.Length, Is.EqualTo(6), $"{nameof(line1)} - {nameof(line1.Length)}");
 			Assert.That(line1.LengthIncludingLineBreak, Is.EqualTo(7), $"{nameof(line1)} - {nameof(line1.LengthIncludingLineBreak)}");
 			Assert.That(line1.End, Is.EqualTo(6), $"{nameof(line1)} - {nameof(line1.End)}");
@@ -97,13 +97,13 @@ public static class SourceTextTests
 
 			var line2 = source.Lines[1];
 			Assert.That(line2.Start, Is.EqualTo(7), $"{nameof(line2)} - {nameof(line2.Start)}");
-			Assert.That(line2.Length, Is.EqualTo(0), $"{nameof(line2)} - {nameof(line2.Length)}");
-			Assert.That(line2.LengthIncludingLineBreak, Is.EqualTo(0), $"{nameof(line2)} - {nameof(line2.LengthIncludingLineBreak)}");
+			Assert.That(line2.Length, Is.Zero, $"{nameof(line2)} - {nameof(line2.Length)}");
+			Assert.That(line2.LengthIncludingLineBreak, Is.Zero, $"{nameof(line2)} - {nameof(line2.LengthIncludingLineBreak)}");
 			Assert.That(line2.End, Is.EqualTo(7), $"{nameof(line2)} - {nameof(line2.End)}");
 			Assert.That(line2.Text, Is.EqualTo(source), $"{nameof(line2)} - {nameof(line2.Text)}");
 			Assert.That(line2.Span, Is.EqualTo(new TextSpan(7, 0)), $"{nameof(line2)} - {nameof(line2.Span)}");
 			Assert.That(line2.SpanIncludingLineBreak, Is.EqualTo(new TextSpan(7, 0)), $"{nameof(line2)} - {nameof(line2.SpanIncludingLineBreak)}");
-		});
+		}
 	}
 
 	[Test]
@@ -112,11 +112,11 @@ public static class SourceTextTests
 		var text = "1 2#3;\r\n";
 		var source = SourceText.From(text);
 
-		Assert.Multiple(() =>
-		{
+	  using (Assert.EnterMultipleScope())
+	  {
 			Assert.That(source.Lines.Length, Is.EqualTo(2), nameof(source.Lines));
 			var line1 = source.Lines[0];
-			Assert.That(line1.Start, Is.EqualTo(0), $"{nameof(line1)} - {nameof(line1.Start)}");
+			Assert.That(line1.Start, Is.Zero, $"{nameof(line1)} - {nameof(line1.Start)}");
 			Assert.That(line1.Length, Is.EqualTo(6), $"{nameof(line1)} - {nameof(line1.Length)}");
 			Assert.That(line1.LengthIncludingLineBreak, Is.EqualTo(8), $"{nameof(line1)} - {nameof(line1.LengthIncludingLineBreak)}");
 			Assert.That(line1.End, Is.EqualTo(6), $"{nameof(line1)} - {nameof(line1.End)}");
@@ -126,12 +126,12 @@ public static class SourceTextTests
 
 			var line2 = source.Lines[1];
 			Assert.That(line2.Start, Is.EqualTo(8), $"{nameof(line2)} - {nameof(line2.Start)}");
-			Assert.That(line2.Length, Is.EqualTo(0), $"{nameof(line2)} - {nameof(line2.Length)}");
-			Assert.That(line2.LengthIncludingLineBreak, Is.EqualTo(0), $"{nameof(line2)} - {nameof(line2.LengthIncludingLineBreak)}");
+			Assert.That(line2.Length, Is.Zero, $"{nameof(line2)} - {nameof(line2.Length)}");
+			Assert.That(line2.LengthIncludingLineBreak, Is.Zero, $"{nameof(line2)} - {nameof(line2.LengthIncludingLineBreak)}");
 			Assert.That(line2.End, Is.EqualTo(8), $"{nameof(line2)} - {nameof(line2.End)}");
 			Assert.That(line2.Text, Is.EqualTo(source), $"{nameof(line2)} - {nameof(line2.Text)}");
 			Assert.That(line2.Span, Is.EqualTo(new TextSpan(8, 0)), $"{nameof(line2)} - {nameof(line2.Span)}");
 			Assert.That(line2.SpanIncludingLineBreak, Is.EqualTo(new TextSpan(8, 0)), $"{nameof(line2)} - {nameof(line2.SpanIncludingLineBreak)}");
-		});
+		}
 	}
 }

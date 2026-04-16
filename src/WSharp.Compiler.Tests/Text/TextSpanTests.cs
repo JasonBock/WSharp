@@ -3,7 +3,7 @@ using WSharp.Compiler.Text;
 
 namespace WSharp.Compiler.Tests.Text;
 
-public static class TextSpanTests
+internal static class TextSpanTests
 {
 	[Test]
 	public static void CheckEquality()
@@ -13,8 +13,8 @@ public static class TextSpanTests
 		var rangeC = new TextSpan(1, 1);
 
 #pragma warning disable NUnit2010 // Use EqualConstraint for better assertion messages in case of failure
-		Assert.Multiple(() =>
-		{
+	  using (Assert.EnterMultipleScope())
+	  {
 			Assert.That(rangeB, Is.Not.EqualTo(rangeA), "rangeB.Equals(rangeA)");
 			Assert.That(rangeB == rangeA, Is.False, "rangeB == rangeA");
 			Assert.That(rangeB != rangeA, Is.True, "rangeB != rangeA");
@@ -38,7 +38,7 @@ public static class TextSpanTests
 			Assert.That(rangeB, Is.Not.EqualTo(rangeC));
 			Assert.That(rangeB == rangeC, Is.False, "rangeB == rangeC");
 			Assert.That(rangeB != rangeC, Is.True, "rangeB != rangeC");
-		});
+		}
 #pragma warning restore NUnit2010 // Use EqualConstraint for better assertion messages in case of failure
 	}
 
@@ -52,11 +52,11 @@ public static class TextSpanTests
 		var rangeB = new TextSpan(1, 2);
 		var rangeC = new TextSpan(1, 1);
 
-		Assert.Multiple(() =>
-		{
+	  using (Assert.EnterMultipleScope())
+	  {
 			Assert.That(rangeB.GetHashCode(), Is.Not.EqualTo(rangeA.GetHashCode()));
 			Assert.That(rangeC.GetHashCode(), Is.EqualTo(rangeA.GetHashCode()));
-		});
+		}
 	}
 
 	[Test]
@@ -64,12 +64,12 @@ public static class TextSpanTests
 	{
 		var span = new TextSpan();
 
-		Assert.Multiple(() =>
-		{
-			Assert.That(span.Start, Is.EqualTo(0), nameof(span.Start));
-			Assert.That(span.Length, Is.EqualTo(0), nameof(span.Length));
-			Assert.That(span.End, Is.EqualTo(0), nameof(span.End));
-		});
+	  using (Assert.EnterMultipleScope())
+	  {
+			Assert.That(span.Start, Is.Zero, nameof(span.Start));
+			Assert.That(span.Length, Is.Zero, nameof(span.Length));
+			Assert.That(span.End, Is.Zero, nameof(span.End));
+		}
 	}
 
 	[Test]
@@ -77,12 +77,12 @@ public static class TextSpanTests
 	{
 		var span = new TextSpan(1, 2);
 
-		Assert.Multiple(() =>
-		{
+	  using (Assert.EnterMultipleScope())
+	  {
 			Assert.That(span.Start, Is.EqualTo(1), nameof(span.Start));
 			Assert.That(span.Length, Is.EqualTo(2), nameof(span.Length));
 			Assert.That(span.End, Is.EqualTo(3), nameof(span.End));
-		});
+		}
 	}
 
 	[Test]
@@ -90,12 +90,12 @@ public static class TextSpanTests
 	{
 		var span = TextSpan.FromBounds(1, 4);
 
-		Assert.Multiple(() =>
-		{
+	  using (Assert.EnterMultipleScope())
+	  {
 			Assert.That(span.Start, Is.EqualTo(1), nameof(span.Start));
 			Assert.That(span.Length, Is.EqualTo(3), nameof(span.Length));
 			Assert.That(span.End, Is.EqualTo(4), nameof(span.End));
-		});
+		}
 	}
 
 	[Test]
@@ -105,12 +105,12 @@ public static class TextSpanTests
 		var span2 = TextSpan.FromBounds(3, 8);
 		var span3 = TextSpan.FromBounds(6, 12);
 
-		Assert.Multiple(() =>
-		{
+	  using (Assert.EnterMultipleScope())
+	  {
 			Assert.That(span1.OverlapsWith(span2), Is.True, "span1.OverlapsWith(span2)");
 			Assert.That(span1.OverlapsWith(span3), Is.False, "span1.OverlapsWith(span3)");
 			Assert.That(span2.OverlapsWith(span3), Is.True, "span2.OverlapsWith(span3)");
-		});
+		}
 	}
 
 	[Test]

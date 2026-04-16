@@ -3,7 +3,7 @@ using WSharp.Compiler.Symbols;
 
 namespace WSharp.Compiler.Tests.Symbols;
 
-public static class TypeSymbolTests
+internal static class TypeSymbolTests
 {
 	[Test]
 	public static void LookupUnknownTypeSymbol() =>
@@ -18,10 +18,10 @@ public static class TypeSymbolTests
 	{
 		var symbol = TypeSymbol.Lookup(typeName)!;
 
-		Assert.Multiple(() =>
-		{
+	  using (Assert.EnterMultipleScope())
+	  {
 			Assert.That(symbol.Name, Is.EqualTo(typeName), nameof(symbol.Name));
 			Assert.That(symbol.Kind, Is.EqualTo(SymbolKind.Type), nameof(symbol.Kind));
-		});
+		}
 	}
 }

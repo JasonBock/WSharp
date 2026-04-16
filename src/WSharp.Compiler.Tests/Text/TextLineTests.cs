@@ -3,14 +3,14 @@ using WSharp.Compiler.Text;
 
 namespace WSharp.Compiler.Tests.Text;
 
-public static class TextLineTests
+internal static class TextLineTests
 {
 	[Test]
 	public static void Create()
 	{
 		var source = SourceText.From("1 2#3;");
 		var line = new TextLine(source, 0, 6, 6);
-		Assert.That(line.Start, Is.EqualTo(0), nameof(line.Start));
+		Assert.That(line.Start, Is.Zero, nameof(line.Start));
 		Assert.That(line.Length, Is.EqualTo(6), nameof(line.Length));
 		Assert.That(line.LengthIncludingLineBreak, Is.EqualTo(6), nameof(line.LengthIncludingLineBreak));
 		Assert.That(line.End, Is.EqualTo(6), nameof(line.End));

@@ -2,9 +2,9 @@
 using System.Collections.Immutable;
 using WSharp.Runtime;
 
-namespace WSharp.Compiler.Tests
-{
-	public static class EvaluationResultTests
+namespace WSharp.Compiler.Tests;
+
+internal static class EvaluationResultTests
 	{
 		[Test]
 		public static void Create()
@@ -14,11 +14,10 @@ namespace WSharp.Compiler.Tests
 
 			var result = new EvaluationResult(diagnostics, lines);
 
-			Assert.Multiple(() =>
-			{
+		 using (Assert.EnterMultipleScope())
+		 {
 				Assert.That(result.Diagnostics, Is.EqualTo(diagnostics), nameof(result.Diagnostics));
 				Assert.That(result.Lines, Is.EqualTo(lines), nameof(result.Lines));
-			});
+			}
 		}
 	}
-}

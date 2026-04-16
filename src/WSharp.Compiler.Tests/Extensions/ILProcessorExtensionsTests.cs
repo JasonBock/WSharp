@@ -7,7 +7,7 @@ using WSharp.Compiler.Symbols;
 
 namespace WSharp.Compiler.Tests.Extensions;
 
-public static class ILProcessorExtensionsTests
+internal static class ILProcessorExtensionsTests
 {
 	private static void UseProcessor(Action<ILProcessor> processor)
 	{
@@ -40,15 +40,15 @@ public static class ILProcessorExtensionsTests
 			var value = BigInteger.Zero;
 			processor.EmitBigInteger(value);
 
-			Assert.Multiple(() =>
-			{
+		   using (Assert.EnterMultipleScope())
+		   {
 				var instructions = processor.Body.Instructions;
-				Assert.That(instructions.Count, Is.EqualTo(1));
+				Assert.That(instructions, Has.Count.EqualTo(1));
 
 				Assert.That(instructions[0].OpCode, Is.EqualTo(OpCodes.Call));
 				Assert.That(((MemberReference)instructions[0].Operand).FullName,
 					Is.EqualTo("System.Numerics.BigInteger System.Numerics.BigInteger::get_Zero()"));
-			});
+			}
 		});
 
 	[Test]
@@ -58,15 +58,15 @@ public static class ILProcessorExtensionsTests
 			var value = BigInteger.One;
 			processor.EmitBigInteger(value);
 
-			Assert.Multiple(() =>
-			{
+		   using (Assert.EnterMultipleScope())
+		   {
 				var instructions = processor.Body.Instructions;
-				Assert.That(instructions.Count, Is.EqualTo(1));
+				Assert.That(instructions, Has.Count.EqualTo(1));
 
 				Assert.That(instructions[0].OpCode, Is.EqualTo(OpCodes.Call));
 				Assert.That(((MemberReference)instructions[0].Operand).FullName,
 					Is.EqualTo("System.Numerics.BigInteger System.Numerics.BigInteger::get_One()"));
-			});
+			}
 		});
 
 	[Test]
@@ -76,10 +76,10 @@ public static class ILProcessorExtensionsTests
 			var value = new BigInteger(444);
 			processor.EmitBigInteger(value);
 
-			Assert.Multiple(() =>
-			{
+		   using (Assert.EnterMultipleScope())
+		   {
 				var instructions = processor.Body.Instructions;
-				Assert.That(instructions.Count, Is.EqualTo(2));
+				Assert.That(instructions, Has.Count.EqualTo(2));
 
 				Assert.That(instructions[0].OpCode, Is.EqualTo(OpCodes.Ldc_I4));
 				Assert.That(instructions[0].Operand, Is.EqualTo((int)value));
@@ -87,7 +87,7 @@ public static class ILProcessorExtensionsTests
 				Assert.That(instructions[^1].OpCode, Is.EqualTo(OpCodes.Newobj));
 				Assert.That(((MemberReference)instructions[^1].Operand).FullName,
 					Is.EqualTo("System.Void System.Numerics.BigInteger::.ctor(System.Int32)"));
-			});
+			}
 		});
 
 	[Test]
@@ -98,10 +98,10 @@ public static class ILProcessorExtensionsTests
 			var valueData = value.ToByteArray();
 			processor.EmitBigInteger(value);
 
-			Assert.Multiple(() =>
-			{
+		   using (Assert.EnterMultipleScope())
+		   {
 				var instructions = processor.Body.Instructions;
-				Assert.That(instructions.Count, Is.EqualTo((3 * valueData.Length) + 2));
+				Assert.That(instructions, Has.Count.EqualTo((3 * valueData.Length) + 2));
 				Assert.That(instructions[0].OpCode, Is.EqualTo(OpCodes.Newarr));
 				Assert.That(((MemberReference)instructions[0].Operand).FullName,
 					Is.EqualTo("System.Byte"));
@@ -128,7 +128,7 @@ public static class ILProcessorExtensionsTests
 				Assert.That(instructions[^1].OpCode, Is.EqualTo(OpCodes.Newobj));
 				Assert.That(((MemberReference)instructions[^1].Operand).FullName,
 					Is.EqualTo("System.Void System.Numerics.BigInteger::.ctor(System.Byte[])"));
-			});
+			}
 		});
 
 	[Test]
@@ -141,11 +141,11 @@ public static class ILProcessorExtensionsTests
 		{
 			processor.EmitBox(null);
 
-			Assert.Multiple(() =>
-			{
+		   using (Assert.EnterMultipleScope())
+		   {
 				var instructions = processor.Body.Instructions;
-				Assert.That(instructions.Count, Is.EqualTo(0));
-			});
+				Assert.That(instructions, Is.Empty);
+			}
 		});
 
 	[Test]
@@ -154,15 +154,15 @@ public static class ILProcessorExtensionsTests
 		{
 			processor.EmitBox(TypeSymbol.Boolean);
 
-			Assert.Multiple(() =>
-			{
+		   using (Assert.EnterMultipleScope())
+		   {
 				var instructions = processor.Body.Instructions;
-				Assert.That(instructions.Count, Is.EqualTo(1));
+				Assert.That(instructions, Has.Count.EqualTo(1));
 
 				Assert.That(instructions[0].OpCode, Is.EqualTo(OpCodes.Box));
 				Assert.That(((MemberReference)instructions[0].Operand).FullName,
 					Is.EqualTo("System.Boolean"));
-			});
+			}
 		});
 
 	[Test]
@@ -171,13 +171,13 @@ public static class ILProcessorExtensionsTests
 		{
 			processor.EmitBox(TypeSymbol.Integer);
 
-			Assert.Multiple(() =>
-			{
+		   using (Assert.EnterMultipleScope())
+		   {
 				var instructions = processor.Body.Instructions;
-				Assert.That(instructions.Count, Is.EqualTo(1));
+				Assert.That(instructions, Has.Count.EqualTo(1));
 				Assert.That(instructions[0].OpCode, Is.EqualTo(OpCodes.Box));
 				Assert.That(((MemberReference)instructions[0].Operand).FullName,
 					Is.EqualTo("System.Numerics.BigInteger"));
-			});
+			}
 		});
 }

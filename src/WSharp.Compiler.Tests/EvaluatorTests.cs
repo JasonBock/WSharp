@@ -1,9 +1,9 @@
 ﻿using NUnit.Framework;
 using WSharp.Compiler.Syntax;
 
-namespace WSharp.Compiler.Tests
-{
-	public static class EvaluatorTests
+namespace WSharp.Compiler.Tests;
+
+internal static class EvaluatorTests
 	{
 		[Test]
 		public static void EvaluateText()
@@ -12,11 +12,10 @@ namespace WSharp.Compiler.Tests
 			var binder = new Compilation(tree);
 			var result = binder.Evaluate();
 
-			Assert.Multiple(() =>
-			{
-				Assert.That(result.Diagnostics.Length, Is.EqualTo(0), nameof(result.Diagnostics));
+		 using (Assert.EnterMultipleScope())
+		 {
+				Assert.That(result.Diagnostics, Is.Empty, nameof(result.Diagnostics));
 				Assert.That(result.Lines.Length, Is.EqualTo(1), nameof(result.Lines));
-			});
+			}
 		}
 	}
-}

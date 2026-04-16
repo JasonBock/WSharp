@@ -4,7 +4,7 @@ using WSharp.Compiler.Symbols;
 
 namespace WSharp.Compiler.Tests.Binding;
 
-public static class ConversionTests
+internal static class ConversionTests
 {
 	[Test]
 	public static void VerifyExplicitConversion() =>

@@ -4,7 +4,7 @@ using WSharp.Compiler.Syntax;
 
 namespace WSharp.Compiler.Tests.Syntax;
 
-public static class UnaryUpdateLineCountExpressionSyntaxTests
+internal static class UnaryUpdateLineCountExpressionSyntaxTests
 {
 	[Test]
 	public static void Create()
@@ -13,11 +13,11 @@ public static class UnaryUpdateLineCountExpressionSyntaxTests
 		var syntax = (UnaryUpdateLineCountExpressionSyntax)SyntaxTree.Parse(code).Root.DescendentNodes()
 			.First(_ => _.Kind == SyntaxKind.UnaryUpdateLineCountExpression);
 
-		Assert.Multiple(() =>
-		{
+	  using (Assert.EnterMultipleScope())
+	  {
 			Assert.That(((LiteralExpressionSyntax)syntax.LineNumber).Value, Is.EqualTo(BigInteger.One), nameof(syntax.LineNumber));
 			Assert.That(syntax.Span.Start, Is.EqualTo(2), nameof(syntax.Span.Start));
 			Assert.That(syntax.Span.End, Is.EqualTo(3), nameof(syntax.Span.End));
-		});
+		}
 	}
 }

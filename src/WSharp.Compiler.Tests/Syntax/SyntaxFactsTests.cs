@@ -3,7 +3,7 @@ using WSharp.Compiler.Syntax;
 
 namespace WSharp.Compiler.Tests.Syntax;
 
-public static class SyntaxFactsTests
+internal static class SyntaxFactsTests
 {
 	[TestCaseSource(nameof(SyntaxFactsTests.GetSyntaxKindData))]
 	public static void RoundTripSyntaxKind(SyntaxKind kind)
@@ -15,13 +15,13 @@ public static class SyntaxFactsTests
 			var (tokensResult, _) = SyntaxTree.ParseTokens(text);
 			var tokens = tokensResult.ToArray();
 
-			Assert.Multiple(() =>
-			{
+		 using (Assert.EnterMultipleScope())
+		 {
 				Assert.That(tokens.Length, Is.EqualTo(1), nameof(tokens.Length));
 				var token = tokens[0];
 				Assert.That(token.Kind, Is.EqualTo(kind), nameof(token.Kind));
 				Assert.That(token.Text, Is.EqualTo(text), nameof(token.Text));
-			});
+			}
 		}
 	}
 
@@ -30,14 +30,14 @@ public static class SyntaxFactsTests
 	{
 		var operatorKinds = SyntaxFacts.GetUnaryOperatorKinds().ToArray();
 
-		Assert.Multiple(() =>
-		{
+	  using (Assert.EnterMultipleScope())
+	  {
 			Assert.That(operatorKinds.Length, Is.EqualTo(4), nameof(operatorKinds.Length));
 			Assert.That(operatorKinds, Contains.Item(SyntaxKind.PlusToken), nameof(SyntaxKind.PlusToken));
 			Assert.That(operatorKinds, Contains.Item(SyntaxKind.MinusToken), nameof(SyntaxKind.MinusToken));
 			Assert.That(operatorKinds, Contains.Item(SyntaxKind.BangToken), nameof(SyntaxKind.BangToken));
 			Assert.That(operatorKinds, Contains.Item(SyntaxKind.TildeToken), nameof(SyntaxKind.TildeToken));
-		});
+		}
 	}
 
 	[Test]
@@ -45,8 +45,8 @@ public static class SyntaxFactsTests
 	{
 		var binaryKinds = SyntaxFacts.GetBinaryOperatorKinds().ToArray();
 
-		Assert.Multiple(() =>
-		{
+	  using (Assert.EnterMultipleScope())
+	  {
 			Assert.That(binaryKinds.Length, Is.EqualTo(16), nameof(binaryKinds.Length));
 			Assert.That(binaryKinds, Contains.Item(SyntaxKind.StarToken), nameof(SyntaxKind.StarToken));
 			Assert.That(binaryKinds, Contains.Item(SyntaxKind.SlashToken), nameof(SyntaxKind.SlashToken));
@@ -64,7 +64,7 @@ public static class SyntaxFactsTests
 			Assert.That(binaryKinds, Contains.Item(SyntaxKind.PipeToken), nameof(SyntaxKind.PipeToken));
 			Assert.That(binaryKinds, Contains.Item(SyntaxKind.PipePipeToken), nameof(SyntaxKind.PipePipeToken));
 			Assert.That(binaryKinds, Contains.Item(SyntaxKind.HatToken), nameof(SyntaxKind.HatToken));
-		});
+		}
 	}
 
 	[TestCase(SyntaxKind.SingleLineCommentTrivia, true)]
@@ -97,7 +97,7 @@ public static class SyntaxFactsTests
 
 	private static IEnumerable<SyntaxKind> GetSyntaxKindData()
 	{
-		foreach (var kind in (SyntaxKind[])Enum.GetValues(typeof(SyntaxKind)))
+		foreach (var kind in Enum.GetValues<SyntaxKind>())
 		{
 			yield return kind;
 		}
