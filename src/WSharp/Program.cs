@@ -96,10 +96,12 @@ internal static class Program
 		if (errors.Count > 0)
 		{
 			using (ConsoleColor.Red.Bind(() => Console.ForegroundColor))
+			{
 				foreach (var error in errors)
 				{
 					Console.Out.WriteLine(error);
 				}
+			}
 
 			return false;
 		}

@@ -89,7 +89,7 @@ public sealed class ExecutionEngine
 
 			foreach (var line in this.lines.Values.Where(_ => _.Count > BigInteger.Zero))
 			{
-				var range = new Range<BigInteger>(currentLowerBound, line.Count + currentLowerBound - 1);
+				var range = new Range<BigInteger>(currentLowerBound, line.Count + currentLowerBound);
 				if (range.Contains(generated))
 				{
 					foundLine = line.Identifier;
