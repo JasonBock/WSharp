@@ -15,8 +15,8 @@ internal static class ParserTests
 
 		var text = $"1 2#({unaryText}3{binaryText}4)";
 
-	  using (Assert.EnterMultipleScope())
-	  {
+		using (Assert.EnterMultipleScope())
+		{
 			var expression = ParserTests.ParseExpression(text);
 
 			using var enumerator = new AssertingEnumerator(expression);
@@ -61,8 +61,8 @@ internal static class ParserTests
 
 		var text = $"1 2#(3 {operator1Text} 4 {operator2Text} 5)";
 
-	  using (Assert.EnterMultipleScope())
-	  {
+		using (Assert.EnterMultipleScope())
+		{
 			var expression = ParserTests.ParseExpression(text);
 
 			using var enumerator = new AssertingEnumerator(expression);

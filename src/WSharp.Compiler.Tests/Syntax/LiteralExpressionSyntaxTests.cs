@@ -13,8 +13,8 @@ internal static class LiteralExpressionSyntaxTests
 		var syntax = (LiteralExpressionSyntax)SyntaxTree.Parse(code).Root.DescendentNodes()
 			.First(_ => _.Kind == SyntaxKind.LiteralExpression);
 
-	  using (Assert.EnterMultipleScope())
-	  {
+		using (Assert.EnterMultipleScope())
+		{
 			Assert.That(syntax.LiteralToken.Kind, Is.EqualTo(SyntaxKind.NumberToken), nameof(syntax.LiteralToken));
 			Assert.That(syntax.Value, Is.EqualTo(BigInteger.One), nameof(syntax.Value));
 			Assert.That(syntax.Span.Start, Is.Zero, nameof(syntax.Span.Start));

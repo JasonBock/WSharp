@@ -13,8 +13,8 @@ internal static class UnaryUpdateLineCountExpressionSyntaxTests
 		var syntax = (UnaryUpdateLineCountExpressionSyntax)SyntaxTree.Parse(code).Root.DescendentNodes()
 			.First(_ => _.Kind == SyntaxKind.UnaryUpdateLineCountExpression);
 
-	  using (Assert.EnterMultipleScope())
-	  {
+		using (Assert.EnterMultipleScope())
+		{
 			Assert.That(((LiteralExpressionSyntax)syntax.LineNumber).Value, Is.EqualTo(BigInteger.One), nameof(syntax.LineNumber));
 			Assert.That(syntax.Span.Start, Is.EqualTo(2), nameof(syntax.Span.Start));
 			Assert.That(syntax.Span.End, Is.EqualTo(3), nameof(syntax.Span.End));

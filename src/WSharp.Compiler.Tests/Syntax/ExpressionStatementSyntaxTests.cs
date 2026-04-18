@@ -12,8 +12,8 @@ internal static class ExpressionStatementSyntaxTests
 		var syntax = (ExpressionStatementSyntax)SyntaxTree.Parse(code).Root.DescendentNodes()
 			.First(_ => _.Kind == SyntaxKind.ExpressionStatement);
 
-	  using (Assert.EnterMultipleScope())
-	  {
+		using (Assert.EnterMultipleScope())
+		{
 			Assert.That(syntax.Expression.Kind, Is.EqualTo(SyntaxKind.LiteralExpression), nameof(syntax.Expression));
 			Assert.That(syntax.Span.Start, Is.Zero, nameof(syntax.Span.Start));
 			Assert.That(syntax.Span.End, Is.EqualTo(1), nameof(syntax.Span.End));

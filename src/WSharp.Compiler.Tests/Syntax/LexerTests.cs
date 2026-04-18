@@ -13,8 +13,8 @@ internal static class LexerTests
 		var (tokensResult, diagnostics) = SyntaxTree.ParseTokens(text);
 		var tokens = tokensResult.ToArray();
 
-	  using (Assert.EnterMultipleScope())
-	  {
+		using (Assert.EnterMultipleScope())
+		{
 			Assert.That(tokens, Has.Length.EqualTo(1), $"{nameof(tokens)}.{nameof(tokens.Length)}");
 			var token = tokens[0];
 			Assert.That(token.Kind, Is.EqualTo(SyntaxKind.StringToken), nameof(token.Kind));
@@ -51,8 +51,8 @@ internal static class LexerTests
 		var (tokensResult, _) = SyntaxTree.ParseTokens(value.text);
 		var tokens = tokensResult.ToArray();
 
-	  using (Assert.EnterMultipleScope())
-	  {
+		using (Assert.EnterMultipleScope())
+		{
 			Assert.That(tokens, Has.Length.EqualTo(1), nameof(tokens.Length));
 			var token = tokens[0];
 			Assert.That(token.Kind, Is.EqualTo(value.kind), nameof(token.Kind));
@@ -66,8 +66,8 @@ internal static class LexerTests
 		var (tokensResult, _) = SyntaxTree.ParseTokens(value.text, true);
 		var tokens = tokensResult.ToArray();
 
-	  using (Assert.EnterMultipleScope())
-	  {
+		using (Assert.EnterMultipleScope())
+		{
 			Assert.That(tokens, Has.Length.EqualTo(1), nameof(tokens.Length));
 			var token = tokens[0];
 			Assert.That(token.LeadingTrivia, Has.Length.EqualTo(1), nameof(token.LeadingTrivia));
@@ -84,8 +84,8 @@ internal static class LexerTests
 		var (tokensResult, _) = SyntaxTree.ParseTokens(text);
 		var tokens = tokensResult.ToArray();
 
-	  using (Assert.EnterMultipleScope())
-	  {
+		using (Assert.EnterMultipleScope())
+		{
 			Assert.That(tokens, Has.Length.EqualTo(2), nameof(tokens.Length));
 			var token1 = tokens[0];
 			Assert.That(token1.Kind, Is.EqualTo(value.t1Kind), $"1 - {nameof(token1.Kind)}");
@@ -104,8 +104,8 @@ internal static class LexerTests
 		var (tokensResult, _) = SyntaxTree.ParseTokens(text);
 		var tokens = tokensResult.ToArray();
 
-	  using (Assert.EnterMultipleScope())
-	  {
+		using (Assert.EnterMultipleScope())
+		{
 			Assert.That(tokens, Has.Length.EqualTo(2), nameof(tokens.Length));
 
 			var token1 = tokens[0];

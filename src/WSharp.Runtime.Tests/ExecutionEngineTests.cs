@@ -107,8 +107,8 @@ internal static class ExecutionEngineTests
 		var engine = new ExecutionEngine(lines, random, new StringReader(string.Empty), new StringWriter());
 		engine.Execute();
 
-	  using (Assert.EnterMultipleScope())
-	  {
+		using (Assert.EnterMultipleScope())
+		{
 			Assert.That(codeExecutionCount0, Is.EqualTo(line0.Count));
 			Assert.That(codeExecutionCount1, Is.EqualTo(line1.Count));
 			Assert.That(codeExecutionCount2, Is.EqualTo(line2.Count));

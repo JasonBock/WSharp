@@ -15,8 +15,8 @@ internal static class SyntaxTokenTests
 		var (tokens, _) = SyntaxTree.ParseTokens(text);
 		var token = tokens[0];
 
-	  using (Assert.EnterMultipleScope())
-	  {
+		using (Assert.EnterMultipleScope())
+		{
 			Assert.That(token.Kind, Is.EqualTo(kind), nameof(token.Kind));
 			Assert.That(token.Position, Is.EqualTo(position), nameof(token.Position));
 			Assert.That(token.Span.Start, Is.EqualTo(position), nameof(token.Span.Start));
@@ -37,8 +37,8 @@ internal static class SyntaxTokenTests
 		var (tokens, _) = SyntaxTree.ParseTokens(text);
 		var token = tokens[0];
 
-	  using (Assert.EnterMultipleScope())
-	  {
+		using (Assert.EnterMultipleScope())
+		{
 			Assert.That(token.Kind, Is.EqualTo(kind), nameof(token.Kind));
 			Assert.That(token.Position, Is.EqualTo(position), nameof(token.Position));
 			Assert.That(token.Span.Start, Is.EqualTo(position), nameof(token.Span.Start));
@@ -57,8 +57,8 @@ internal static class SyntaxTokenTests
 		var (tokens, _) = SyntaxTree.ParseTokens(text);
 		var token = tokens[0];
 
-	  using (Assert.EnterMultipleScope())
-	  {
+		using (Assert.EnterMultipleScope())
+		{
 			Assert.That(token.Kind, Is.EqualTo(SyntaxKind.NumberToken), nameof(token.Kind));
 			Assert.That(token.Position, Is.EqualTo(13), nameof(token.Position));
 			Assert.That(token.Span.Start, Is.EqualTo(13), nameof(token.Span.Start));

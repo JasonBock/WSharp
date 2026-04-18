@@ -14,8 +14,8 @@ internal static class LineTests
 
 		var line = new Line(identifier, count, code);
 
-	  using (Assert.EnterMultipleScope())
-	  {
+		using (Assert.EnterMultipleScope())
+		{
 			Assert.That(line.Identifier, Is.EqualTo(identifier));
 			Assert.That(line.Count, Is.EqualTo(count));
 			Assert.That(line.Code, Is.SameAs(code));
@@ -48,8 +48,8 @@ internal static class LineTests
 		var line = new Line(identifier, count, code);
 		var newLine = line.UpdateCount(delta);
 
-	  using (Assert.EnterMultipleScope())
-	  {
+		using (Assert.EnterMultipleScope())
+		{
 			Assert.That(newLine.Identifier, Is.EqualTo((BigInteger)identifier));
 			Assert.That(newLine.Count, Is.EqualTo(new BigInteger(expectedResult)));
 			Assert.That(newLine.Code, Is.SameAs(code));

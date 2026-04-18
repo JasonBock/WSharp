@@ -13,8 +13,8 @@ internal static class TextSpanTests
 		var rangeC = new TextSpan(1, 1);
 
 #pragma warning disable NUnit2010 // Use EqualConstraint for better assertion messages in case of failure
-	  using (Assert.EnterMultipleScope())
-	  {
+		using (Assert.EnterMultipleScope())
+		{
 			Assert.That(rangeB, Is.Not.EqualTo(rangeA), "rangeB.Equals(rangeA)");
 			Assert.That(rangeB == rangeA, Is.False, "rangeB == rangeA");
 			Assert.That(rangeB != rangeA, Is.True, "rangeB != rangeA");
@@ -52,8 +52,8 @@ internal static class TextSpanTests
 		var rangeB = new TextSpan(1, 2);
 		var rangeC = new TextSpan(1, 1);
 
-	  using (Assert.EnterMultipleScope())
-	  {
+		using (Assert.EnterMultipleScope())
+		{
 			Assert.That(rangeB.GetHashCode(), Is.Not.EqualTo(rangeA.GetHashCode()));
 			Assert.That(rangeC.GetHashCode(), Is.EqualTo(rangeA.GetHashCode()));
 		}
@@ -64,8 +64,8 @@ internal static class TextSpanTests
 	{
 		var span = new TextSpan();
 
-	  using (Assert.EnterMultipleScope())
-	  {
+		using (Assert.EnterMultipleScope())
+		{
 			Assert.That(span.Start, Is.Zero, nameof(span.Start));
 			Assert.That(span.Length, Is.Zero, nameof(span.Length));
 			Assert.That(span.End, Is.Zero, nameof(span.End));
@@ -77,8 +77,8 @@ internal static class TextSpanTests
 	{
 		var span = new TextSpan(1, 2);
 
-	  using (Assert.EnterMultipleScope())
-	  {
+		using (Assert.EnterMultipleScope())
+		{
 			Assert.That(span.Start, Is.EqualTo(1), nameof(span.Start));
 			Assert.That(span.Length, Is.EqualTo(2), nameof(span.Length));
 			Assert.That(span.End, Is.EqualTo(3), nameof(span.End));
@@ -90,8 +90,8 @@ internal static class TextSpanTests
 	{
 		var span = TextSpan.FromBounds(1, 4);
 
-	  using (Assert.EnterMultipleScope())
-	  {
+		using (Assert.EnterMultipleScope())
+		{
 			Assert.That(span.Start, Is.EqualTo(1), nameof(span.Start));
 			Assert.That(span.Length, Is.EqualTo(3), nameof(span.Length));
 			Assert.That(span.End, Is.EqualTo(4), nameof(span.End));
@@ -105,8 +105,8 @@ internal static class TextSpanTests
 		var span2 = TextSpan.FromBounds(3, 8);
 		var span3 = TextSpan.FromBounds(6, 12);
 
-	  using (Assert.EnterMultipleScope())
-	  {
+		using (Assert.EnterMultipleScope())
+		{
 			Assert.That(span1.OverlapsWith(span2), Is.True, "span1.OverlapsWith(span2)");
 			Assert.That(span1.OverlapsWith(span3), Is.False, "span1.OverlapsWith(span3)");
 			Assert.That(span2.OverlapsWith(span3), Is.True, "span2.OverlapsWith(span3)");

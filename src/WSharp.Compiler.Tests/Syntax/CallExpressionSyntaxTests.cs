@@ -12,8 +12,8 @@ internal static class CallExpressionSyntaxTests
 		var syntax = (CallExpressionSyntax)SyntaxTree.Parse(code).Root.DescendentNodes()
 			.First(_ => _.Kind == SyntaxKind.CallExpression);
 
-	  using (Assert.EnterMultipleScope())
-	  {
+		using (Assert.EnterMultipleScope())
+		{
 			Assert.That(syntax.Identifier.Kind, Is.EqualTo(SyntaxKind.IdentifierToken), nameof(syntax.Identifier));
 			Assert.That(syntax.Identifier.Text, Is.EqualTo("print"), nameof(syntax.Identifier));
 			Assert.That(syntax.OpenParenthesisToken.Kind, Is.EqualTo(SyntaxKind.OpenParenthesisToken), nameof(syntax.OpenParenthesisToken));

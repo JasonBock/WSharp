@@ -13,8 +13,8 @@ internal static class UpdateLineCountExpressionSyntaxTests
 		var syntax = (UpdateLineCountExpressionSyntax)SyntaxTree.Parse(code).Root.DescendentNodes()
 			.First(_ => _.Kind == SyntaxKind.UpdateLineCountExpression);
 
-	  using (Assert.EnterMultipleScope())
-	  {
+		using (Assert.EnterMultipleScope())
+		{
 			Assert.That(((LiteralExpressionSyntax)syntax.Left).Value, Is.EqualTo(BigInteger.One), nameof(syntax.Left));
 			Assert.That(syntax.OperatorToken.Kind, Is.EqualTo(SyntaxKind.UpdateLineCountToken), nameof(syntax.OperatorToken));
 			Assert.That(((LiteralExpressionSyntax)syntax.Right).Value, Is.EqualTo(new BigInteger(2)), nameof(syntax.Right));

@@ -13,8 +13,8 @@ internal static class BinaryExpressionSyntaxTests
 		var syntax = (BinaryExpressionSyntax)SyntaxTree.Parse(code).Root.DescendentNodes()
 		  .First(_ => _.Kind == SyntaxKind.BinaryExpression);
 
-	  using (Assert.EnterMultipleScope())
-	  {
+		using (Assert.EnterMultipleScope())
+		{
 			Assert.That(((LiteralExpressionSyntax)syntax.Left).Value, Is.EqualTo(BigInteger.One), nameof(syntax.Left));
 			Assert.That(syntax.OperatorToken.Kind, Is.EqualTo(SyntaxKind.PlusToken), nameof(syntax.OperatorToken));
 			Assert.That(((LiteralExpressionSyntax)syntax.Right).Value, Is.EqualTo(new BigInteger(2)), nameof(syntax.Left));

@@ -16,7 +16,6 @@ internal static class ConversionTests
 			Assert.That(Conversion.Explicit.IsIdentity, Is.False, nameof(Conversion.IsIdentity));
 			Assert.That(Conversion.Explicit.IsImplicit, Is.False, nameof(Conversion.IsImplicit));
 		}
-		;
 	}
 
 	[Test]

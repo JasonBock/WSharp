@@ -13,8 +13,8 @@ internal static class ParameterSymbolTests
 
 		var parameter = new ParameterSymbol(name, type);
 
-	  using (Assert.EnterMultipleScope())
-	  {
+		using (Assert.EnterMultipleScope())
+		{
 			Assert.That(parameter.Name, Is.EqualTo(name), nameof(parameter.Name));
 			Assert.That(parameter.Type, Is.EqualTo(type), nameof(parameter.Type));
 		}

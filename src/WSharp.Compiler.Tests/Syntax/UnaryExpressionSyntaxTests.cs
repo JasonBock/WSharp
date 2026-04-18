@@ -12,8 +12,8 @@ internal static class UnaryExpressionSyntaxTests
 		var syntax = (UnaryExpressionSyntax)SyntaxTree.Parse(code).Root.DescendentNodes()
 			.First(_ => _.Kind == SyntaxKind.UnaryExpression);
 
-	  using (Assert.EnterMultipleScope())
-	  {
+		using (Assert.EnterMultipleScope())
+		{
 			Assert.That(syntax.OperatorToken.Kind, Is.EqualTo(SyntaxKind.MinusToken), nameof(syntax.OperatorToken));
 			Assert.That(syntax.Operand.Kind, Is.EqualTo(SyntaxKind.LiteralExpression), nameof(syntax.Operand));
 			Assert.That(syntax.Span.Start, Is.EqualTo(2), nameof(syntax.Span.Start));

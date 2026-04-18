@@ -11,8 +11,8 @@ internal static class CompilationUnitSyntaxTests
 		var code = "1 1;";
 		var syntax = SyntaxTree.Parse(code).Root;
 
-	  using (Assert.EnterMultipleScope())
-	  {
+		using (Assert.EnterMultipleScope())
+		{
 			Assert.That(syntax.Kind, Is.EqualTo(SyntaxKind.CompilationUnit), nameof(syntax.Kind));
 			Assert.That(syntax.LineStatements.Lines, Has.Count.EqualTo(1), nameof(syntax.LineStatements));
 			Assert.That(syntax.EndOfFileToken.Kind, Is.EqualTo(SyntaxKind.EndOfFileToken), nameof(syntax.EndOfFileToken));

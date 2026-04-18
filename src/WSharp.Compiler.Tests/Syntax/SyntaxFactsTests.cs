@@ -15,8 +15,8 @@ internal static class SyntaxFactsTests
 			var (tokensResult, _) = SyntaxTree.ParseTokens(text);
 			var tokens = tokensResult.ToArray();
 
-		 using (Assert.EnterMultipleScope())
-		 {
+			using (Assert.EnterMultipleScope())
+			{
 				Assert.That(tokens, Has.Length.EqualTo(1), nameof(tokens.Length));
 				var token = tokens[0];
 				Assert.That(token.Kind, Is.EqualTo(kind), nameof(token.Kind));
@@ -30,8 +30,8 @@ internal static class SyntaxFactsTests
 	{
 		var operatorKinds = SyntaxFacts.GetUnaryOperatorKinds().ToArray();
 
-	  using (Assert.EnterMultipleScope())
-	  {
+		using (Assert.EnterMultipleScope())
+		{
 			Assert.That(operatorKinds, Has.Length.EqualTo(4), nameof(operatorKinds.Length));
 			Assert.That(operatorKinds, Contains.Item(SyntaxKind.PlusToken), nameof(SyntaxKind.PlusToken));
 			Assert.That(operatorKinds, Contains.Item(SyntaxKind.MinusToken), nameof(SyntaxKind.MinusToken));
@@ -45,8 +45,8 @@ internal static class SyntaxFactsTests
 	{
 		var binaryKinds = SyntaxFacts.GetBinaryOperatorKinds().ToArray();
 
-	  using (Assert.EnterMultipleScope())
-	  {
+		using (Assert.EnterMultipleScope())
+		{
 			Assert.That(binaryKinds, Has.Length.EqualTo(16), nameof(binaryKinds.Length));
 			Assert.That(binaryKinds, Contains.Item(SyntaxKind.StarToken), nameof(SyntaxKind.StarToken));
 			Assert.That(binaryKinds, Contains.Item(SyntaxKind.SlashToken), nameof(SyntaxKind.SlashToken));

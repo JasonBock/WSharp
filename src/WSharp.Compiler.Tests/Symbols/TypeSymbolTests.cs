@@ -18,8 +18,8 @@ internal static class TypeSymbolTests
 	{
 		var symbol = TypeSymbol.Lookup(typeName)!;
 
-	  using (Assert.EnterMultipleScope())
-	  {
+		using (Assert.EnterMultipleScope())
+		{
 			Assert.That(symbol.Name, Is.EqualTo(typeName), nameof(symbol.Name));
 			Assert.That(symbol.Kind, Is.EqualTo(SymbolKind.Type), nameof(symbol.Kind));
 		}

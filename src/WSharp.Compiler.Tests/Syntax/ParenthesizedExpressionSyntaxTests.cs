@@ -12,8 +12,8 @@ internal static class ParenthesizedExpressionSyntaxTests
 		var syntax = (ParenthesizedExpressionSyntax)SyntaxTree.Parse(code).Root.DescendentNodes()
 			.First(_ => _.Kind == SyntaxKind.ParenthesizedExpression);
 
-	  using (Assert.EnterMultipleScope())
-	  {
+		using (Assert.EnterMultipleScope())
+		{
 			Assert.That(syntax.OpenParenthesisToken.Kind, Is.EqualTo(SyntaxKind.OpenParenthesisToken), nameof(syntax.OpenParenthesisToken));
 			Assert.That(syntax.Expression.Kind, Is.EqualTo(SyntaxKind.BinaryExpression), nameof(syntax.Expression));
 			Assert.That(syntax.CloseParenthesisToken.Kind, Is.EqualTo(SyntaxKind.CloseParenthesisToken), nameof(syntax.CloseParenthesisToken));

@@ -23,8 +23,8 @@ internal static class TextLocationTests
 		var location5 = new TextLocation(text1, span1);
 
 #pragma warning disable NUnit2010 // Use EqualConstraint for better assertion messages in case of failure
-	  using (Assert.EnterMultipleScope())
-	  {
+		using (Assert.EnterMultipleScope())
+		{
 			Assert.That(location1, Is.Not.EqualTo(location2), "location1.Equals(location2)");
 			Assert.That(location1 == location2, Is.False, "location1 == location2");
 			Assert.That(location1 != location2, Is.True, "location1 != location2");
@@ -52,8 +52,8 @@ internal static class TextLocationTests
 		var span = new TextSpan(2, 1);
 		var location = new TextLocation(text, span);
 
-	  using (Assert.EnterMultipleScope())
-	  {
+		using (Assert.EnterMultipleScope())
+		{
 			Assert.That(location.EndCharacter, Is.EqualTo(3), nameof(location.EndCharacter));
 			Assert.That(location.EndLine, Is.Zero, nameof(location.EndLine));
 			Assert.That(location.Span, Is.EqualTo(span), nameof(location.Span));
@@ -71,8 +71,8 @@ internal static class TextLocationTests
 		var span = new TextSpan(2, 7);
 		var location = new TextLocation(text, span);
 
-	  using (Assert.EnterMultipleScope())
-	  {
+		using (Assert.EnterMultipleScope())
+		{
 			Assert.That(location.EndCharacter, Is.EqualTo(9), nameof(location.EndCharacter));
 			Assert.That(location.EndLine, Is.EqualTo(1), nameof(location.EndLine));
 			Assert.That(location.Span, Is.EqualTo(span), nameof(location.Span));

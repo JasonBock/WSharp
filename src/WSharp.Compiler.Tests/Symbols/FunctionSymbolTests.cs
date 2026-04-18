@@ -1,5 +1,4 @@
 ﻿using NUnit.Framework;
-using System.Collections.Immutable;
 using WSharp.Compiler.Symbols;
 
 namespace WSharp.Compiler.Tests.Symbols;
@@ -15,8 +14,8 @@ internal static class FunctionSymbolTests
 
 		var function = new FunctionSymbol(name, [parameter], returnType);
 
-	  using (Assert.EnterMultipleScope())
-	  {
+		using (Assert.EnterMultipleScope())
+		{
 			Assert.That(function.Name, Is.EqualTo(name), nameof(function.Name));
 			Assert.That(function.ReturnType, Is.EqualTo(returnType), nameof(function.ReturnType));
 			Assert.That(function.Parameters, Has.Length.EqualTo(1), nameof(function.Parameters.Length));
